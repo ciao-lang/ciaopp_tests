@@ -1,0 +1,22 @@
+set terminal pdfcairo
+
+set output 'details.pdf'
+
+graph_title = system("echo $det_graph_title")
+
+set title "Fixpoint execution time for ".graph_title
+set xlabel "# of clauses"
+set ylabel "Runtime (ms)"
+set pointsize 0.5
+#set xtics 10
+#set logscale y
+
+file_exists(file) = system("if [ -f '".file."' ] ; then echo '1' ; else echo '0' ; fi") + 0
+
+if ( file_exists("mon-noninc/stats/stats.pl_norm.data") ) {
+   filenames = "mon-noninc mon-inc mod-noninc mod-inc"
+} else {
+   filenames = "mon-noninc-top_down mon-inc-top_down mon-inc-bottom_up mod-noninc-top_down mod-inc-top_down mod-inc-bottom_up"
+}
+
+plot for [file in filenames] file."/stats/stats.pl_norm.data" using ($4+$6+$7+$8+$9+$10+$11) title file
