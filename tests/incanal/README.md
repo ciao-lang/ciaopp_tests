@@ -1,4 +1,4 @@
-# These are test for incremental analysis
+# Tests for incremental analysis
 
 ## Requirements
 To run these tests `bash` is needed. 
