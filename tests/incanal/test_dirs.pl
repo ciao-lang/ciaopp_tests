@@ -40,46 +40,42 @@ test_dir(bu_doctree,bibutils, Dir, manual) :-
         basic_incanal_dir(bibutils,Dir).
 % for incverif paper
 % TODO: hardwired path!
-% test_dir('cmds/lpdoccl.pl',lpdoc_backends,'~/clip/Papers/incverif/incanal_assrts_paper/src/lpdoc_backends',states).
+test_dir('cmds/lpdoccl.pl',lpdoc_backends,'~/clip/Papers/incverif/incanal_assrts_paper/src/lpdoc_backends',states).
 % test_dir('cmds/lpdoccl.pl',lpdoc_asr_inc,'~/clip/Papers/incverif/incanal_assrts_paper/src/lpdoc_asr_inc',states).
 
-% test_dir('trust_success.pl',X,Dir,states) :-
-%         trust_success_test(X), !,
-%         basic_incanal_dir(X,Dir).
-% % assertions
-% test_dir(incanal_trust,trust_success, Dir, git) :-
-%         incanal_trusts_dir(trust_success,Dir).
-% test_dir(trust_success, trust_success_complex, Dir, git) :-
-%         incanal_trusts_dir(trust_success_complex,Dir).
-% % TODO: hardwired path!
-% test_dir('cmds/lpdoccl', lpdoc_asr_inc, '~/ciao/lpdoc_asr_inc', git).
-% test_dir(trust,X, Dir,git) :-
-%         basic_trust_call_test(X), !,
-%         incanal_trusts_dir(X,Dir).
-% test_dir('trust_calls.pl',X, Dir,git) :-
-%         trust_call_test(X), !,
-%         incanal_trusts_dir(X,Dir).
+% assertions
+test_dir('trust_success.pl',X,Dir,states) :-
+        inc_trust_succ_test(X), !,
+        incanal_trusts_dir(X,Dir).
+test_dir('trust_calls.pl',X, Dir,states) :-
+        inc_trust_call_test(X), !,
+        incanal_trusts_dir(X,Dir).
+test_dir(trust,X, Dir,git) :-
+        basic_inc_trust_test(X), !,
+        incanal_trusts_dir(X,Dir).
 
 basic_incanal_dir(Id,Dir) :-
         path_concat('tests/incanal/bench',Id,D1),
         bundle_path(ciaopp_tests, D1, Dir).
 
-% basic_trust_call_test(trust_calls).
-% basic_trust_call_test(trust_calls_complex).
+basic_inc_trust_test(trust_calls).
+basic_inc_trust_test(trust_calls_complex).
 
-% trust_call_test('trust_calls_C1_+').
-% trust_call_test('trust_calls_C2_+').
-% trust_call_test('trust_calls_C3_+').
-% trust_call_test('trust_calls_C1_-').
-% trust_call_test('trust_calls_C2_-').
-% trust_call_test('trust_calls_C3_-').
+inc_trust_call_test('trust_C1_+').
+inc_trust_call_test('trust_C2_+').
+inc_trust_call_test('trust_C3_+').
+inc_trust_call_test('trust_C1_-').
+inc_trust_call_test('trust_C2_-').
+inc_trust_call_test('trust_C3_-').
+inc_trust_call_test('trust_C1_-bot').
+inc_trust_call_test('trust_C1_+bot').
 
-% trust_success_test('trust_success_S1').
-% trust_success_test('trust_success_S2').
-% trust_success_test('trust_success_S3').
-% trust_success_test('trust_success_S4').
+inc_trust_succ_test('trust_S1').
+inc_trust_succ_test('trust_S2').
+inc_trust_succ_test('trust_S3').
+inc_trust_succ_test('trust_S4').
 
-% incanal_trusts_dir(Id,Dir) :- !, fail.
-% incanal_trusts_dir(Id,Dir) :-
-%         path_concat('tests/benchs/incanal_trusts',Id,D1),
-%         bundle_path(ciaopp_extra, D1, Dir).
+%incanal_trusts_dir(Id,Dir) :- !, fail.
+incanal_trusts_dir(Id,Dir) :-
+        path_concat('tests/incanal/bench',Id,D1),
+        bundle_path(ciaopp_tests, D1, Dir).

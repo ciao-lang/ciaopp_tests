@@ -5,7 +5,7 @@ _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
 
 pushd $_base > /dev/null 2>&1
 
-tests=(qsort hanoi aiakl) # boyer peephole)
+tests=(qsort hanoi aiakl boyer peephole)
 configs=(add del)
 domains=(shfr)
 

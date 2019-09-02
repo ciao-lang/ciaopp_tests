@@ -3,7 +3,7 @@
 _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
     cd "$d";done;cd "$(dirname "$e")";pwd -P)
 
-tests=(trust_calls_C1_+ trust_calls_C2_+ trust_calls_C3_+ trust_calls_C1_- trust_calls_C2_- trust_calls_C3_- trust_success_S1 trust_success_S2 trust_success_S3 trust_success_S4)
+tests=(trust_C1_+ trust_C1_+bot trust_C2_+ trust_C3_+ trust_C1_- trust_C1_-bot trust_C2_- trust_C3_- trust_S1 trust_S2 trust_S3 trust_S4)
 
 if [ "$#" -ne 1 ]; then
 	  echo "Usage: ./test_incanal_assrts.sh <domain>"
@@ -41,7 +41,7 @@ for i in "${tests[@]}" ; do
     echo "Running $i"
     for k in "${inc_configs[@]}" ; do
         log_file="$res_dir"/logs/"$i"_"$k"_"$domain"_assertions.log
-        ./$bench_driver "$i" add 1 $domain $k assertions trace --user_tag $tag #&> "$log_file"
+        ./$bench_driver "$i" add 1 $domain $k assertions --user_tag $tag &> "$log_file"
     done
 
     bench_res_dir=$(find $res_dir -name "$i*$domain*$tag")
