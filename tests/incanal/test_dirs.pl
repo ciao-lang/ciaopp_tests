@@ -69,6 +69,8 @@ inc_trust_call_test('trust_C2_-').
 inc_trust_call_test('trust_C3_-').
 inc_trust_call_test('trust_C1_-bot').
 inc_trust_call_test('trust_C1_+bot').
+inc_trust_call_test('trust_C_exported').
+inc_trust_call_test('trust_C_internal').
 
 inc_trust_succ_test('trust_S1').
 inc_trust_succ_test('trust_S2').

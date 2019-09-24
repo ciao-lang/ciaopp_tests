@@ -3,7 +3,8 @@
 _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
     cd "$d";done;cd "$(dirname "$e")";pwd -P)
 
-tests=(trust_C1_+ trust_C1_+bot trust_C2_+ trust_C3_+ trust_C1_- trust_C1_-bot trust_C2_- trust_C3_- trust_S1 trust_S2 trust_S3 trust_S4)
+tests=(trust_C1_+ trust_C1_+bot trust_C2_+ trust_C3_+ trust_C1_- trust_C1_-bot trust_C2_- trust_C3_- trust_S1 trust_S2 trust_S3 trust_S4 trust_C_exported trust_C_internal)
+# TODO: keep up to date w.r.t. test_dirs:inc_trust_call_test/1 and test_dirs:inc_trust_succ_test/1
 
 if [ "$#" -ne 1 ]; then
 	  echo "Usage: ./test_incanal_assrts.sh <domain>"
