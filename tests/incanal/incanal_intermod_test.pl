@@ -319,7 +319,7 @@ perform_seq_analysis1(St, DirType, TopLevel, Dir) :-
 	garbage_collect,
 	( modular_analyze(AbsInt, TopLevel, _Stats) ->
     show_global_answer_table(_),
-%    show_analysis,
+    show_analysis,
     true
 	; error_message("ANALYSIS FAILED", [])
 	),

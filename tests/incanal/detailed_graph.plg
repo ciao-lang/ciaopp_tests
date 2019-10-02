@@ -19,4 +19,4 @@ if ( file_exists("mon-noninc/stats/stats.pl_norm.data") ) {
    filenames = "mon-noninc-top_down mon-inc-top_down mon-inc-bottom_up mod-noninc-top_down mod-inc-top_down mod-inc-bottom_up"
 }
 
-plot for [file in filenames] file."/stats/stats.pl_norm.data" using ($3+$5+$6+$7+$8+$9+$10+$11) title file
+plot for [file in filenames] file."/stats/stats.pl_norm.data" using ($4+$6+$7+$8+$9+$10+$11) title file

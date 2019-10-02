@@ -94,7 +94,7 @@ else
 		               run_config "$i" "$j $k" "$log_file_end"
 	             done
 	         else
-	             log_file_end="$i"_"$j"
+	             log_file="$i"_"$j"
 	             run_config "$i" "$j" "$log_file_end"
 	         fi
 	     done
