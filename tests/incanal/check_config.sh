@@ -15,17 +15,17 @@ function check_args {
         ;;
         *)
             echo "Wrong arguments"
-	          show_help
-	          exit
-	  esac
+                  show_help
+                  exit
+          esac
 
     case $2 in
         shfr|def|pdb|gr)
             ;;
         *)
             echo "Wrong domain option"
-	          show_help
-	          exit
+                  show_help
+                  exit
             ;;
     esac
 }
@@ -38,7 +38,7 @@ function compare_directories_add {
     extra=$5
 
     echo "CHECKING $k $i for $j $mon ... "
-	  ciaopp-dump-cmp "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc/detailed_step_results" "$j"
+          ciaopp-dump-cmp "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc/detailed_step_results" "$j"
 }
 
 function compare_directories_del {

@@ -10,18 +10,18 @@ function show_help {
 
 function check_args {
     if [ "$1" -ne 3 ]; then
-	if [ "$1" -ne 4 ]; then
-	    echo "Wrong arguments"
-	    show_help
-	    exit
-	fi
+        if [ "$1" -ne 4 ]; then
+            echo "Wrong arguments"
+            show_help
+            exit
+        fi
     fi
     if [ "$2" != "add" ]; then
-	      if [ "$2" != "del" ]; then
-	          echo "Wrong simulation option"
-	          show_help
-	          exit
-	      fi
+              if [ "$2" != "del" ]; then
+                  echo "Wrong simulation option"
+                  show_help
+                  exit
+              fi
     fi
 
     case $3 in
@@ -29,8 +29,8 @@ function check_args {
         ;;
         *)
             echo "Wrong domain option"
-	          show_help
-	          exit
+                  show_help
+                  exit
             ;;
     esac
 }
@@ -81,23 +81,23 @@ function run_config {
 if [ "$test_type" == "add" ]; then
    for i in "${mod_config[@]}" ; do
        for j in "${inc_config[@]}" ; do
-	   log_file_end="$i"_"$j"
-	   run_config "$i" "$j" "$log_file_end"
-	done
+           log_file_end="$i"_"$j"
+           run_config "$i" "$j" "$log_file_end"
+        done
    done
 else
    for i in "${mod_config[@]}" ; do
        for j in "${inc_config[@]}" ; do
-	         if [ "$j" == "incremental" ]; then
-	             for k in "${del_config[@]}" ; do
-		               log_file_end="$i"_"$j"_"$k"
-		               run_config "$i" "$j $k" "$log_file_end"
-	             done
-	         else
-	             log_file_end="$i"_"$j"
-	             run_config "$i" "$j" "$log_file_end"
-	         fi
-	     done
+                 if [ "$j" == "incremental" ]; then
+                     for k in "${del_config[@]}" ; do
+                               log_file_end="$i"_"$j"_"$k"
+                               run_config "$i" "$j $k" "$log_file_end"
+                     done
+                 else
+                     log_file_end="$i"_"$j"
+                     run_config "$i" "$j" "$log_file_end"
+                 fi
+             done
    done
 fi
 

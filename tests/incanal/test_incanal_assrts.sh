@@ -7,7 +7,7 @@ tests=(trust_C1_+ trust_C1_+bot trust_C2_+ trust_C3_+ trust_C1_- trust_C1_-bot t
 # TODO: keep up to date w.r.t. test_dirs:inc_trust_call_test/1 and test_dirs:inc_trust_succ_test/1
 
 if [ "$#" -ne 1 ]; then
-	  echo "Usage: ./test_incanal_assrts.sh <domain>"
+          echo "Usage: ./test_incanal_assrts.sh <domain>"
     exit
 fi
 

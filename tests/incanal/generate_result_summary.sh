@@ -19,9 +19,9 @@ function check_args {
     #if [ "$1" -ne 1 ]; then
     #echo "TODO: [Not implemented yet] Cleaning previous results..."
     if [ "$1" -ne 2 ]; then
-	echo "Wrong arguments"
-	show_help
-	exit
+        echo "Wrong arguments"
+        show_help
+        exit
     fi
 }
 
@@ -36,9 +36,9 @@ function summarize_benchs_directory {
 
     benchs=$(ls -d "$test_dir"/$filter/)
     for b in ${benchs[@]} ; do
-	echo "Summarizing $b"
-	summarize_test "$b$bsumfile" "$b"
-	echo "$empty_row" >> $plot_file
+        echo "Summarizing $b"
+        summarize_test "$b$bsumfile" "$b"
+        echo "$empty_row" >> $plot_file
     done
 }
 
@@ -62,19 +62,19 @@ function summarize_test { # execute this function for each of the filtered tests
     echo "summary(benchName, load, compDiff, restore, procDiff, procAssrts, preProc, incAct, analyze, 'GAT', 'SaveGAT', contextChs)." >> "$results_file"
 
     for dir in ${config_dirs[@]} ; do
-	stats_dir=$dir/stats
-	bench_config=$(basename "$dir")
+        stats_dir=$dir/stats
+        bench_config=$(basename "$dir")
 
-	echo "Processing $stats_dir..."
-	echo ""
-	echo "summary('$bench_config'," >> "$results_file"
+        echo "Processing $stats_dir..."
+        echo ""
+        echo "summary('$bench_config'," >> "$results_file"
 
-	$sum_driver "$stats_dir" >> "$results_file"
-	$gather_driver "$stats_dir"
+        $sum_driver "$stats_dir" >> "$results_file"
+        $gather_driver "$stats_dir"
 
-	# get stats file
-	gather_file=$(ls "$stats_dir"/stats.pl)
-	$norm_driver "$gather_file" "$gather_file"_norm.data gnuplot "$mask_all"
+        # get stats file
+        gather_file=$(ls "$stats_dir"/stats.pl)
+        $norm_driver "$gather_file" "$gather_file"_norm.data gnuplot "$mask_all"
     done
 
     #Generate summarized data

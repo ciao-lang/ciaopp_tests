@@ -18,10 +18,10 @@ echo "Running tests..."
 
 for k in "${configs[@]}" ; do
     for i in "${tests[@]}" ; do
-	      for j in "${domains[@]}" ; do
-	          rm -rf test_results/$k*$j*quick-run
-	          ./run_configs.sh $i $k $j "--user_tag quick-run"
-	      done
+              for j in "${domains[@]}" ; do
+                  rm -rf test_results/$k*$j*quick-run
+                  ./run_configs.sh $i $k $j "--user_tag quick-run"
+              done
     done
 done
 
@@ -31,10 +31,10 @@ done
 errors=0
 
 for i in "${tests[@]}" ; do
-	  for j in "${domains[@]}" ; do
-	      ./check_config.sh $i $j "-quick-run"
+          for j in "${domains[@]}" ; do
+              ./check_config.sh $i $j "-quick-run"
         errors=$(expr $errors + $?) # add errors
-	  done
+          done
 done
 
 echo "$errors ERROR(S) FOUND."

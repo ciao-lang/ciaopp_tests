@@ -7,7 +7,7 @@ tests=(ann aiakl bid boyer cleandirs hanoi peephole progeom warplan prolog_read 
 configs=(add del)
 
 if [ "$#" -ne 1 ]; then
-	  echo "Usage: ./run_all.sh <domain>"
+          echo "Usage: ./run_all.sh <domain>"
     exit
 fi
 
@@ -22,7 +22,7 @@ echo "Running tests..."
 
 for k in "${configs[@]}" ; do
     for i in "${tests[@]}" ; do
-	./run_configs.sh $i $k "$1"
+        ./run_configs.sh $i $k "$1"
     done
 done
 
@@ -31,10 +31,10 @@ domains=($1)
 errors=0
 
 for i in "${tests[@]}" ; do
-	  for j in "${domains[@]}" ; do
-	      ./check_config.sh $i $j
+          for j in "${domains[@]}" ; do
+              ./check_config.sh $i $j
         errors=$($errors+$?) # add errors
-	  done
+          done
 done
 
 popd > /dev/null 2>&1
