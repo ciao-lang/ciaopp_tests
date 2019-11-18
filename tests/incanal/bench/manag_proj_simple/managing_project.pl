@@ -285,7 +285,7 @@ get_all_personal_project_efforts([Person|Persons],Project,SM,SY,EM,EY,Efforts):-
 	    Efforts = [(Person,Eff)|More_Efforts]),
 	get_all_personal_project_efforts(Persons,Project,SM,SY,EM,EY,More_Efforts).
 
-:- comment(hours_to_be_justified_person_project(Person,Project,SM,SY,EM,EY,Hours),
+:- doc(hours_to_be_justified_person_project(Person,Project,SM,SY,EM,EY,Hours),
    "The aim of this predicate is to compute the number of hours which
    @var{Person} should justify in the Cost Sstatement of @var{Project}
    for the period indicated in order to match the actual payments.").
