@@ -5,7 +5,7 @@
 :- doc(author, "Isabel Garcia-Contreras").
 
 :- doc(module, "This module is intended to be a Ciao interface for the
-	scripts for running benchmaks of (modular) (incremental) analysis.
+    scripts for running benchmaks of (modular) (incremental) analysis.
 
 Before running any comman, the bench drivers have to be compiled:
 @begin{verbatim}
@@ -64,13 +64,13 @@ Checking the correctness of a performed test:
 
 :- export(run_benchmark/3).
 :- pred run_benchmark(Bench, Edition, Opts) : (atm(Bench), edition(Edition), list(Opts))
-	#"Runs all configurations of incremental and modular analysis
-          for benchmark @var{Bench} and @var{Edition} for the edition
-          simulation sequence. Note that if there were previous
-          results of a benchmark with the same configuration, those
-          will be overwritten".
+    #"Runs all configurations of incremental and modular analysis
+      for benchmark @var{Bench} and @var{Edition} for the edition
+      simulation sequence. Note that if there were previous
+      results of a benchmark with the same configuration, those
+      will be overwritten".
 run_benchmark(Bench, Edition, _Opts) :-
-	process_call('./run_configs.sh', [Bench,Edition], []).
+    process_call('./run_configs.sh', [Bench,Edition], []).
 
 :- regtype edition/1.
 edition(add).
@@ -79,7 +79,7 @@ edition(del).
 :- export(compile_all/0).
 :- doc(compile_all/0, "Compiles all executables to perform tests.").
 compile_all :-
-	process_call('./compile.sh', [], []).
+    process_call('./compile.sh', [], []).
 
 check_benchmark_correctness. % --> compare analysis
 
@@ -87,38 +87,38 @@ summarize_bench_stats(_). % --> prolog_to_table usages
 
 :- export(generate_results_summary/1).
 :- pred generate_results_summary(Filter) : string
-	#"It generates:
+    #"It generates:
       @begin{itemize}
       @item A graph with all the tests that were runned (for example with @pred{run_benchmark/3}) that meet the filter.
       @end{itemize}
       ".
 generate_results_summary(Filter) :-
-	all_tests_results_dir(Dir),
-	atom_codes(AF, Filter),
-	display('Detailed graphs are written in Dir in subdirectory with the current timestamp.'), nl,
-	process_call('./generate_result_summary.sh', [Dir, AF], []).
+    all_tests_results_dir(Dir),
+    atom_codes(AF, Filter),
+    display('Detailed graphs are written in Dir in subdirectory with the current timestamp.'), nl,
+    process_call('./generate_result_summary.sh', [Dir, AF], []).
 
 :- export(show_performed_tests_directory/0).
 :- doc(show_performed_tests_directory/0, "Shows a list of the tests that were
-	performed by the user.").
+    performed by the user.").
 show_performed_tests_directory :-
-	all_tests_results_dir(Dir),
-	( % failure-driven loop
-	  directory_dir(Dir, _, F),
-	    display(F), nl,
-	    fail
-	;
-	    true
-	).
+    all_tests_results_dir(Dir),
+    ( % failure-driven loop
+      directory_dir(Dir, _, F),
+        display(F), nl,
+        fail
+    ;
+        true
+    ).
 
 :- export(check_tests_semantic_results/2).
 :- pred check_tests_semantic_results(Domain, Dirs) : atm * list(atm)
-	#"Checks the correctness of analysis results in an already
-	performed benchmark. @var{Dirs} is a (sub)list of the
-	directories displayed by
-	@pred{show_performed_tests_directory}.".
+    #"Checks the correctness of analysis results in an already
+    performed benchmark. @var{Dirs} is a (sub)list of the
+    directories displayed by
+    @pred{show_performed_tests_directory}.".
 check_tests_semantic_results(Domain, Dirs) :-
-	process_call('./analysis_results_checker', [Domain|Dirs], []).
+    process_call('./analysis_results_checker', [Domain|Dirs], []).
 
 % ---------------------------------------------------------------------------
 
@@ -128,10 +128,10 @@ check_tests_semantic_results(Domain, Dirs) :-
 
 :- export(directory_dir/3).
 directory_dir(Dir, Base, F1) :-
-	directory_files(Dir, Fs),
-	member(Base, Fs),
-	path_concat(Dir, Base, F1),
-	file_property(F1, type(directory)).
+    directory_files(Dir, Fs),
+    member(Base, Fs),
+    path_concat(Dir, Base, F1),
+    file_property(F1, type(directory)).
 
 % ---------------------------------------------------------------------------
 

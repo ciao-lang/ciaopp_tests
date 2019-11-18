@@ -7,7 +7,7 @@
 %:- pred test(X) : ground(X).
 
 test(L):-  length(L,Length), length(Result,Length),
-           qsort(L,Result), sorted(Result).
+       qsort(L,Result), sorted(Result).
 
 sorted([]).
 sorted([_]).

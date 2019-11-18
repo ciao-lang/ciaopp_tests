@@ -22,16 +22,16 @@
 */
 
 %:- entry bid(X,Y,Z,W)
-%	: ( ground(X)
-%	  , mshare([[Y],[Z],[W]])
-%	  , var(Y), var(Z), var(W)
+%       : ( ground(X)
+%         , mshare([[Y],[Z],[W]])
+%         , var(Y), var(Z), var(W)
 %         ).
 
 goal(Attr,Pts,Bid) :-
-	bid([ace-clubs, 3-hearts, 4-spades, 4-diamonds,
-             king-clubs, jack-hearts, ace-spades, ace-hearts,
-             10-clubs, 9-clubs, 6-clubs, queen-diamonds, king-spades],
-        Attr,Pts,Bid).
+    bid([ace-clubs, 3-hearts, 4-spades, 4-diamonds,
+         king-clubs, jack-hearts, ace-spades, ace-hearts,
+         10-clubs, 9-clubs, 6-clubs, queen-diamonds, king-spades],
+    Attr,Pts,Bid).
 
 bid(Hand,Attributes,Points,Bid) :-
     sort_hand(Hand,SortedHand) ,

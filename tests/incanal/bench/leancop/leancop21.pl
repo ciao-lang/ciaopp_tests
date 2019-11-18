@@ -39,30 +39,30 @@
 %%% prove matrix M / formula F
 
 not(member(X,Set)) :-
-	member(X, Set), !, fail.
+    member(X, Set), !, fail.
 not(aux(A,B,C,D)) :-
-	aux(A,B,C,D), !, fail.
+    aux(A,B,C,D), !, fail.
 not(pathlim) :-
-	pathlim, !, fail.
+    pathlim, !, fail.
 not(_).
 
 prove(F,Proof) :-
-	prove2(F,[cut,comp(7)],Proof).
+    prove2(F,[cut,comp(7)],Proof).
 
 prove2(F,Set,Proof) :-
-	( F=[_|_] ->
-	    M=F
-	;
-	    make_matrix(F,M,Set)
-	),
-	retractall_fact(lit(_,_,_,_)),
-	( member([-(#)],M) ->
-	    S=conj
-	;
-	    S=pos
-	),
-	assert_clauses(M,S),
-	prove2_(1,Set,Proof).
+    ( F=[_|_] ->
+        M=F
+    ;
+        make_matrix(F,M,Set)
+    ),
+    retractall_fact(lit(_,_,_,_)),
+    ( member([-(#)],M) ->
+        S=conj
+    ;
+        S=pos
+    ),
+    assert_clauses(M,S),
+    prove2_(1,Set,Proof).
 
 prove2_(PathLim,Set,Proof) :-
     ( not(member(scut,Set)) -> prove_([-(#)],[],PathLim,[],Set,[Proof])
@@ -71,56 +71,56 @@ prove2_(PathLim,Set,Proof) :-
     ).
 prove2_(PathLim,Set,Proof) :-
     ( member(comp(Limit),Set), PathLim=Limit ->
-        prove2_(1,[],Proof)
+    prove2_(1,[],Proof)
     ; ( member(comp(_),Set) ; retract_fact(pathlim) ) ->
-        PathLim1 is PathLim+1, prove2_(PathLim1,Set,Proof)
+    PathLim1 is PathLim+1, prove2_(PathLim1,Set,Proof)
     ).
 
 %%% leanCoP core prover
 
 aux(LitC,Lit,Cla,Path) :-
-	member(LitC,[Lit|Cla]),
-	member(LitP,Path),
-	LitC==LitP.
+    member(LitC,[Lit|Cla]),
+    member(LitP,Path),
+    LitC==LitP.
 
 prove_([],_,_,_,_,[]).
 prove_([Lit|Cla],Path,PathLim,Lem,Set,Proof) :-
-	( Proof=[[[NegLit|Cla1]|Proof1]|Proof2],
-	  not(aux(LitC,Lit,Cla,Path)),
-	  (-NegLit=Lit;-Lit=NegLit) ->
-	     ( member(LitL,Lem), Lit==LitL, Cla1=[], Proof1=[]
-	     ; member(NegL,Path), unify_with_occurs_check(NegL,NegLit),
-	       Cla1=[], Proof1=[]
-	     ;
-	       % mlit(NegLit,NegL,Cla1,Grnd1),
-               lit(NegLit,NegL,Cla1,Grnd1),
-	       unify_with_occurs_check(NegL,NegLit),
-	       ( Grnd1=g -> true 
-	       ; length(Path,K), K<PathLim -> true
-	       ; not(pathlim) -> asserta_fact(pathlim), fail
-	       ),
-	       prove_(Cla1,[Lit|Path],PathLim,Lem,Set,Proof1)
-	     ),
-	     ( member(cut,Set) -> ! ; true ),
-	     prove_(Cla,Path,PathLim,[Lit|Lem],Set,Proof2)
-	).
+    ( Proof=[[[NegLit|Cla1]|Proof1]|Proof2],
+      not(aux(LitC,Lit,Cla,Path)),
+      (-NegLit=Lit;-Lit=NegLit) ->
+         ( member(LitL,Lem), Lit==LitL, Cla1=[], Proof1=[]
+         ; member(NegL,Path), unify_with_occurs_check(NegL,NegLit),
+           Cla1=[], Proof1=[]
+         ;
+           % mlit(NegLit,NegL,Cla1,Grnd1),
+           lit(NegLit,NegL,Cla1,Grnd1),
+           unify_with_occurs_check(NegL,NegLit),
+           ( Grnd1=g -> true 
+           ; length(Path,K), K<PathLim -> true
+           ; not(pathlim) -> asserta_fact(pathlim), fail
+           ),
+           prove_(Cla1,[Lit|Path],PathLim,Lem,Set,Proof1)
+         ),
+         ( member(cut,Set) -> ! ; true ),
+         prove_(Cla,Path,PathLim,[Lit|Lem],Set,Proof2)
+    ).
 
 %%% write clauses into Prolog's database
 
 assert_clauses([],_).
 assert_clauses([C|M],Set) :-
-	( Set\=conj, not(member(-_,C)) ->
-	    C1=[#|C]
-	;
-	    C1=C
-	),
-	( ground(C) ->
-	    G=g
-	;
-	    G=n
-	),
-	assert_clauses2(C1,[],G),
-	assert_clauses(M,Set).
+    ( Set\=conj, not(member(-_,C)) ->
+        C1=[#|C]
+    ;
+        C1=C
+    ),
+    ( ground(C) ->
+        G=g
+    ;
+        G=n
+    ),
+    assert_clauses2(C1,[],G),
+    assert_clauses(M,Set).
 
 assert_clauses2([],_,_).
 assert_clauses2([L|C],C1,G) :-

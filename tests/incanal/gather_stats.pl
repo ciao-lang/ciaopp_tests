@@ -16,44 +16,44 @@
 
 :- pred main(Args) : list(Args).
 main([Dir]) :- !,
-	( check_stats_dir(Dir, FOut) -> true
-	; display('Not a statistics directory\n')
-	),
-	open(FOut, write, SOut),
-	gather_stats_dir(Dir, SOut).
+    ( check_stats_dir(Dir, FOut) -> true
+    ; display('Not a statistics directory\n')
+    ),
+    open(FOut, write, SOut),
+    gather_stats_dir(Dir, SOut).
 main(_) :-
-	display('Usage ./gather_stats_dir <stat_dir>\n'), nl.
+    display('Usage ./gather_stats_dir <stat_dir>\n'), nl.
 
 gather_stats_dir(Dir, SOut) :-
-	retractall_fact(all_tmp_stat(_, _)),
-	
-	( % failure-driven loop
-	  stat_directory_file_path(Dir, F),
-	    ( file_exists(F) ->
-	        summarize_file(F),
-		format(SOut, 'stats(', []),
-		write_total(SOut, [it, load_time, comp_diff, restore, proc_diff, proc_assrts, preproc, inc_time, fixp, genreg, savereg]),
-		retractall_fact(all_tmp_stat(_,_)),
-		fail
-	    ;
-		!
-	    )
-	;
-	    true
-	).
+    retractall_fact(all_tmp_stat(_, _)),
+    
+    ( % failure-driven loop
+      stat_directory_file_path(Dir, F),
+        ( file_exists(F) ->
+            summarize_file(F),
+            format(SOut, 'stats(', []),
+            write_total(SOut, [it, load_time, comp_diff, restore, proc_diff, proc_assrts, preproc, inc_time, fixp, genreg, savereg]),
+            retractall_fact(all_tmp_stat(_,_)),
+            fail
+        ;
+            !
+        )
+    ;
+        true
+    ).
 
 :- export(count/1).
 count(1).
 count(X1) :-
-	count(X),
-	X1 is X + 1.
+    count(X),
+    X1 is X + 1.
 
 % only works for incanal intermod stat files
 :- export(stat_directory_file_path/2).
 stat_directory_file_path(Dir, F) :-
-	count(X),
-	atom_number(Xa, X),
-	atom_concat(Xa, '.stat', F1),
-	path_concat(Dir, F1, F).
+    count(X),
+    atom_number(Xa, X),
+    atom_concat(Xa, '.stat', F1),
+    path_concat(Dir, F1, F).
 stat_directory_file_path(Dir, F) :-
-	stat_directory_file_path(Dir, F).
+    stat_directory_file_path(Dir, F).

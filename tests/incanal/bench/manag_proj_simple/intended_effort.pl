@@ -19,11 +19,11 @@ intended_effort(amos,2,1,1,2).
 intended_effort(colognet,2,german,1,X):- X is 210/131.25. 
 
 total_amos(X):-
-	Prometidos is 21.7,
-	findall(X,intended_effort(amos,2,_,_,X),List_Effort),
-	subtract_list(List_Effort,Prometidos,X).
+    Prometidos is 21.7,
+    findall(X,intended_effort(amos,2,_,_,X),List_Effort),
+    subtract_list(List_Effort,Prometidos,X).
 
 subtract_list([],P,P).
 subtract_list([X|Xs],P,NP):-
-	subtract_list(Xs,P,Tmp),
-	NP is Tmp - X.
+    subtract_list(Xs,P,Tmp),
+    NP is Tmp - X.

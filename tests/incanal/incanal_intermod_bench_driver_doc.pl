@@ -108,6 +108,6 @@ For example:
 Will simulate editing the program hanoi starting from a random program
 containing 20\% of the clauses and adding clauses (randomly) 2 by 2
 until the program contains 80\% of the original program clauses.
-	").
+    ").
 
 % TODO: add more examples of execution

@@ -14,22 +14,22 @@ equal(compile(Form),reverse(codegen(optimize(Form),[]))).
 equal(count_list(Z,sort_lp(X,Y)),plus(count_list(Z,X),count_list(Z,Y))).
 equal(countps_(L,Pred),countps_loop(L,Pred,zero)).
 equal(difference(A,B),C) :-
-        difference(A,B,C).
+    difference(A,B,C).
 equal(divides(X,Y),zerop(remainder(Y,X))).
 equal(dsort(X),sort2(X)).
 equal(eqp(X,Y),equal(fix(X),fix(Y))).
 equal(equal(A,B),C) :-
-        eq(A,B,C).
+    eq(A,B,C).
 equal(even1(X),if(zerop(X),t,odd(decr(X)))).
 equal(exec(append(X,Y),Pds,Envrn),exec(Y,exec(X,Pds,Envrn),Envrn)).
 equal(exp(A,B),C) :-
-        exp(A,B,C).
+    exp(A,B,C).
 equal(fact_(I),fact_loop(I,1)).
 equal(falsify(X),falsify1(normalize(X),[])).
 equal(fix(X),if(numberp(X),X,zero)).
 equal(flatten(cdr(gopher(X))),if(listp(X),cdr(flatten(X)),cons(zero,[]))).
 equal(gcd(A,B),C) :-
-        gcd(A,B,C).
+    gcd(A,B,C).
 equal(get(J,set(I,Val,Mem)),if(eqp(J,I),Val,get(J,Mem))).
 equal(greatereqp(X,Y),not(lessp(X,Y))).
 equal(greatereqpr(X,Y),not(lessp(X,Y))).
@@ -39,41 +39,41 @@ equal(iff(X,Y),and(implies(X,Y),implies(Y,X))).
 equal(implies(P,Q),if(P,if(Q,t,f),t)).
 equal(last(append(A,B)),if(listp(B),last(B),if(listp(A),cons(car(last(A))),B))).
 equal(length(A),B) :-
-        mylength(A,B).
+    mylength(A,B).
 equal(lesseqp(X,Y),not(lessp(Y,X))).
 equal(lessp(A,B),C) :-
-        lessp(A,B,C).
+    lessp(A,B,C).
 equal(listp(gopher(X)),listp(X)).
 equal(mc_flatten(X,Y),append(flatten(X),Y)).
 equal(meaning(A,B),C) :-
-        meaning(A,B,C).
+    meaning(A,B,C).
 equal(member(A,B),C) :-
-        mymember(A,B,C).
+    mymember(A,B,C).
 equal(not(P),if(P,f,t)).
 equal(nth(A,B),C) :-
-        nth(A,B,C).
+    nth(A,B,C).
 equal(numberp(greatest_factor(X,Y)),not(and(or(zerop(Y),equal(Y,1)),not(numberp(X))))).
 equal(or(P,Q),if(P,t,if(Q,t,f),f)).
 equal(plus(A,B),C) :-
-        plus(A,B,C).
+    plus(A,B,C).
 equal(power_eval(A,B),C) :-
-        power_eval(A,B,C).
+    power_eval(A,B,C).
 equal(prime(X),and(not(zerop(X)),and(not(equal(X,add1(zero))),prime1(X,decr(X))))).
 equal(prime_list(append(X,Y)),and(prime_list(X),prime_list(Y))).
 equal(quotient(A,B),C) :-
-        quotient(A,B,C).
+    quotient(A,B,C).
 equal(remainder(A,B),C) :-
-        remainder(A,B,C).
+    remainder(A,B,C).
 equal(reverse_(X),reverse_loop(X,[])).
 equal(reverse(append(A,B)),append(reverse(B),reverse(A))).
 equal(reverse_loop(A,B),C) :-
-        reverse_loop(A,B,C).
+    reverse_loop(A,B,C).
 equal(samefringe(X,Y),equal(flatten(X),flatten(Y))).
 equal(sigma(zero,I),quotient(times(I,add1(I)),2)).
 equal(sort2(delete(X,L)),delete(X,sort2(L))).
 equal(tautology_checker(X),tautologyp(normalize(X),[])).
 equal(times(A,B),C) :-
-        times(A,B,C).
+    times(A,B,C).
 equal(times_list(append(X,Y)),times(times_list(X),times_list(Y))).
 equal(value(normalize(X),A),value(X,A)).
 equal(zerop(X),or(equal(X,zero),not(numberp(X)))).

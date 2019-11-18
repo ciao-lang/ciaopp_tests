@@ -3,6 +3,6 @@
 p(a).
 p(b).
 p(X) :-
-	q(X).
+    q(X).
 
 :- use_module(m2, [q/1]).

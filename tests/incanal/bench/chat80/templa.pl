@@ -1,31 +1,31 @@
 :- module(templa,
-	[ adjunction/4,
-	  aggr_adj/4,
-	  aggr_noun/4,
-	  attribute/6,
-	  comparator/5,
-	  intrans/6,
-	  measure/4,
-	  meta_noun/7,
-	  name_template/2,
-	  property/9,
-	  restriction/4,
-	  sign/2,
-	  thing/6,
-	  trans/9,
-	  units/2
-	],
-	[assertions]).
+    [ adjunction/4,
+      aggr_adj/4,
+      aggr_noun/4,
+      attribute/6,
+      comparator/5,
+      intrans/6,
+      measure/4,
+      meta_noun/7,
+      name_template/2,
+      property/9,
+      restriction/4,
+      sign/2,
+      thing/6,
+      trans/9,
+      units/2
+    ],
+    [assertions]).
 
 :- use_module(world0, 
-	[ circle_of_latitude/1,
-	  city/1,
-	  continent/1,
-	  country/1,
-	  region/1,
-	  river/1,
-	  seamass/1
-	]).
+    [ circle_of_latitude/1,
+      city/1,
+      continent/1,
+      country/1,
+      region/1,
+      river/1,
+      seamass/1
+    ]).
 
 
 %:- include(chatops).
@@ -64,27 +64,27 @@ aggr_noun(total,_,_,total).
 
 :- trust success meta_noun(A,B,C,D,E,F,G) => gnd(A).
 :- trust success meta_noun(A,B,C,D,E,F,G)
-	: (gnd(C),gnd(E),gnd(F))
-        => (gnd(A), gnd(G)).
+    : (gnd(C),gnd(E),gnd(F))
+    => (gnd(A), gnd(G)).
 meta_noun(number,_,V,'&'(feature,_),X,P,numberof(X,P,V)).
 
 /* Proper nouns */
 
 :- trust success name_template(A,B) : gnd(A) => gnd(A).
 name_template(X,'&'(feature,circle)) :-
-	circle_of_latitude(X).
+    circle_of_latitude(X).
 name_template(X,'&'(feature,city)) :-
-	city(X).
+    city(X).
 name_template(X,'&'(feature,'&'(place,continent))) :-
-	continent(X).
+    continent(X).
 name_template(X,'&'(feature,'&'(place,country))) :-
-	country(X).
+    country(X).
 name_template(X,'&'(feature,'&'(place,_))) :- % [IG] This case!
-	region(X).
+    region(X).
 name_template(X,'&'(feature,river)) :-
-	river(X).
+    river(X).
 name_template(X,'&'(feature,'&'(place,seamass))) :-
-	seamass(X).
+    seamass(X).
 
 /* Verbs */
 

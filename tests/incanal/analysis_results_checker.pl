@@ -27,102 +27,102 @@ in modular analysis probably will not be consistent or valid.
 :- use_module(ciaopp_tests(incanal/incanal_intermod_test), [gat_test_results_dir/2]).
 
 main([AbsInt|Dirs]) :- !,
-	check_dirs(Dirs, AbsInt).
+    check_dirs(Dirs, AbsInt).
 main(_) :-
-	display('Usage: ./analysis_results_checker <domain> <dir1> <dir2> ...'), nl.
+    display('Usage: ./analysis_results_checker <domain> <dir1> <dir2> ...'), nl.
 
 check_dirs(Dirs, AbsInt) :-
-	member(D, Dirs),
-	file_property(D, type(directory)),
-	check_dir(D, AbsInt),
-	fail.
+    member(D, Dirs),
+    file_property(D, type(directory)),
+    check_dir(D, AbsInt),
+    fail.
 check_dirs(_, _).
 
 check_dir(Dir, AbsInt) :-
-	directory_dir(Dir, Base, _), !,
-	atom_codes(Base, S),
-	( append(_, "top_down", S) -> % deletion directory
-	    analysis_dir(Dir, 'mon-noninc-top_down', MonDir),
-	    analysis_dir(Dir, 'mod-noninc-top_down', ModDir),
-	    evaluate_results(MonDir, ModDir, AbsInt),
-	    ( member(IncDir, ['mon-inc-top_down', 'mon-inc-bottom_up']),
-	        analysis_dir(Dir, IncDir, Dir2),
-		evaluate_results(MonDir, Dir2, AbsInt),
-		fail
-	    ;
-		true
-	    ),
-	    ( member(IncDir, ['mod-inc-top_down', 'mod-inc-bottom_up']),
-	        analysis_dir(Dir, IncDir, Dir2),
-		evaluate_results(ModDir, Dir2, AbsInt),
-		fail
-	    ;
-		true
-	    )
-	;
-	    analysis_dir(Dir, 'mon-noninc', MonDir),
-	    analysis_dir(Dir, 'mod-noninc', ModDir),
-	    evaluate_results(MonDir, ModDir, AbsInt),
-	    analysis_dir(Dir, 'mon-inc', Dir1),
-	    evaluate_results(MonDir, Dir1, AbsInt),
-	    analysis_dir(Dir, 'mod-inc', Dir2),
-	    evaluate_results(ModDir, Dir2, AbsInt)
-	).
+    directory_dir(Dir, Base, _), !,
+    atom_codes(Base, S),
+    ( append(_, "top_down", S) -> % deletion directory
+        analysis_dir(Dir, 'mon-noninc-top_down', MonDir),
+        analysis_dir(Dir, 'mod-noninc-top_down', ModDir),
+        evaluate_results(MonDir, ModDir, AbsInt),
+        ( member(IncDir, ['mon-inc-top_down', 'mon-inc-bottom_up']),
+            analysis_dir(Dir, IncDir, Dir2),
+            evaluate_results(MonDir, Dir2, AbsInt),
+            fail
+        ;
+            true
+        ),
+        ( member(IncDir, ['mod-inc-top_down', 'mod-inc-bottom_up']),
+            analysis_dir(Dir, IncDir, Dir2),
+            evaluate_results(ModDir, Dir2, AbsInt),
+            fail
+        ;
+            true
+        )
+    ;
+        analysis_dir(Dir, 'mon-noninc', MonDir),
+        analysis_dir(Dir, 'mod-noninc', ModDir),
+        evaluate_results(MonDir, ModDir, AbsInt),
+        analysis_dir(Dir, 'mon-inc', Dir1),
+        evaluate_results(MonDir, Dir1, AbsInt),
+        analysis_dir(Dir, 'mod-inc', Dir2),
+        evaluate_results(ModDir, Dir2, AbsInt)
+    ).
 
 analysis_dir(Dir, Config, AD) :-
-	path_concat(Dir, Config, A),
-	gat_test_results_dir(A, AD).
-	
+    path_concat(Dir, Config, A),
+    gat_test_results_dir(A, AD).
+    
 :- pred evaluate_results(Dir1, Dir2, AbsInt) : atm * atm * atm.
 evaluate_results(Dir1, Dir2, AbsInt) :-
-	format('COMPARING DIRECTORIES ~w and ~w~n', [Dir1, Dir2]),
-	set_fact(checking_domain(AbsInt)),
-	gat_checker_loop(Dir1, Dir2, 1, AbsInt, Diffs),
-	summarize_abs_diffs(Diffs),
-	show_global_answer_table(AbsInt).
+    format('COMPARING DIRECTORIES ~w and ~w~n', [Dir1, Dir2]),
+    set_fact(checking_domain(AbsInt)),
+    gat_checker_loop(Dir1, Dir2, 1, AbsInt, Diffs),
+    summarize_abs_diffs(Diffs),
+    show_global_answer_table(AbsInt).
 
 gat_checker_loop(Dir1, Dir2, N, AbsInt, NDs) :-
-	%display_list(['\nIteration ', N, ' ==============================\n']),
-	%tmp_gat_checker_loop(Dir1, Dir2, N, 1, AbsInt, TmpDiff), % IG Do not compare LAT
-	TmpDiff = [],
-	% Do not return the tmp_gat diff for the moment, only display
-	dump_dir(Dir1, N, DumpF1),
-	dump_dir(Dir2, N, DumpF2),
-	compare_dumps(DumpF1, DumpF2, registry, registry, gat, inc_gat, AbsInt, Diff), !, % IG: This fails only if files do not exist
-	N1 is N + 1,
-	append([(DumpF1,Diff)|TmpDiff],Ds,NDs),
-	gat_checker_loop(Dir1, Dir2, N1, AbsInt, Ds).
+    %display_list(['\nIteration ', N, ' ==============================\n']),
+    %tmp_gat_checker_loop(Dir1, Dir2, N, 1, AbsInt, TmpDiff), % IG Do not compare LAT
+    TmpDiff = [],
+    % Do not return the tmp_gat diff for the moment, only display
+    dump_dir(Dir1, N, DumpF1),
+    dump_dir(Dir2, N, DumpF2),
+    compare_dumps(DumpF1, DumpF2, registry, registry, gat, inc_gat, AbsInt, Diff), !, % IG: This fails only if files do not exist
+    N1 is N + 1,
+    append([(DumpF1,Diff)|TmpDiff],Ds,NDs),
+    gat_checker_loop(Dir1, Dir2, N1, AbsInt, Ds).
 gat_checker_loop(_, _, _, _, []).
 
 dump_dir(Dir, N, DumpD) :-
-	atom_number(A, N),
-	atom_concat('inc_reg_', A, F),
-	path_concat(Dir, F, DumpD).
+    atom_number(A, N),
+    atom_concat('inc_reg_', A, F),
+    path_concat(Dir, F, DumpD).
  
 summarize_abs_diffs([]).
 summarize_abs_diffs([(Text,D)|Ds]) :-
-	display_list(['\nIteration ', Text, '\n']),
-	print_diff(D, ND),
-	( ND = [] ->
-	    display('OK'), nl
-	;   true
-	),
-	summarize_abs_diffs(Ds).
+    display_list(['\nIteration ', Text, '\n']),
+    print_diff(D, ND),
+    ( ND = [] ->
+        display('OK'), nl
+    ;   true
+    ),
+    summarize_abs_diffs(Ds).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 tmp_gat_checker_loop(Dir1, Dir2, N, It, AbsInt, [(MDumpD,Diff)|Ds]) :-
-	tmp_dump_dir(Dir1, N, It, MDumpD),
-	tmp_dump_dir(Dir2, N, It, IMDumpD),
-	compare_dumps(MDumpD, IMDumpD, registry, registry, tmp_gat, inc_tmp_gat, AbsInt, Diff), !,
-	%display_list(['Temporary Answer Table ', N, ' ',It, '\n\n']),
-	%show_global_answer_table(AbsInt),
-	It1 is It + 1,
-	tmp_gat_checker_loop(Dir1, Dir2, N, It1, AbsInt, Ds).
+    tmp_dump_dir(Dir1, N, It, MDumpD),
+    tmp_dump_dir(Dir2, N, It, IMDumpD),
+    compare_dumps(MDumpD, IMDumpD, registry, registry, tmp_gat, inc_tmp_gat, AbsInt, Diff), !,
+    %display_list(['Temporary Answer Table ', N, ' ',It, '\n\n']),
+    %show_global_answer_table(AbsInt),
+    It1 is It + 1,
+    tmp_gat_checker_loop(Dir1, Dir2, N, It1, AbsInt, Ds).
 tmp_gat_checker_loop(_, _, _, _, _, []).
 
 tmp_dump_dir(Dir, N, It, TmpDumpD) :-
-	dump_dir(Dir, N, DumpD),
-	atom_concat(DumpD, '_', A),
-	atom_number(Ita, It),
-	atom_concat(A, Ita, TmpDumpD).
+    dump_dir(Dir, N, DumpD),
+    atom_concat(DumpD, '_', A),
+    atom_number(Ita, It),
+    atom_concat(A, Ita, TmpDumpD).

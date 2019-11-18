@@ -8,22 +8,22 @@
 
 /*
 :- mode aggregate(+,+,?),
-        dimensioned(+),
-	one_of(+,?),
-	i_aggr(+,+,?),
-	u_aggr(+,+,?),
-	i_total(+,?),
-	i_maxs(+,?),
-	i_mins(+,?),
-	i_maxs0(+,+,+,?,?),
-	i_mins0(+,+,+,?,?),
-	u_total(+,?),
-	u_sum(+,+,?),
-	u_maxs(+,?),
-	u_mins(+,?),
-	i_maxs0(+,+,+,?,?),
-	i_mins0(+,+,+,?,?),
-	u_lt(+,+).
+    dimensioned(+),
+    one_of(+,?),
+    i_aggr(+,+,?),
+    u_aggr(+,+,?),
+    i_total(+,?),
+    i_maxs(+,?),
+    i_mins(+,?),
+    i_maxs0(+,+,+,?,?),
+    i_mins0(+,+,+,?,?),
+    u_total(+,?),
+    u_sum(+,+,?),
+    u_maxs(+,?),
+    u_mins(+,?),
+    i_maxs0(+,+,+,?,?),
+    i_mins0(+,+,+,?,?),
+    u_lt(+,+).
 */
 
 :- trust calls aggregate(X,Y,_) : (gnd(X), gnd(Y)).

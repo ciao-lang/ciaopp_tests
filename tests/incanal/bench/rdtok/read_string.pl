@@ -18,21 +18,21 @@
 %   present something which will read present-day Prolog programs.
 
 read_string(Chars, Quote, NextCh) :-
-	get_code(Ch),
-	read_string(Ch, Chars, Quote, NextCh).
+    get_code(Ch),
+    read_string(Ch, Chars, Quote, NextCh).
 
 
 read_string(-1, _N, Quote, -1) :-
-	display('! end of file in '), ttyput(Quote),
-	display(token), ttyput(Quote), ttynl,
-	!, fail.
+    display('! end of file in '), ttyput(Quote),
+    display(token), ttyput(Quote), ttynl,
+    !, fail.
 read_string(Quote, Chars, Quote, NextCh) :- !,
-	get_code(Ch),				% closing or doubled quote
-	more_string(Ch, Quote, Chars, NextCh).
+    get_code(Ch),                           % closing or doubled quote
+    more_string(Ch, Quote, Chars, NextCh).
 read_string(Char, [Char|Chars], Quote, NextCh) :-
-	read_string(Chars, Quote, NextCh).	% ordinary character
+    read_string(Chars, Quote, NextCh).      % ordinary character
 
 more_string(Quote, Quote, [Quote|Chars], NextCh) :- !,
-	read_string(Chars, Quote, NextCh).	% doubled quote
-more_string(NextCh, _, [], NextCh).		% end
+    read_string(Chars, Quote, NextCh).      % doubled quote
+more_string(NextCh, _, [], NextCh).             % end
 

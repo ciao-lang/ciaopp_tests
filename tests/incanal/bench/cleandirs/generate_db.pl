@@ -26,16 +26,16 @@ generates('.gz', '').
  %% chaining two levels: probably this is enough.
 
 generate_file(FileX, FileY):-
-        generates(X, Y),
-        atom_concat(Base, Y, FileY),
-        atom_concat(Base, X, FileX).
+    generates(X, Y),
+    atom_concat(Base, Y, FileY),
+    atom_concat(Base, X, FileX).
 
 can_generate_file(X, Y):-
-        can_generate(X, Y),
-        X \== Y.
+    can_generate(X, Y),
+    X \== Y.
 
 can_generate(FileX, FileY):-
-        generate_file(FileX, FileY).
+    generate_file(FileX, FileY).
 can_generate(FileX, FileZ):-
-        generate_file(FileY, FileZ),
-        generate_file(FileX, FileY).
+    generate_file(FileY, FileZ),
+    generate_file(FileX, FileY).

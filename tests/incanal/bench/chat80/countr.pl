@@ -12,11 +12,11 @@
 %        => ( term_typing:ground([A,B,C,D,E,F,G,H,I,J]) ).
 
 country(Country,Region,Latitude,Longitude,
-	AreaDiv,AreaMod,PopulationDiv,PopulationMod,
-        Capital,Currency):-
+    AreaDiv,AreaMod,PopulationDiv,PopulationMod,
+    Capital,Currency):-
 country_db(Country,Region,Latitude,Longitude,
-	AreaDiv,AreaMod,PopulationDiv,PopulationMod,
-        Capital,Currency).
+    AreaDiv,AreaMod,PopulationDiv,PopulationMod,
+    Capital,Currency).
 
 %:- true pred country_db(A,B,C,D,E,F,G,H,I,J)
 %        => ( term_typing:ground([A,B,C,D,E,F,G,H,I,J]) ).
@@ -25,11 +25,11 @@ country_db(afghanistan,indian_subcontinent,33,-65,254,861,18,290,kabul,afghani).
 country_db(albania,southern_europe,41,-20,11,100,2,350,tirana,lek).
 country_db(algeria,north_africa,35,-11,919,951,15,770,algiers,dinar).
 country_db(andorra,southern_europe,42,-1,0,179,0,25,andorra_la_villa,
-	franc_peseta).
+    franc_peseta).
 country_db(angola,southern_africa,-12,-18,481,351,5,810,luanda,?).
 country_db(argentina,south_america,-35,66,1072,67,23,920,buenos_aires,peso).
 country_db(australia,australasia,-23,-135,2967,909,13,268,canberra,
-	australian_dollar).
+    australian_dollar).
 country_db(austria,western_europe,47,-14,32,374,7,520,vienna,schilling).
 country_db(bahamas,caribbean,24,74,4,404,0,190,nassau,bahamian_dollar).
 country_db(bahrain,middle_east,26,-50,0,231,0,230,manama,dinar).
@@ -40,7 +40,7 @@ country_db(belize,central_america,17,88,8,866,0,82,belize_town,?).
 country_db(bhutan,indian_subcontinent,27,-90,19,305,1,150,thimphu,indian_rupee).
 country_db(bolivia,south_america,-17,64,424,162,5,330,sucre,peso).
 country_db(botswana,southern_africa,-22,-24,219,815,0,650,gaborone,
-	south_african_rand).
+    south_african_rand).
 country_db(brazil,south_america,-13,53,3286,470,105,137,brasilia,cruzeiro).
 country_db(bulgaria,eastern_europe,43,-25,42,829,8,620,sofia,lev).
 country_db(burma,southeast_east,21,-96,261,789,29,560,rangoon,kyat).
@@ -49,7 +49,7 @@ country_db(cambodia,southeast_east,12,-105,69,898,7,640,phnom_penh,riel).
 country_db(cameroon,west_africa,3,-12,183,568,6,170,yaounde,cfa_franc).
 country_db(canada,north_america,60,100,3851,809,22,47,ottawa,canadian_dollar).
 country_db(central_african_republic,central_africa,7,-20,241,313,1,720,bangui,
-	cfa_franc).
+    cfa_franc).
 country_db(chad,central_africa,12,-17,495,752,3,870,n_djamena,cfa_franc).
 country_db(chile,south_america,-35,71,286,396,10,230,santiago,escudo).
 country_db(china,far_east,30,-110,3691,502,840,0,peking,yuan).
@@ -106,11 +106,11 @@ country_db(liberia,west_africa,6,9,43,0,1,660,monrovia,us_dollar).
 country_db(libya,north_africa,28,-17,679,536,2,257,tripoli,libyan_dinar).
 country_db(liechtenstein,western_europe,47,-9,0,62,0,23,vaduz,swiss_franc).
 country_db(luxembourg,western_europe,50,-6,0,999,0,350,luxembourg,
-	luxembourg_franc).
+    luxembourg_franc).
 country_db(malagasy,southern_africa,-20,-47,203,35,7,655,tananarive,ariary).
 country_db(malawi,southern_africa,-13,-34,45,747,4,790,zomba,kwacha).
 country_db(malaysia,southeast_east,5,-110,128,328,10,920,kuala_lumpa,
-	malaysian_dollar).
+    malaysian_dollar).
 country_db(maldives,indian_subcontinent,2,-73,0,115,0,123,male,rupee).
 country_db(mali,west_africa,15,10,464,873,5,380,bamako,mali_franc).
 country_db(malta,southern_europe,36,-14,0,122,0,319,valetta,pound).
@@ -124,7 +124,7 @@ country_db(mozambique,southern_africa,-19,-35,303,373,8,820,maputo,?).
 country_db(nepal,indian_subcontinent,28,-84,54,362,12,20,katmandu,nepalese_rupee).
 country_db(netherlands,western_europe,52,-5,14,192,13,500,amsterdam,guilder).
 country_db(new_zealand,australasia,-40,-176,103,736,2,962,wellington,
-	new_zealand_dollar).
+    new_zealand_dollar).
 country_db(nicaragua,central_america,12,85,57,143,2,10,managua,cordoba).
 country_db(niger,west_africa,13,-10,489,206,4,300,niamey,cfa_franc).
 country_db(nigeria,west_africa,8,-8,356,669,79,759,lagos,naira).
@@ -134,7 +134,7 @@ country_db(oman,middle_east,23,-58,82,0,0,720,muscat,riyal_omani).
 country_db(pakistan,indian_subcontinent,30,-70,342,750,66,750,islamad,rupee).
 country_db(panama,central_america,9,80,28,753,1,570,panama,balboa).
 country_db(papua_new_guinea,
-          australasia,-8,-145,183,540,2,580,port_harcourt,australian_dollar).
+      australasia,-8,-145,183,540,2,580,port_harcourt,australian_dollar).
 country_db(paraguay,south_america,-23,57,157,47,2,670,asuncion,guarani).
 country_db(peru,south_america,-8,75,496,222,14,910,lima,sol).
 country_db(philippines,southeast_east,12,-123,115,707,40,220,quezon_city,piso).
@@ -149,7 +149,7 @@ country_db(senegal,west_africa,14,14,76,124,4,230,dakar,cfa_franc).
 country_db(seychelles,east_africa,-4,-55,0,40,0,156,victoria,rupee).
 country_db(sierra_leone,west_africa,9,12,27,925,2,860,freetown,leone).
 country_db(singapore,southeast_east,1,-104,0,226,2,190,singapore,
-	singapore_dollar).
+    singapore_dollar).
 country_db(somalia,east_africa,7,-47,246,155,3,100,mogadishu,somali_shilling).
 country_db(south_africa,southern_africa,-30,-25,471,819,23,720,pretoria,rand).
 country_db(south_korea,far_east,36,-128,38,31,33,333,seoul,won).
@@ -165,12 +165,12 @@ country_db(switzerland,western_europe,46,-8,15,941,6,440,bern,franc).
 country_db(syria,middle_east,35,-38,71,498,6,895,damascus,syrian_pound).
 country_db(taiwan,far_east,23,-121,13,592,15,737,taipei,taiwan_dollar).
 country_db(tanzania,east_africa,-7,-34,363,708,14,0,dar_es_salaam,
-	tanzanian_shilling).
+    tanzanian_shilling).
 country_db(thailand,southeast_east,16,-102,198,455,39,950,bangkok,baht).
 country_db(togo,west_africa,8,-1,21,853,2,120,lome,cfa_franc).
 country_db(tonga,australasia,-20,173,0,269,0,90,nukualofa,pa_anga).
 country_db(trinidad_and_tobago,caribbean,10,61,1,979,5,510,port_of_spain,
-	trinidad_and_tobago_dollar).
+    trinidad_and_tobago_dollar).
 country_db(tunisia,north_africa,33,-9,63,378,5,510,tunis,dinar).
 country_db(turkey,middle_east,39,-36,301,380,37,930,ankara,lira).
 country_db(uganda,east_africa,2,-32,91,134,10,810,kampala,uganda_shilling).
@@ -188,15 +188,15 @@ country_db(yugoslavia,southern_europe,44,-20,98,766,21,126,belgrade,dinar).
 country_db(zaire,central_africa,-3,-23,905,63,23,560,kinshasa,zaire).
 country_db(zambia,southern_africa,-15,-28,290,724,4,640,lusaka,kwacha).
 country_db(zimbabwe,southern_africa,-20,-30,150,333,5,690,salisbury,
-	rhodesian_dollar).
+    rhodesian_dollar).
 
 %% Simulate slow database access: 
 old_country_db(X1,X2,X3,X4,X5,X6,X7,X8,X9,X10) :- 
-	db_loop(100),
-	country_db(X1,X2,X3,X4,X5,X6,X7,X8,X9,X10).
+    db_loop(100),
+    country_db(X1,X2,X3,X4,X5,X6,X7,X8,X9,X10).
 
 db_loop(0).
 db_loop(N) :-
-	N > 0,
-	N1 is N-1,
-	db_loop(N1).
+    N > 0,
+    N1 is N-1,
+    db_loop(N1).

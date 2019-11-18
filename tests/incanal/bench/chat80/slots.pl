@@ -61,7 +61,7 @@ i_np_head0(wh(X),X,X,id,'`'(true),Pred,Pred,[]).
 i_np_mods(Mods,_,[],'`'(true),[],Mods,_,_).
 i_np_mods([Mod|Mods],X,Slots0,Pred0,QMods0,Up,Id,Index) :-
    i_np_mod(Mod,X,Slots0,Slots,
-            Pred0,Pred,QMods0,QMods,Up0,-Id,Index),
+        Pred0,Pred,QMods0,QMods,Up0,-Id,Index),
    conc(Up0,Mods,Mods0),
    i_np_mods(Mods0,X,Slots,Pred,QMods,Up,+Id,Index).
 i_np_mods(Mods,_,[Slot|Slots],'`'(true),QMods,Mods,Id,_) :-
@@ -232,8 +232,8 @@ i_pred(pp(prep(Prep),NP),X,['`'(H),Q|As],As,Up,Id) :-
    adjunction(Prep,X,Y,H).
 
 i_adjoin(with,TS-S,TV-Y,[slot(prep(of),TV,Z,_,free)],
-	held_arg(poss,-_Id,TS-S),
-	Y=Z).
+    held_arg(poss,-_Id,TS-S),
+    Y=Z).
 i_adjoin(Prep,X,Y,[],[],P) :-
    adjunction(Prep,X,Y,P).
 
@@ -288,15 +288,15 @@ noun_template(Noun,TypeV,V,apply(F,P),
    meta_noun(Noun,TypeV,V,TypeX,X,P,F).
 
 verb_template(have,Y=Z,
-		[slot(subj,TypeS,S,-Id,free),
-		 slot(dir,TypeV,Y,_,free),
-		 slot(prep(of),TypeV,Z,_,free)],
-		held_arg(poss,-(-(+Id)),TypeS-S), have).
+            [slot(subj,TypeS,S,-Id,free),
+             slot(dir,TypeV,Y,_,free),
+             slot(prep(of),TypeV,Z,_,free)],
+            held_arg(poss,-(-(+Id)),TypeS-S), have).
 verb_template(have,Y=Z,
-	[slot(subj,TypeS,S,-(-(Id)),free),
-	 slot(dir,TypeV,Y,_,free),
-	 slot(prep(as),TypeV,Z,_,free)],
-	held_arg(poss,-(-(-(+Id))),TypeS-S), have).
+    [slot(subj,TypeS,S,-(-(Id)),free),
+     slot(dir,TypeV,Y,_,free),
+     slot(prep(as),TypeV,Z,_,free)],
+    held_arg(poss,-(-(-(+Id))),TypeS-S), have).
 verb_template(Verb,Pred,
       [slot(subj,TypeS,S,_,free)|Slots],[],transparent) :-
    verb_type(Verb,_+Kind),

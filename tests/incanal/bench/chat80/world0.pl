@@ -1,15 +1,15 @@
 :- module(world0,
-	[ circle_of_latitude/1,
-	  city/1,
-	  continent/1,
-	  country/1,
-	  database/1,
-	  ratio/4,
-	  region/1,
-	  river/1,
-	  seamass/1
-	],
-	[]).
+    [ circle_of_latitude/1,
+      city/1,
+      continent/1,
+      country/1,
+      database/1,
+      ratio/4,
+      region/1,
+      river/1,
+      seamass/1
+    ],
+    []).
 % Data for the World Database.
 %% Changed in to is_in to avoid name clashes with linda interface M.H.
 

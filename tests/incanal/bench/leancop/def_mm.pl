@@ -20,7 +20,7 @@
 :- use_module(library(lists), [member/2, append/3, length/2]).
 
 not(member(X,Set)) :-
-	member(X, Set), !, fail.
+    member(X, Set), !, fail.
 not(_).
 
 % ------------------------------------------------------------------
@@ -50,17 +50,17 @@ make_matrix(Fml,Matrix,Set) :-
     ( member(nodef,Set) ->
        def_nnf(F2,NNF,1,_,nnf), dnf(NNF,DNF)
        ;
-        not(member(def,Set)), F2=('=>'(B,D)) ->
-        def_nnf('~'(B),NNF,1,I,nnf), dnf(NNF,DNF1),
-        def_nnf(D,DNF2,I,_,def), DNF=(DNF2;DNF1)
-        ;
-        def_nnf(F2,DNF,1,_,def)
+    not(member(def,Set)), F2=('=>'(B,D)) ->
+    def_nnf('~'(B),NNF,1,I,nnf), dnf(NNF,DNF1),
+    def_nnf(D,DNF2,I,_,def), DNF=(DNF2;DNF1)
+    ;
+    def_nnf(F2,DNF,1,_,def)
     ),
     mat(DNF,M),
     ( member(reo(I),Set) ->
-        mreorder(M,Matrix,I)
+    mreorder(M,Matrix,I)
     ;
-	Matrix=M
+    Matrix=M
     ).
 
 % ------------------------------------------------------------------
@@ -88,7 +88,7 @@ def(Fml,FreeV,NNF,DEF,Paths,I,I1,Set) :-
       Fml = '~'(('=>'(A,B)))-> Fml1 = ((A,'~'(B)));
       Fml = ('<=>'(A, B))  ->
       ( Set=def        -> Fml1 = (('=>'(A,B)) , ('=>'(B,A)));
-                          Fml1 = ((A , B) ; ('~'(A) , '~'(B))) );
+                      Fml1 = ((A , B) ; ('~'(A) , '~'(B))) );
       Fml = '~'(('<=>'(A, B))) -> Fml1 = ((A,'~'(B)) ; ('~'(A) , B)) ), !,
     def(Fml1,FreeV,NNF,DEF,Paths,I,I1,Set).
 
@@ -104,20 +104,20 @@ def((A ; B),FreeV,NNF,DEF,Paths,I,I1,Set) :- !,
     def(B,FreeV,NNF2,DEF2,Paths2,I2,I1,Set),
     append(DEF1,DEF2,DEF), Paths is Paths1 * Paths2,
     (Paths1 > Paths2 -> NNF = (NNF2;NNF1);
-                        NNF = (NNF1;NNF2)).
+                    NNF = (NNF1;NNF2)).
 
 def((A , B),FreeV,NNF,DEF,Paths,I,I1,Set) :- !,
     def(A,FreeV,NNF3,DEF3,Paths1,I,I2,Set),
     ( NNF3=(_;_), Set=def -> append([('~'('=>'(I2^FreeV,NNF3)))],DEF3,DEF1),
-                             NNF1=I2^FreeV, I3 is I2+1 ;
-                             DEF1=DEF3, NNF1=NNF3, I3 is I2 ),
+                         NNF1=I2^FreeV, I3 is I2+1 ;
+                         DEF1=DEF3, NNF1=NNF3, I3 is I2 ),
     def(B,FreeV,NNF4,DEF4,Paths2,I3,I4,Set),
     ( NNF4=(_;_), Set=def -> append([('~'(I4)^FreeV,NNF4)],DEF4,DEF2),
-                             NNF2=I4^FreeV, I1 is I4+1 ;
-                             DEF2=DEF4, NNF2=NNF4, I1 is I4 ),
+                         NNF2=I4^FreeV, I1 is I4+1 ;
+                         DEF2=DEF4, NNF2=NNF4, I1 is I4 ),
     append(DEF1,DEF2,DEF), Paths is Paths1 + Paths2,
     (Paths1 > Paths2 -> NNF = (NNF2,NNF1);
-                        NNF = (NNF1,NNF2)).
+                    NNF = (NNF1,NNF2)).
 
 def(Lit,_,Lit,[],1,I,I,_).
 

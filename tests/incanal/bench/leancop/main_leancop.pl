@@ -24,39 +24,39 @@
 :- use_module(leancop_tptp2, [leancop_tptp2/5, leancop_equal/2]).
 
 main([Layout, File, Settings0]) :-
-	set_axiom_path,
-	read_from_atom(Settings0, Settings),
-	set_proof_layout(Layout),
-	leancop_main(File, Settings, _Result).
+    set_axiom_path,
+    read_from_atom(Settings0, Settings),
+    set_proof_layout(Layout),
+    leancop_main(File, Settings, _Result).
 
 :- data axiom_path/1.
 
 set_axiom_path :-
-	( getenvstr('TPTP',Path) -> atom_codes(Path1,Path) ; Path1='' ),
-	retractall_fact(axiom_path(_)),
-	asserta_fact(axiom_path(Path1)).
+    ( getenvstr('TPTP',Path) -> atom_codes(Path1,Path) ; Path1='' ),
+    retractall_fact(axiom_path(_)),
+    asserta_fact(axiom_path(Path1)).
 
 % call leanCoP core prover
 leancop_main(File,Settings,Result) :-
-	axiom_path(AxPath),
-	( AxPath='' -> 
-	    AxDir=''
-	; name(AxPath,AxL),
-	  append(AxL,"/",DirL),
-	  name(AxDir,DirL)
-	),
-	( leancop_tptp2(File,AxDir,[_],F,Conj) ->
-	    Problem=F
-	; throw(cannot_read_tptp2(File)) /*[File], f(Problem), Conj=non_empty*/
-	),
-	( Conj\=[] -> Problem1=Problem ; Problem1=('~'(Problem)) ),
-	leancop_equal(Problem1,Problem2),
-	make_matrix(Problem2,Matrix,Settings),
-	( prove2(Matrix,Settings,Proof) ->
-	    ( Conj\=[] -> Result='Theorem' ; Result='Unsatisfiable' )
-	; ( Conj\=[] -> Result='Non-Theorem' ; Result='Satisfiable' )
-	),
-	output_result(File,Matrix,Proof,Result,Conj).
+    axiom_path(AxPath),
+    ( AxPath='' -> 
+        AxDir=''
+    ; name(AxPath,AxL),
+      append(AxL,"/",DirL),
+      name(AxDir,DirL)
+    ),
+    ( leancop_tptp2(File,AxDir,[_],F,Conj) ->
+        Problem=F
+    ; throw(cannot_read_tptp2(File)) /*[File], f(Problem), Conj=non_empty*/
+    ),
+    ( Conj\=[] -> Problem1=Problem ; Problem1=('~'(Problem)) ),
+    leancop_equal(Problem1,Problem2),
+    make_matrix(Problem2,Matrix,Settings),
+    ( prove2(Matrix,Settings,Proof) ->
+        ( Conj\=[] -> Result='Theorem' ; Result='Unsatisfiable' )
+    ; ( Conj\=[] -> Result='Non-Theorem' ; Result='Satisfiable' )
+    ),
+    output_result(File,Matrix,Proof,Result,Conj).
 
 % print status and connection proof
 output_result(File,Matrix,Proof,Result,Conj) :-

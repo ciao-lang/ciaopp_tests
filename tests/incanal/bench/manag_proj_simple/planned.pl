@@ -23,16 +23,16 @@
    be the case. ").
 
 active_tasks(Project,Start,End,Tasks):-
-	findall(t(WP,T,S,E,Name),task(Project,WP,T,S,E,Name),All_Tasks),
-	select_active(All_Tasks,Start,End,Tasks).
+    findall(t(WP,T,S,E,Name),task(Project,WP,T,S,E,Name),All_Tasks),
+    select_active(All_Tasks,Start,End,Tasks).
 
 select_active([],_,_,[]).
 select_active([t(WP,T,S,E,Name)|Tasks],Start,End,Active_Tasks):-
-	(is_active(S,E,Start,End) ->
-	    Active_Tasks = [t(WP,T,S,E,Name)|More_Tasks]
-	;
-	    Active_Tasks = More_Tasks),
-	select_active(Tasks,Start,End,More_Tasks).
+    (is_active(S,E,Start,End) ->
+        Active_Tasks = [t(WP,T,S,E,Name)|More_Tasks]
+    ;
+        Active_Tasks = More_Tasks),
+    select_active(Tasks,Start,End,More_Tasks).
 
 :- doc(planned(Project,Start,End,Partner,Unit,Tasks,Efforts,Total),
    "Returns in @var{Tasks} the list of tasks in @var{Project} which
@@ -59,53 +59,53 @@ select_active([t(WP,T,S,E,Name)|Tasks],Start,End,Active_Tasks):-
 %:- pred planned(+,+,+,+,+,-,-,-).
 
 % :- trust pred planned(Project,Start,End,Partner,Unit,Tasks,Efforts,Total)  
-% 	=> ground([Project,Start,End,Partner,Unit]).
+%       => ground([Project,Start,End,Partner,Unit]).
 
 
 planned(Project,Start,End,Partner,Unit,Tasks,Efforts,Total):-
-	active_tasks(Project,Start,End,A_Tasks),
-	get_intended_effort(A_Tasks,Project,Start,End,Partner,Tasks,Efforts_MM),
-	sum_list(Efforts_MM,Total_MM),
-	(Unit = mm ->
-	    Efforts = Efforts_MM,
-	    Total = Total_MM
-	;
-	    hours_in_a_MM(Partner,Num_Hours),
-	    map_multiply(Efforts_MM,Num_Hours,Efforts),
-	    Total is Total_MM * Num_Hours).
+    active_tasks(Project,Start,End,A_Tasks),
+    get_intended_effort(A_Tasks,Project,Start,End,Partner,Tasks,Efforts_MM),
+    sum_list(Efforts_MM,Total_MM),
+    (Unit = mm ->
+        Efforts = Efforts_MM,
+        Total = Total_MM
+    ;
+        hours_in_a_MM(Partner,Num_Hours),
+        map_multiply(Efforts_MM,Num_Hours,Efforts),
+        Total is Total_MM * Num_Hours).
 
 is_active(_S,E,Start,_End):-
-	E =< Start, !, fail.
+    E =< Start, !, fail.
 is_active(S,_E,_Start,End):-
-	S >= End, !, fail.
+    S >= End, !, fail.
 is_active(_S,_E,_Start,_End).
 
 get_intended_effort([],_Project,_Start,_End,_Partner,[],[]).
 get_intended_effort([Task|Tasks],Project,Start,End,Partner,Active_Tasks,Intended_Effort):-
-	Task = t(WP,T,S,E,_Name),
-	intended_effort(Project,WP,T,Partner,Effort),
-	Effort > 0, !,
-	intersection(S,E,Start,End,Lower,Upper),
-	length(Lower,Upper,Actual_Length),
-	length(S,E,Full_Length),
-	Estimated_Effort is Effort*Actual_Length/Full_Length,
-	Active_Tasks = [Task|A_Tasks],
-	Intended_Effort = [Estimated_Effort|I_Effort],
-	get_intended_effort(Tasks,Project,Start,End,Partner,A_Tasks,I_Effort).
+    Task = t(WP,T,S,E,_Name),
+    intended_effort(Project,WP,T,Partner,Effort),
+    Effort > 0, !,
+    intersection(S,E,Start,End,Lower,Upper),
+    length(Lower,Upper,Actual_Length),
+    length(S,E,Full_Length),
+    Estimated_Effort is Effort*Actual_Length/Full_Length,
+    Active_Tasks = [Task|A_Tasks],
+    Intended_Effort = [Estimated_Effort|I_Effort],
+    get_intended_effort(Tasks,Project,Start,End,Partner,A_Tasks,I_Effort).
 get_intended_effort([_Task|Tasks],Project,Start,End,Partner,Active_Tasks,Intended_Effort):-
-	get_intended_effort(Tasks,Project,Start,End,Partner,Active_Tasks,Intended_Effort).
+    get_intended_effort(Tasks,Project,Start,End,Partner,Active_Tasks,Intended_Effort).
 
 intersection(S,E,Start,End,Lower,Upper):-
-	max(S,Start,Lower),
-	min(E,End,Upper).
+    max(S,Start,Lower),
+    min(E,End,Upper).
 
 max(A,B,C):-
-	(A > B -> C = A ; C = B).
+    (A > B -> C = A ; C = B).
 min(A,B,C):-
-	(A < B -> C = A ; C = B).
+    (A < B -> C = A ; C = B).
 
 length(Start,End,Length):-
-	Length is End - Start.
+    Length is End - Start.
 
 :- doc( hours_in_a_MM(Partner,Number_of_Hours), "In the CPFs it is
 fixed the number of hours a MM represents. Note that this may vary
@@ -119,12 +119,12 @@ hours_in_a_MM(4,135.67). %1628/12
 
 map_multiply([],_,[]).
 map_multiply([X|Xs],Num,[NX|NXs]):-
-	NX is X * Num,
-	map_multiply(Xs,Num,NXs).
+    NX is X * Num,
+    map_multiply(Xs,Num,NXs).
 
 sum_list([],0).
 sum_list([X|Xs],Sum):-
-	sum_list(Xs,Tmp),
-	Sum is Tmp + X.
+    sum_list(Xs,Tmp),
+    Sum is Tmp + X.
 
 

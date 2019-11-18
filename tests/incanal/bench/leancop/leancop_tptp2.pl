@@ -50,39 +50,39 @@
 
 ensure_runtime_ops :- ops_done, !.
 ensure_runtime_ops :-
-	assertz_fact(ops_done),
-	runtime_ops.
+    assertz_fact(ops_done),
+    runtime_ops.
 
 % Define operators for runtime
 runtime_ops :-
-	op(1130, xfy, <=>), % equivalence
-	op(1110, xfy, =>),  % implication
-	%                   % disjunction (;)
-	%                   % conjunction (,)
-        op( 500, fy, ~),    % negation
-	op( 500, fy, all),  % universal quantifier
-	op( 500, fy, ex),   % existential quantifier
-	op( 500,xfy, :),
-	% TPTP syntax
-	op(1130, xfy, <~>),  % negated equivalence
-	op(1110, xfy, <=),   % implication
-	op(1100, xfy, '|'),  % disjunction
-	op(1100, xfy, '~|'), % negated disjunction
-	op(1000, xfy, &),    % conjunction
-	op(1000, xfy, ~&),   % negated conjunction
-	op( 500, fy, !),     % universal quantifier
-	op( 500, fy, ?),     % existential quantifier
-	op( 400, xfx, =),    % equality
-	op( 300, xf, !),     % negated equality (for !=)
-	op( 299, fx, $).     % for $true/$false
+    op(1130, xfy, <=>), % equivalence
+    op(1110, xfy, =>),  % implication
+    %                   % disjunction (;)
+    %                   % conjunction (,)
+    op( 500, fy, ~),    % negation
+    op( 500, fy, all),  % universal quantifier
+    op( 500, fy, ex),   % existential quantifier
+    op( 500,xfy, :),
+    % TPTP syntax
+    op(1130, xfy, <~>),  % negated equivalence
+    op(1110, xfy, <=),   % implication
+    op(1100, xfy, '|'),  % disjunction
+    op(1100, xfy, '~|'), % negated disjunction
+    op(1000, xfy, &),    % conjunction
+    op(1000, xfy, ~&),   % negated conjunction
+    op( 500, fy, !),     % universal quantifier
+    op( 500, fy, ?),     % existential quantifier
+    op( 400, xfx, =),    % equality
+    op( 300, xf, !),     % negated equality (for !=)
+    op( 299, fx, $).     % for $true/$false
 
 
 % TPTP syntax to leanCoP syntax mapping
 
 not(var(X)) :-
-	var(X), !, fail.
+    var(X), !, fail.
 not(member(X,Set)) :-
-	member(X, Set), !, fail.
+    member(X, Set), !, fail.
 not(_).
 
 
@@ -102,8 +102,8 @@ op_tptp2(('?'([V|Vars]:A)),('ex'(':'(V,A1))), ['?'(':'(Vars,A))],[A1]).
 op_tptp2('$true',('=>'(true___,true___)),      [],[]).
 op_tptp2('$false',(false___ , '~'(false___)),[],[]).
 op_tptp2(A=B,'~'(A1=B),[],[]) :-
-	not(var(A)),
-	A=('!'(A1)).
+    not(var(A)),
+    A=('!'(A1)).
 op_tptp2(P,P,[],[]).
 
 
@@ -115,7 +115,7 @@ leancop_tptp2(File,AxPath,AxNames,F,Con) :-
     ensure_runtime_ops,
     open(File,read,Stream),
     ( fof2cop(Stream,AxPath,AxNames,A,Con) -> 
-        close(Stream) 
+    close(Stream) 
     ; close(Stream),
       fail 
     ),
@@ -125,12 +125,12 @@ fof2cop(Stream,AxPath,AxNames,F,Con) :-
     read(Stream,Term),
     ( Term=end_of_file -> F=[], Con=[] ;
       ( Term=..[fof,Name,Type,Fml|_] ->
-        ( not(member(Name,AxNames)) -> true ; fml2cop([Fml],[Fml1]) ),
-        ( Type=conjecture -> Con=Fml1 ; Con=Con1 ) ;
-        ( Term=include(File), AxNames2=[_] ;
-          Term=include(File,AxNames2) ) -> name(AxPath,AL),
-          name(File,FL), append(AL,FL,AxL), name(AxFile,AxL),
-          leancop_tptp2(AxFile,'',AxNames2,Fml1,_), Con=Con1
+    ( not(member(Name,AxNames)) -> true ; fml2cop([Fml],[Fml1]) ),
+    ( Type=conjecture -> Con=Fml1 ; Con=Con1 ) ;
+    ( Term=include(File), AxNames2=[_] ;
+      Term=include(File,AxNames2) ) -> name(AxPath,AL),
+      name(File,FL), append(AL,FL,AxL), name(AxFile,AxL),
+      leancop_tptp2(AxFile,'',AxNames2,Fml1,_), Con=Con1
       ), fof2cop(Stream,AxPath,AxNames,F1,Con1),
       ( Term=..[fof,N,Type|_], (Type=conjecture; not(member(N,AxNames)))
       -> (F1=[] -> F=[] ; F=F1) ; (F1=[] -> F=Fml1 ; F=(Fml1,F1)) )
@@ -176,7 +176,7 @@ subst_axiom(A,B,[X|C],[Y|D],E,I) :-
 collect_predfunc([],[],[]).
 collect_predfunc([F|Fml],PL,FL) :-
     ( ( F=..['<=>'|F1] ; F=..['=>'|F1] ; F=..[;|F1] ; F=..[','|F1] ;
-        F=..['~'|F1] ; (F=..[all,_:F2] ; F=..[ex,_:F2]), F1=[F2] ) ->
+    F=..['~'|F1] ; (F=..[all,_:F2] ; F=..[ex,_:F2]), F1=[F2] ) ->
       collect_predfunc(F1,PL1,FL1) ; F=..[P|Arg], length(Arg,I),
       I>0 ->  PL1=[(P,I)], collect_func(Arg,FL1) ; PL1=[], FL1=[] ),
     collect_predfunc(Fml,PL2,FL2),

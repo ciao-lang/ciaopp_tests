@@ -1,7 +1,7 @@
 :- module(committed_hours,[committed_hours/6],[assertions]).
 
 % :- trust pred committed_hours(Month,Year,Person,Teaching,Other,Vacation) 
-% 	=> ground([Month,Year,Person,Teaching,Other,Vacation]).
+%       => ground([Month,Year,Person,Teaching,Other,Vacation]).
 
 :- doc(committed_hours(Month,Year,Person,Teaching,Other,Vacation),
 "@var{Teaching},@var{Other}, and @var{Vacation} are the number of

@@ -1,38 +1,38 @@
 :- module(_,  [
-        modif_time/2,
-        datime/9,
-        working_directory/2,
-        system/1,
-        delete_file/1,
-        cd/1,
-        directory_files/2,
-        file_exists/1,
-        file_property/2
-	      ],
-	[assertions, isomodes]).
+    modif_time/2,
+    datime/9,
+    working_directory/2,
+    system/1,
+    delete_file/1,
+    cd/1,
+    directory_files/2,
+    file_exists/1,
+    file_property/2
+          ],
+    [assertions, isomodes]).
 
 :- use_module(engine(runtime_control), [set_prolog_flag/2, prolog_flag/3]).
 
 :- pred modif_time(+atm, ?int).
 modif_time(Path, Time) :-
-        prolog_flag(fileerrors, OldFE, off),
-        ( file_properties(Path, [], [], Time, [], []) ->
-            set_prolog_flag(fileerrors, OldFE)
-        ; set_prolog_flag(fileerrors, OldFE),
-          fail
-        ).
+    prolog_flag(fileerrors, OldFE, off),
+    ( file_properties(Path, [], [], Time, [], []) ->
+        set_prolog_flag(fileerrors, OldFE)
+    ; set_prolog_flag(fileerrors, OldFE),
+      fail
+    ).
 
 :- trust pred datime(+int,?int,?int,?int,?int,?int,?int,?int,?int)
-        # "If @var{Time} is given, the rest of the arguments are unified
-        with the date and time to which the @var{Time} argument refers.".
+    # "If @var{Time} is given, the rest of the arguments are unified
+    with the date and time to which the @var{Time} argument refers.".
 
 :- trust pred datime(?int,+int,+int,+int,+int,+int,+int,?int,?int) #
-	"Bound @var{Time}, @var{WeekDay} and @var{YearDay} as
-	determined by the input arguments.".
+    "Bound @var{Time}, @var{WeekDay} and @var{YearDay} as
+    determined by the input arguments.".
 
 :- trust pred datime(-int,-int,-int,-int,-int,-int,-int,?int,?int)
-	# "Bound @var{Time} to current time and the rest of the
-	arguments refer to current time.".
+    # "Bound @var{Time} to current time and the rest of the
+    arguments refer to current time.".
 
 :- impl_defined(datime/9).
 
@@ -44,8 +44,8 @@ modif_time(Path, Time) :-
 
 :- trust pred working_directory(?atm, +atm) # "Changes current working directory.".
 :- trust pred working_directory(OldDir, NewDir)
-         : (var(OldDir), var(NewDir), OldDir == NewDir) => atm * atm
-         # "Gets current working directory.".
+     : (var(OldDir), var(NewDir), OldDir == NewDir) => atm * atm
+     # "Gets current working directory.".
 :- impl_defined(working_directory/2).
 
 :- doc(cd(Path), "Changes working directory to @var{Path}.").
@@ -96,7 +96,7 @@ shell(Path) :- shell(Path, 0).
 :- impl_defined(delete_file/1).
 
 :- doc(file_exists(File), "Succeeds if @var{File} (a file or
-        directory) exists (and is accessible).").
+    directory) exists (and is accessible).").
 
 :- pred file_exists/1: atm.
 
@@ -113,36 +113,36 @@ file_exists(Path) :- file_exists(Path, 0).
 :- pred file_property(+atm, ?struct).
 
 file_property(Path, Property) :-
-	file_property_(Property, Path).
+    file_property_(Property, Path).
 
 file_property_(Property, Path) :-
-	var(Property), !,
-	file_properties(Path, Type, Linkto, Time, Protection, Size),
-	( Property = type(Type)
-	; Linkto \== '', Property = linkto(Linkto)
-	; Property = mod_time(Time)
-	; Property = mode(Protection)
-	; Property = size(Size)
-	).
+    var(Property), !,
+    file_properties(Path, Type, Linkto, Time, Protection, Size),
+    ( Property = type(Type)
+    ; Linkto \== '', Property = linkto(Linkto)
+    ; Property = mod_time(Time)
+    ; Property = mode(Protection)
+    ; Property = size(Size)
+    ).
 file_property_(type(Type), Path) :- !,
-	file_properties(Path, Type0, [], [], [], []),
-	Type = Type0.
+    file_properties(Path, Type0, [], [], [], []),
+    Type = Type0.
 file_property_(linkto(File), Path) :- !,
-	file_properties(Path, [], File0, [], [], []),
-	File0 \== '',
-	File = File0.
+    file_properties(Path, [], File0, [], [], []),
+    File0 \== '',
+    File = File0.
 file_property_(mod_time(Time), Path) :- !,
-	file_properties(Path, [], [], Time, [], []).
+    file_properties(Path, [], [], Time, [], []).
 file_property_(mode(Protection), Path) :- !,
-	file_properties(Path, [], [], [], Protection, []).
+    file_properties(Path, [], [], [], Protection, []).
 file_property_(size(Size), Path) :- !,
-	file_properties(Path, [], [], [], [], Size).
+    file_properties(Path, [], [], [], [], Size).
 file_property_(Other, _) :-
-	throw(error(domain_error(file_property_type,Other),
-	file_property/2-2)).
+    throw(error(domain_error(file_property_type,Other),
+    file_property/2-2)).
 
 :- doc(file_properties(Path, Type, Linkto, Time, Protection, Size),
-        "The file @var{Path} has the following properties:
+    "The file @var{Path} has the following properties:
 
 @begin{itemize} 
 

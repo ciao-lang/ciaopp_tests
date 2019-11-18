@@ -23,8 +23,8 @@
 :- data proof_layout/1. % compact, connect, readable
 
 set_proof_layout(Layout) :-
-	retractall_fact(proof_layout(_)), 
-	assertz_fact(proof_layout(Layout)).
+    retractall_fact(proof_layout(_)), 
+    assertz_fact(proof_layout(Layout)).
 
 %%% output of leanCoP proof
 
@@ -86,111 +86,111 @@ print_connect_proof([[(Cla,Num,Sub)|Proof]|Proof2],[I|J]) :-
     print_connect_proof(Proof2,[I1|J]).
 
 print_connect_proof_step(I,Cla,Num,Sub) :-
-	append(I,[1],I1),
-	print_step(I1),
-	print('  '),
-	print(Cla),
-	( Num = (R:N) ->
-	    append(_,[H|T],I1),
-	    N1 is N+1,
-	    length([H|T],N1),
-	    ( R=r ->
-	        print('   (reduction:'),
-		print_step(T)
-	    ;
-		print('   (lemmata:'),
-		print_step(T)
-	    )
-	;
-	    print('   ('),
-	    print(Num)
-	), print(')  '),
-	( Sub=[[],_] ->
-	    true
-	;
-	    print('substitution:'),
-	    print(Sub)
-	),
-	nl.
+    append(I,[1],I1),
+    print_step(I1),
+    print('  '),
+    print(Cla),
+    ( Num = (R:N) ->
+        append(_,[H|T],I1),
+        N1 is N+1,
+        length([H|T],N1),
+        ( R=r ->
+            print('   (reduction:'),
+            print_step(T)
+        ;
+            print('   (lemmata:'),
+            print_step(T)
+        )
+    ;
+        print('   ('),
+        print(Num)
+    ), print(')  '),
+    ( Sub=[[],_] ->
+        true
+    ;
+        print('substitution:'),
+        print(Sub)
+    ),
+    nl.
 
 %%% calculate leanCoP proof
 
 calc_proof(Mat,[Cla|Proof],[(Cla1,Num,Sub)|Proof1]) :-
-	( (Cla=[#|Cla1];Cla=[-!|Cla1]) ->
-	   true
-	;
-	    Cla1=Cla
-	),
-	clause_num_sub(Cla1,[],[],Mat,1,Num,Sub),
-	calc_proof(Cla1,[],[],Mat,Proof,Proof1).
+    ( (Cla=[#|Cla1];Cla=[-!|Cla1]) ->
+       true
+    ;
+        Cla1=Cla
+    ),
+    clause_num_sub(Cla1,[],[],Mat,1,Num,Sub),
+    calc_proof(Cla1,[],[],Mat,Proof,Proof1).
 
 calc_proof(_,_,_,_,[],[]).
 calc_proof(Cla,Path,Lem,Mat,[[Cla1|Proof]|Proof2],Proof1) :-
-	append(Cla2,[#|Cla3],Cla1), !,
-	append(Cla2,Cla3,Cla4),
-	append(Pro1,[[[-(#)]]|Pro2],Proof),
-	append(Pro1,Pro2,Proof3),
-	calc_proof(Cla,Path,Lem,Mat,[[Cla4|Proof3]|Proof2],Proof1).
+    append(Cla2,[#|Cla3],Cla1), !,
+    append(Cla2,Cla3,Cla4),
+    append(Pro1,[[[-(#)]]|Pro2],Proof),
+    append(Pro1,Pro2,Proof3),
+    calc_proof(Cla,Path,Lem,Mat,[[Cla4|Proof3]|Proof2],Proof1).
 % [IG] this clause is bad for shfr
 calc_proof([Lit|Cla],Path,Lem,Mat,[[Cla1|Proof]|Proof2],Proof1) :-
-	(-NegLit=Lit;-Lit=NegLit),
-	 aux1(NegLit,Path,I,Cla1,Cla4)
-	 ->
-	clause_num_sub(Cla1,Path,Lem,Mat,1,Num,Sub),
-	Proof1=[[([NegLit|Cla4],Num,Sub)|Proof3]|Proof4],
-	calc_proof(Cla4,[I:Lit|Path],Lem,Mat,Proof,Proof3),
-	( Lem=[':'(I,':'(J,_))|_] ->
-	    J1 is J+1 
- 	;
- 	    J1=1
- 	),
-	calc_proof(Cla,Path,[':'(I,':'(J,Lit))|Lem],Mat,Proof2,Proof4).
+    (-NegLit=Lit;-Lit=NegLit),
+     aux1(NegLit,Path,I,Cla1,Cla4)
+     ->
+    clause_num_sub(Cla1,Path,Lem,Mat,1,Num,Sub),
+    Proof1=[[([NegLit|Cla4],Num,Sub)|Proof3]|Proof4],
+    calc_proof(Cla4,[I:Lit|Path],Lem,Mat,Proof,Proof3),
+    ( Lem=[':'(I,':'(J,_))|_] ->
+        J1 is J+1 
+    ;
+        J1=1
+    ),
+    calc_proof(Cla,Path,[':'(I,':'(J,Lit))|Lem],Mat,Proof2,Proof4).
 
 aux1(NegLit,Path,I,Cla1,Cla4) :-
-	append(Cla2,[NegL|Cla3],Cla1),
-	NegLit==NegL,
-	append(Cla2,Cla3,Cla4),
-	length([_|Path],I).
+    append(Cla2,[NegL|Cla3],Cla1),
+    NegLit==NegL,
+    append(Cla2,Cla3,Cla4),
+    length([_|Path],I).
 
 %%% determine clause number and substitution
 
 clause_num_sub([NegLit],Path,Lem,[],_,R:Num,[[],[]]) :-
-	( -NegLit=Lit;-Lit=NegLit),
-	  member(':'(Num,':'(J,LitL)),Lem),
-	  LitL==Lit ->
-	  R=J
-        ;
-	member(':'(Num,NegL),Path),
-	NegL==NegLit -> R=r.
+    ( -NegLit=Lit;-Lit=NegLit),
+      member(':'(Num,':'(J,LitL)),Lem),
+      LitL==Lit ->
+      R=J
+    ;
+    member(':'(Num,NegL),Path),
+    NegL==NegLit -> R=r.
 
 clause_num_sub(Cla,Path,Lem,[Cla1|Mat],I,Num,Sub) :-
-	append(Cla2,[L|Cla3],Cla1),
-	append([L|Cla2],Cla3,Cla4),
-	instance1(Cla,Cla4) ->
-	Num=I,
-	term_variables(Cla4,Var),
-	copy_term(Cla4,Cla5),
-	term_variables(Cla5,Var1),
-	Cla=Cla5,
-	Sub=[Var,Var1]
-        ;
-	I1 is I+1,
-	clause_num_sub(Cla,Path,Lem,Mat,I1,Num,Sub).
+    append(Cla2,[L|Cla3],Cla1),
+    append([L|Cla2],Cla3,Cla4),
+    instance1(Cla,Cla4) ->
+    Num=I,
+    term_variables(Cla4,Var),
+    copy_term(Cla4,Cla5),
+    term_variables(Cla5,Var1),
+    Cla=Cla5,
+    Sub=[Var,Var1]
+    ;
+    I1 is I+1,
+    clause_num_sub(Cla,Path,Lem,Mat,I1,Num,Sub).
 
 not(aux(A,B)) :-
-	aux(A, B), !, fail.
+    aux(A, B), !, fail.
 not(not(X)) :-
-	not(X), !, fail.
+    not(X), !, fail.
 not(_).
 
 instance1(A,B) :-
-	not(not(aux(A,B))).
+    not(not(aux(A,B))).
 
 aux(A,B) :-
-	term_variables(A,VA),
-	unify_with_occurs_check(A,B),
-	term_variables(A,VB),
-	VA==VB.
+    term_variables(A,VA),
+    unify_with_occurs_check(A,B),
+    term_variables(A,VB),
+    VA==VB.
 
 %%% print leanCoP proof
 
@@ -220,7 +220,7 @@ print_assume(I,Lit) :-
 print_clause(I,Cla,Num,Sub) :-
     print_sp(I), print(' Then clause ('), print(Num), print(')'),
     ( Sub=[[],[]] -> true ; print(' under the substitution '),
-                            print(Sub), nl, print_sp(I) ),
+                        print(Sub), nl, print_sp(I) ),
     ( Cla=[] -> print(' is true.') ;
       print(' is false if at least one of the following is false:'),
       nl, print_sp(I), print(' '), print(Cla) ), nl.
@@ -237,18 +237,18 @@ print_fact(I,J) :-
 
 print_clauses([],_,[]) :- nl.
 print_clauses([[-(#)]|Mat],I,Mat1) :- !,
-	print_clauses(Mat,I,Mat1).
+    print_clauses(Mat,I,Mat1).
 print_clauses([Cla|Mat],I,Mat1) :-
-	append(Cla2,[#|Cla3],Cla),
-	append(Cla2,Cla3,Cla1),
-	print_clauses([Cla1|Mat],I,Mat1).
+    append(Cla2,[#|Cla3],Cla),
+    append(Cla2,Cla3,Cla1),
+    print_clauses([Cla1|Mat],I,Mat1).
 print_clauses([Cla|Mat],I,[Cla|Mat1]) :-
-	print(' ('),
-	print(I),
-	print(')  '),
-	print(Cla), nl,
-	I1 is I+1,
-	print_clauses(Mat,I1,Mat1).
+    print(' ('),
+    print(I),
+    print(')  '),
+    print(Cla), nl,
+    I1 is I+1,
+    print_clauses(Mat,I1,Mat1).
 
 print_step([I]) :- print(I).
 print_step([I,J|T]) :- print_step([J|T]), print('.'), print(I).

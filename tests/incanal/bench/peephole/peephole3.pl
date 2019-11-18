@@ -3,39 +3,39 @@
 :- use_module(peephole2, [peep_chk/2, popt1a/2]).
 
 popt1a1(unipvar(X),PilRest,[bldpvar(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(unipval(X),PilRest,[bldpval(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(unitvar(X),PilRest,[bldtvar(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(unitval(X),PilRest,[bldtval(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(unicon(X),PilRest,[bldcon(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(uninumcon(X),PilRest,[bldnumcon(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(unifloatcon(X),PilRest,[bldfloatcon(X)|OptPilRest]) :-
-        popt1a(PilRest,OptPilRest).
+    popt1a(PilRest,OptPilRest).
 popt1a1(gettval(R,R),PRest,OptPRest) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(movreg(R,R),PRest,OptPRest) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jump(L),[label(L)|PRest],[jump(_Addr)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jump(Addr),[jump(_N)|PRest],[jump(Addr)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jumpz(_N,L),[label(L)|PRest],[label(L)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jumpnz(_N,L),[label(L)|PRest],[label(L)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jumplt(_N,L),[label(L)|PRest],[label(L)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jumple(_N,L),[label(L)|PRest],[label(L)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jumpgt(_N,L),[label(L)|PRest],[label(L)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 popt1a1(jumpge(_N,L),[label(L)|PRest],[label(L)|OptPRest]) :-
-        popt1a(PRest,OptPRest).
+    popt1a(PRest,OptPRest).
 
 % -----------------------------------------------------------
 
@@ -90,10 +90,10 @@ peep_use(jumpge(_2,_3),_1).
 % -----------------------------------------------------------
 
 term_or_chk([Inst|_N],R) :-
-        peep_term(Inst,R),
-        !.
+    peep_term(Inst,R),
+    !.
 term_or_chk([_N|Rest],R) :-
-        peep_chk(Rest,R).
+    peep_chk(Rest,R).
 
 peep_term(call(_2,_3),_1).
 peep_term(calld(_2,_3),_1).

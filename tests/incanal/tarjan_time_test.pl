@@ -14,22 +14,22 @@
 :- use_module(engine(io_basic)).
 
 main([File, Tarjan]) :- !,
-	module(File), !,
-	program(Cls, Ds),
-	generate_trans_clauses(Tarjan, Cls, Ds).
+    module(File), !,
+    program(Cls, Ds),
+    generate_trans_clauses(Tarjan, Cls, Ds).
 
 generate_trans_clauses(Tarjan, Cls, Ds) :-
-	classify_clauses(Tarjan, Cls, Rs, Ps),
-	transform_clauses(Cls,Ds,Rs,Ps,gr),
-	raw_output(user).
+    classify_clauses(Tarjan, Cls, Rs, Ps),
+    transform_clauses(Cls,Ds,Rs,Ps,gr),
+    raw_output(user).
 
 classify_clauses(assert_tarjan, Cls, Rs, Ps) :-
-	stat_no_store(program_tarjan(Cls), S1),
-	display(S1), nl,
-	stat_no_store(program_recursive_classify(Cls,Rs,Ps), S2),
-	display(S2), nl.
+    stat_no_store(program_tarjan(Cls), S1),
+    display(S1), nl,
+    stat_no_store(program_recursive_classify(Cls,Rs,Ps), S2),
+    display(S2), nl.
 classify_clauses(list_tarjan, Cls, Rs, Ps) :-
-	stat_no_store(tarjan(Cls, SCCs), S1),
-	display(S1), nl,
-	stat_no_store(recursive_classify(Cls,SCCs,Rs,Ps), S2),
-	display(S2), nl.
+    stat_no_store(tarjan(Cls, SCCs), S1),
+    display(S1), nl,
+    stat_no_store(recursive_classify(Cls,SCCs,Rs,Ps), S2),
+    display(S2), nl.

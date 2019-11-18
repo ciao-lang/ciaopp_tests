@@ -11,5 +11,5 @@ p(f).
 p(X) :- q(X).
 
 main(X, Y) :-
-	q(X),
-	p(Y).
+    q(X),
+    p(Y).

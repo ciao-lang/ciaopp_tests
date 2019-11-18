@@ -20,21 +20,21 @@ Notes:
 
 shanoi(1,A,_B,C,[mv(A,C)]).
 shanoi(N,A,B,C,M) :-
-	N > 1,
-	N1 is N - 1,
-	shanoi(N1,A,C,B,M1),
-	shanoi(N1,B,A,C,M2),
-	append(M1,[mv(A,C)],T),
-	append(T,M2,M).
+    N > 1,
+    N1 is N - 1,
+    shanoi(N1,A,C,B,M1),
+    shanoi(N1,B,A,C,M2),
+    append(M1,[mv(A,C)],T),
+    append(T,M2,M).
 
 %-----------------------------------------------------------------------------
 
 demo:-  Size=15,
-	format('Towers of Hanoi for ~w elements',[Size]),
-	time(_,_A), nl, nl,
-	shanoi(Size,a,b,c,Sol),
-	time(T,Sol),
-	format('The solution is: ~w',[Sol]),nl,
-	format('Solved in ~w msec.',[T]), nl.
+    format('Towers of Hanoi for ~w elements',[Size]),
+    time(_,_A), nl, nl,
+    shanoi(Size,a,b,c,Sol),
+    time(T,Sol),
+    format('The solution is: ~w',[Sol]),nl,
+    format('Solved in ~w msec.',[T]), nl.
 
 time(Time,_):- statistics(runtime,[_,Time]).

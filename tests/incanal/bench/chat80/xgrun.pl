@@ -2,8 +2,8 @@
 
 /*
 :- mode terminal(?,+,?,+,?),
-        gap(+),
-        virtual(+,+,?).
+    gap(+),
+    virtual(+,+,?).
 */
 
 :- trust calls terminal(_,X,_,Y,_) : (gnd(X), gnd(Y)).

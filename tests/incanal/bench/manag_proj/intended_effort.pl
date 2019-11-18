@@ -98,15 +98,15 @@ intended_effort(amos,2,bardo2,1,X):-   X is   75/131.25. %Bardo
 intended_effort(amos,2,jmanuel2,1,X):- X is  50/131.25. %JManuel
 
 total_amos(X):-
-	Prometidos is 21.7,
-	findall(X,intended_effort(amos,2,_,_,X),List_Effort),
-	subtract_list(List_Effort,Prometidos,X).
+    Prometidos is 21.7,
+    findall(X,intended_effort(amos,2,_,_,X),List_Effort),
+    subtract_list(List_Effort,Prometidos,X).
 
 subtract_list([],P,P).
 subtract_list([X|Xs],P,NP):-
-	subtract_list(Xs,P,Tmp),
-	NP is Tmp - X.
-	
+    subtract_list(Xs,P,Tmp),
+    NP is Tmp - X.
+    
 %intended_effort(amos,2,1,1,21.7). % todos
 
 % bristol --------------------------------------------------------

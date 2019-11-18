@@ -1,28 +1,28 @@
 :- module(newdic,
-	[ '`'/1,
-	  adj/2,
-	  adverb/1,
-	  conj/1,
-	  det/4,
-	  int_art/4,
-	  int_pron/2,
-	  loc_pred/2,
-	  name/1,
-	  noun_form/3,
-	  number/3,
-	  pers_pron/5,
-	  poss_pron/4,
-	  prep/1,
-	  quantifier_pron/3,
-	  rel_adj/2,
-	  rel_pron/2,
-	  sup_adj/2,
-	  terminator/2,
-	  verb_form/4,
-	  verb_type/2,
-	  word/1
-	],
-	[assertions]).
+    [ '`'/1,
+      adj/2,
+      adverb/1,
+      conj/1,
+      det/4,
+      int_art/4,
+      int_pron/2,
+      loc_pred/2,
+      name/1,
+      noun_form/3,
+      number/3,
+      pers_pron/5,
+      poss_pron/4,
+      prep/1,
+      quantifier_pron/3,
+      rel_adj/2,
+      rel_pron/2,
+      sup_adj/2,
+      terminator/2,
+      verb_form/4,
+      verb_type/2,
+      word/1
+    ],
+    [assertions]).
 
 :- use_module(templa, [name_template/2]).
 
@@ -62,7 +62,7 @@
 */
 
 % =================================================================
-	% General Dictionary
+    % General Dictionary
 
 :- trust calls word(X) : gnd(X).
 :- trust calls '`'(X) : gnd(X).

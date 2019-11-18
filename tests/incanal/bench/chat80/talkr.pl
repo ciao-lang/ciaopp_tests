@@ -94,8 +94,8 @@ complex(\+P) :- complex(P).
 
 respond([],"Nothing satisfies your question.").
 respond([A|L],Ans) :- 
-	reply(A,Ans,Ansrs), 
-	replies(L,Ansrs,[]).
+    reply(A,Ans,Ansrs), 
+    replies(L,Ansrs,[]).
 %% respond([]) :- write('Nothing satisfies your question.'), nl.
 %% respond([A|L]) :- reply(A), replies(L).
 
@@ -116,26 +116,26 @@ yesno(false,"No.").
 
 replies([],[0'.|R],R).
 replies([A],Ans,Ansrs) :- 
-	dlst(" and ",Ans,Q1),
-	reply(A,Q1,Q2), 
-	Q2 = [0'.|Ansrs].
+    dlst(" and ",Ans,Q1),
+    reply(A,Q1,Q2), 
+    Q2 = [0'.|Ansrs].
 replies([A|X],Ans,Ansrs) :- 
-	dlst(", ",Ans,Q1),
-	reply(A,Q1,Q2), 
-	replies(X,Q2,Ansrs).
+    dlst(", ",Ans,Q1),
+    reply(A,Q1,Q2), 
+    replies(X,Q2,Ansrs).
 %% replies([]) :- write('.').
 %% replies([A]) :- write(' and '), reply(A), write('.').
 %% replies([A|X]) :- write(', '), reply(A), replies(X).
 
 reply('--'(N,A),As) :- 
-	!, 
-	name(N,Ns),
-	dlst(Ns,A,[0' |Q1]),
-	name(_U,Us),
-	dlst(Us,Q1,As).
+    !, 
+    name(N,Ns),
+    dlst(Ns,A,[0' |Q1]),
+    name(_U,Us),
+    dlst(Us,Q1,As).
 reply(X,A,As) :- 
-	name(X,Xs),
-	dlst(Xs,A,As).
+    name(X,Xs),
+    dlst(Xs,A,As).
 %% reply(N--U) :- !, write(N), write(' '), write(U).
 %% reply(X) :- write(X).
 
@@ -175,8 +175,8 @@ pick([],_) :- !, fail.
 pick(X,X).
 
 dlst([X|Y],[X|R],E) :-
-	!,
-	dlst(Y,R,E).
+    !,
+    dlst(Y,R,E).
 dlst([],E,E).
 
 %% PBC
