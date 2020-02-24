@@ -3,7 +3,7 @@ set output 'statistics.pdf'
 
 filter = system("echo $graph_title")
 
-set title "Accumulated analysis time ".filter
+set title "Accumulated analysis time ".filter noenhanced
 set xlabel "Benchmark opts"
 set ylabel "Normalized time w.r.t. monolithic non-incremental"
 
@@ -13,21 +13,18 @@ set auto x
 unset xtics
 set style data histogram
 set style histogram rowstacked
-#set yrange [0:4]
 
-set xtics border in scale 0,0 nomirror rotate by -45  autojustify
 set border 3 front lt black linewidth 1.000 dashtype solid
 set style fill   solid 1.00 noborder
 set grid nopolar
 
 set grid layerdefault   lt 0 linewidth 0.250,  lt 0 linewidth 0.250
-set xtics border in scale 0,0 nomirror rotate by -45  autojustify
+set xtics border in scale 0,0 nomirror rotate by -45  autojustify noenhanced
 set xtics   ()
 
 set style fill solid border -1
 set key autotitle columnheader
-set key left
+set key left noenhanced
 set xtics nomirror rotate by -45 scale 0
-#set terminal pdf #enhanced font "Helvetica,14" #size 1000,550
 
 plot "test_results/graphs/to_plot.data" using ($9):xtic(1), for [i in "incAct preProc GAT procDiff"] '' using i

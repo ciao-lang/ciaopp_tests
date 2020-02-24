@@ -16,14 +16,36 @@
 
 :- use_module(library(write), [write/1]).
 :- use_module(engine(io_basic)).
-:- use_module(library(aggregates), [findall/3]).
 :- use_module(library(lists), [length/2]).
 
-:- use_module(universe, [attribute/2, example/2]).
-:- use_module(operations, [dij/2, wc/2, distance/3, cc/3, combine/3]).
+:- use_module(z_universe, [attribute/2, example/2]).
+:- use_module(y_operations, [dij/2, wc/2, distance/3, cc/3, combine/3]).
 :- use_module(my_library, [my_own_ordunion/3, list_to_my_own_ordset/2,
     my_own_select_/3, my_own_memberchk/2, my_own_append/3,
     non_my_own_member/2, my_own_member/2]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- use_package(datafacts).
+:- data d/1.
+my_findall(Tmpl, G, Xs) :-
+    asserta_fact(d(first)),
+    my_collect(Tmpl, G),
+    my_sols([],Xs0), Xs=Xs0.
+my_collect(Tmpl, G) :-
+    ( my_call(G),
+      asserta_fact(d(sol(Tmpl))),
+      fail
+    ; true
+    ).
+my_sols(Xs0,Xs) :-
+    retract_fact(d(Mark)),
+    !,
+    ( Mark = first -> Xs = Xs0
+    ; Mark = sol(X) -> Xs1 = [X|Xs0], my_sols(Xs1, Xs)
+    ).
+my_call(attribute(A,B)) :- attribute(A,B).
+my_call(instance(A,B,C)) :- instance(A,B,C).
+my_call(cont_table(A,B,C,D,E,F)) :- cont_table(A,B,C,D,E,F).
 
 % Clustering parameters
 factor(1.2).

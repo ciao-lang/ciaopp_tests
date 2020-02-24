@@ -3,11 +3,22 @@
 _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
         cd "$d";done;cd "$(dirname "$e")";pwd -P)
 
+set -x
+
+# TODO: hardwired directory
+cached_assertions="../../../../build/data/ciaopp_lib_cache"
+mkdir -p "../../../../build/data"
+mkdir -p "../../../../build/data/ciaopp_lib_cache"
+echo "Generating cached assertions for libraries $cached_assertions ..."
+gen_lib_cache $cached_assertions
+
 pushd $_base > /dev/null 2>&1
 
 tests=(qsort hanoi aiakl boyer peephole)
 configs=(add del)
 domains=(shfr)
+
+total_checks=5
 
 echo "Compiling tests..."
 ./compile.sh
@@ -18,26 +29,25 @@ echo "Running tests..."
 
 for k in "${configs[@]}" ; do
     for i in "${tests[@]}" ; do
-              for j in "${domains[@]}" ; do
-                  rm -rf test_results/$k*$j*quick-run
-                  ./run_configs.sh $i $k $j "--user_tag quick-run"
-              done
+        for j in "${domains[@]}" ; do
+            rm -rf test_results/$k*$j*quick-run
+            ./run_configs.sh $i $k $j "--user_tag quick-run"
+        done
     done
 done
-
-# ./generate_result_summary.sh test_results "*add*quick-run"
-# ./generate_result_summary.sh test_results "*del*quick-run"
 
 errors=0
 
 for i in "${tests[@]}" ; do
-          for j in "${domains[@]}" ; do
-              ./check_config.sh $i $j "-quick-run"
+    for j in "${domains[@]}" ; do
+        ./check_config.sh $i $j "-quick-run"
         errors=$(expr $errors + $?) # add errors
-          done
+    done
 done
 
-echo "$errors ERROR(S) FOUND."
+noerrors=$(expr $total_checks - $errors)
+
+echo "$noerrors/$total_checks passed."
 
 popd > /dev/null 2>&1
 

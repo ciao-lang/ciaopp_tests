@@ -1,4 +1,4 @@
-:- module(universe, [attribute/2, example/2], []).
+:- module(_, [attribute/2, example/2], []).
 
  %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  %% The universe to be clustered.

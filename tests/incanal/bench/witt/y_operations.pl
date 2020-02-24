@@ -1,4 +1,4 @@
-:- module(operations, [dij/2, wc/2, cc/3, distance/3, combine/3], []).
+:- module(_, [dij/2, wc/2, cc/3, distance/3, combine/3], []).
 
 :- use_module(library(lists), [length/2]).
 

@@ -4,7 +4,7 @@ _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
         cd "$d";done;cd "$(dirname "$e")";pwd -P) || exit
 
 function show_help {
-    echo "Usage: ./run_configs.sh <bench_name> <add/del> <domain>"
+    echo "Usage: $0 <bench_name> <add/del> <domain> \"[user_opts]\" "
     echo
 }
 
@@ -23,16 +23,6 @@ function check_args {
                   exit
               fi
     fi
-
-    case $3 in
-        shfr|def|pdb|gr)
-        ;;
-        *)
-            echo "Wrong domain option"
-                  show_help
-                  exit
-            ;;
-    esac
 }
 
 pushd "$_base" > /dev/null 2>&1 || exit
@@ -68,14 +58,14 @@ function run_config {
     inc=$2
     log_file_end=$3
 
-    log_file="$res_dir"/logs/"$bench_name"_"$test_type"_"$log_file_end".log
+    log_file="$res_dir"/logs/"$bench_name"_"$test_type"_$domain_"$log_file_end".log
 
     echo "Testing $bench_name for $mod $inc ..."
     rm -f "$log_file"
     echo "Logs are being printed in $log_file"
 
+    echo "COMMAND: ./$bench_driver $bench_name $test_type 1 $domain $rand $mod $inc $bench_opts $user_opts"
     ./$bench_driver "$bench_name" "$test_type" 1 $domain $rand "$mod" $inc $bench_opts $user_opts &> "$log_file"
-
 }
 
 if [ "$test_type" == "add" ]; then
@@ -88,16 +78,16 @@ if [ "$test_type" == "add" ]; then
 else
    for i in "${mod_config[@]}" ; do
        for j in "${inc_config[@]}" ; do
-                 if [ "$j" == "incremental" ]; then
-                     for k in "${del_config[@]}" ; do
-                               log_file_end="$i"_"$j"_"$k"
-                               run_config "$i" "$j $k" "$log_file_end"
-                     done
-                 else
-                     log_file_end="$i"_"$j"
-                     run_config "$i" "$j" "$log_file_end"
-                 fi
-             done
+           if [ "$j" == "incremental" ]; then
+               for k in "${del_config[@]}" ; do
+                   log_file_end="$i"_"$j"_"$k"
+                   run_config "$i" "$j $k" "$log_file_end"
+               done
+           else
+               log_file_end="$i"_"$j"
+               run_config "$i" "$j" "$log_file_end"
+           fi
+       done
    done
 fi
 

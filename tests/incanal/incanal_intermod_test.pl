@@ -10,7 +10,7 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(library(sort), [sort/2]).
 :- use_module(library(lists), [member/2, reverse/2,append/3]).
 :- use_module(library(system), [directory_files/2, make_directory/1, file_exists/1]).
-:- use_module(library(pathnames), [path_concat/3, path_splitext/3, path_split/3]).
+:- use_module(library(pathnames), [path_concat/3, path_splitext/3, path_split/3, path_basename/2]).
 :- use_module(library(fastrw), [fast_write/2]).
 :- use_module(library(bundle/bundle_paths), [bundle_path/3,reverse_bundle_path/3]).
 :- use_module(library(arithpreds), [ceiling/2]).
@@ -26,9 +26,9 @@ flags, use the incanal_intermod_bench_driver module.").
 
 :- use_module(ciaopp(preprocess_flags), [current_pp_flag/2]).
 :- use_module(ciaopp(plai/intermod), [modular_analyze/3]).
-:- use_module(ciaopp(p_unit/p_dump), [dump/2]).
+:- use_module(ciaopp(p_unit/p_dump), [dump_dir/1]).
 :- use_module(ciaopp(p_unit/p_abs), [registry/3, registry_headers/2, write_registry_file/3]).
-:- use_module(ciaopp(raw_printer), [show_global_answer_table/1, raw_output/1,show_analysis/0]).
+:- use_module(ciaopp(raw_printer)).
 
 :- use_module(ciaopp(analysis_stats), [clean_stat_steps/0, dump_steps/1]).
 :- use_module(ciaopp_tests(incanal/naive_reader)).
@@ -106,7 +106,7 @@ set_configs([C|Cs]) :-
     assertz_fact(test_config(C, Value)),
     set_configs(Cs2).
 set_configs([C|Cs]) :-
-  error_message("Option not available: ~w", [C]),
+    error_message("Option not available: ~w", [C]),
     set_configs(Cs).
 
 :- pred get_results_dir(Id, TDir) #"@var{TDir} is the location of results
@@ -156,15 +156,15 @@ test(bench(TestId, TestTopLevel, SrcDir,DirType), Opts) :-
     set_configs(Opts),
     set_fact(test_iteration(0)),
     set_fact(test_toplevel(TestTopLevel)),
-  get_analysis_dir(TestId,AnaDir), % directory where analysis is performed
-  get_results_dir(TestId,ResDir), % directory where results are stored
+    get_analysis_dir(TestId,AnaDir), % directory where analysis is performed
+    get_results_dir(TestId,ResDir), % directory where results are stored
     generate_simulation_sequence(DirType,SrcDir,Seq),
     set_fact(test_dir(TestId)),
-    init_results_directories(ResDir),
+    init_results_directories(ResDir), % move before generating sim seq
     write_sequence_file(ResDir,Seq),
     write_dir_state_sequence(Seq, DirType,ResDir),
-  clean_ana_dir(AnaDir),
-  path_concat(AnaDir,TestTopLevel,TLPath),
+    clean_ana_dir(AnaDir),
+    path_concat(AnaDir,TestTopLevel,TLPath),
     perform_seq_analysis(Seq,DirType,TLPath,AnaDir).
 
 get_analysis_dir(TestId,AnaDir) :- % TODO: hardwired
@@ -177,10 +177,10 @@ get_analysis_dir(TestId,AnaDir) :-
 clean_ana_dir(AnaDir) :-
     path_concat(AnaDir,'src/version_auto.pl',VPath),  % TODO: !!
     ( file_exists(VPath) ->
-      path_concat(AnaDir,'src/version_auto_fixed.pl',VPath2),
-      catch(process_call(path(mv), [VPath, VPath2], []), _, true),
-      clean_tree(AnaDir),
-      catch(process_call(path(mv), [VPath2, VPath], []), _, true)
+        path_concat(AnaDir,'src/version_auto_fixed.pl',VPath2),
+        catch(process_call(path(mv), [VPath, VPath2], []), _, true),
+        clean_tree(AnaDir),
+        catch(process_call(path(mv), [VPath2, VPath], []), _, true)
     ; true),
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.reg', '-delete'], []),
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.dump', '-delete'], []),
@@ -317,10 +317,12 @@ perform_seq_analysis1(St, DirType, TopLevel, Dir) :-
     inc_test_iteration(N),
     display_list(['\n---------- Edition iteration ', N, ' ----------\n\n']),
     garbage_collect,
+    set_dir_dump_lat,
     ( modular_analyze(AbsInt, TopLevel, _Stats) ->
-    show_global_answer_table(_),
-%    show_analysis,
-    true
+        ( get_test_config('--show-gat',_) -> show_global_answer_table(AbsInt) ; true ),
+        ( get_test_config('--show-lat',_) -> show_analysis ; true ),
+        ( get_test_config('--show-cls',_) -> show_trans_clauses ; true ),
+        ( get_test_config('--show-raw-output',_) -> raw_output(user) ; true )
     ; error_message("ANALYSIS FAILED", [])
     ),
     edition_stat_file(StatFile),
@@ -353,10 +355,13 @@ dump_gat :-
     test_dir(Name),
     test_iteration(N),
     it_dump_gat_file(Name, N, DumpDir),
-    dump_registries(DumpDir),
-  atom_concat(Name,'.dump_inc',Name1),
-  path_concat(DumpDir,Name1,DumpName),
-  dump(DumpName,[incremental]).
+    dump_registries(DumpDir).
+
+set_dir_dump_lat :- % CurrMod has the full path
+    test_dir(Name),
+    test_iteration(N),
+    it_dump_gat_file(Name, N, DumpDir),
+    set_fact(dump_dir(DumpDir)).
 
 :- export(it_dump_gat_file/3).
 :- pred it_dump_gat_file(TestId, N, DumpF)
@@ -366,7 +371,9 @@ dump_gat :-
       @var{DumpF}.".
 it_dump_gat_file(TestId, N, F) :-
     it_dump_gat_file_(TestId, N, F),
-    make_directory(F).
+    ( file_exists(F) -> true ;
+        make_directory(F)
+    ).
 
 it_dump_gat_file_(TestId, N, DumpDir) :-
     get_results_dir(TestId, RDir),
@@ -374,23 +381,6 @@ it_dump_gat_file_(TestId, N, DumpDir) :-
     atom_number(A, N),
     atom_concat('inc_reg_', A, F),
     path_concat(T, F, DumpDir). % add extension
-
-:- export(it_dump_lat_file/4).
-:- pred it_dump_lat_file(TestId, N, I, DumpF)
-    #"Dumps the local answer table, i.e., completes and memo_table
-     information in modular analysis of the iteration @var{I} of
-     the state @var{N} of the sequence of states of test with id
-     @var{TestId}, in file @var{DumpF}.".
-it_dump_lat_file(TestId, N, I, DumpDir) :-
-    it_dump_lat_file_(TestId, N, I, DumpDir),
-    make_directory(DumpDir).
-%       path_splitext(F, DumpF, '.dump').
-
-it_dump_lat_file_(TestId, N, I, DumpF) :-
-    it_dump_gat_file_(TestId, N, F),
-    atom_number(A, I),
-    atom_concat('_', A, B),
-    atom_concat(F, B, DumpF).
 
 dump_registries(DumpDir) :- % This registry should contain the GAT
     findall(X, analyzed_module(X), Modules),
@@ -409,17 +399,6 @@ analyzed_module(Mod) :-
     ( registry(_SgKey, Mod, _RegData) -> true % (we do not care)
     ; fail
     ).
-
-:- export(dump_lat/1).
-:- pred dump_lat(ModIt) #"Dumps the local answer table in an iteration
-    to a file. This is done to check the correctness of the
-    analysis.".
-dump_lat(ModIt) :-
-    test_dir(TestId),
-    test_iteration(N),
-    it_dump_lat_file(TestId, N, ModIt, DumpDir), % Dir already created
-    dump_registries(DumpDir), !.
-dump_lat(_).
 
 % This predicate is thought to skip steps of sequences (i.e. so the
 % test is not forced to start with 0 clauses)

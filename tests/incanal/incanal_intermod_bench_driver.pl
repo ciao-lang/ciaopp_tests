@@ -68,7 +68,7 @@ main_([Bench, EditionType, N, Domain|Opts]) :-
     working_directory(_, Path),
     atom_number(N, N1),
     edit_num(EditionType, EditT), !,
-  set_pp_flag(preload_lib_sources, on),
+    set_pp_flag(preload_lib_sources, on),
     ensure_lib_sources_loaded,
     test(Bench, EditT, Opts, N1, Domain).
 main_(_) :-
@@ -106,19 +106,31 @@ test(Bench, EditT, ConfigOpts, NCh, Domain) :-
     retractall_fact(test_config_(_,_)),
     set_common_flags,
     make_config(ConfigOpts),
-  ( test_dir(Top, Bench, Bench0, Type) ->
-      fixed_absolute_file_name(Bench0,'.',BenchDir),
-      ( member(basic, ConfigOpts) ->
-      basic_analyze(Top, BenchDir, Domain)
-      ;
-      TOpts = ['n_edits', NCh, 'edit_type', EditT, 'domain', Domain],
-      test(bench(Bench, Top, BenchDir,Type), TOpts)
-      )
-  ;
-    show_message(error, "Bench not found: ~w", [Bench])
-  ).
+    ( test_dir(Top, Bench, Bench0, Type) ->
+        fixed_absolute_file_name(Bench0,'.',BenchDir),
+        ( member(basic, ConfigOpts) ->
+            basic_analyze(Top, BenchDir, Domain)
+        ;
+            TOpts = ['n_edits', NCh, 'edit_type', EditT, 'domain', Domain],
+            test(bench(Bench, Top, BenchDir,Type), TOpts)
+        )
+    ;
+        show_message(error, "Bench not found: ~w", [Bench])
+    ).
 
 make_config([]).
+make_config(['--show-gat'|Cfs]) :- !,
+    set_test_config('--show-gat', _),
+    make_config(Cfs).
+make_config(['--show-lat'|Cfs]) :- !,
+    set_test_config('--show-lat', _),
+    make_config(Cfs).
+make_config(['--show-cls'|Cfs]) :- !,
+    set_test_config('--show-cls', _),
+    make_config(Cfs).
+make_config(['--show-raw-output'|Cfs]) :- !,
+    set_test_config('--show-raw-output', _),
+    make_config(Cfs).
 make_config(['--start', A|Cfs]) :- !,
     atom_number(A, N),
     set_test_config('--start', N),
@@ -179,6 +191,8 @@ config(fact_info) :- !,
 config(assertions) :- !,
     set_pp_flag(old_trusts, off),
     set_pp_flag(use_check_as_trust, on).
+config(verbose) :- !,
+        set_pp_flag(verbosity, very_high).
 config(X) :-
     show_message(note, "Config not available for: ~w", [X]).
 
@@ -199,6 +213,8 @@ config_opt(fact_info).
 config_opt(under_all).
 config_opt(over_all).
 config_opt(assertions).
+config_opt(verbose).
+config_opt(debug_cls).
 
 basic_analyze(Top, Dir, Domain) :-
     path_concat(Dir, Top, ModPath),

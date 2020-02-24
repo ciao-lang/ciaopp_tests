@@ -14,8 +14,9 @@ fi
 pushd $_base > /dev/null 2>&1
 
 bench_driver=incanal_intermod_bench_driver
-ana_checker=ciaopp-dump-cmp
 res_dir=test_results
+trace=""
+trace=trace # comment to remove tracing
 
 # TODO: hardwired directory
 cached_assertions="../../../../build/data/ciaopp_lib_cache"
@@ -42,12 +43,12 @@ for i in "${tests[@]}" ; do
     echo "Running $i"
     for k in "${inc_configs[@]}" ; do
         log_file="$res_dir"/logs/"$i"_"$k"_"$domain"_assertions.log
-        ./$bench_driver "$i" add 1 $domain $k assertions --user_tag $tag &> "$log_file"
+        ./$bench_driver "$i" add 1 $domain $k assertions $trace --user_tag $tag
     done
 
     bench_res_dir=$(find $res_dir -name "$i*$domain*$tag")
     echo "Checking $i"
-    $ana_checker "$bench_res_dir"/mon-noninc/detailed_step_results "$bench_res_dir"/mon-inc/detailed_step_results $domain
+    ciaopp-dump cmp "$bench_res_dir"/mon-noninc/detailed_step_results "$bench_res_dir"/mon-inc/detailed_step_results $domain
     errors=$(($errors+$?)) # add errors
 done
 

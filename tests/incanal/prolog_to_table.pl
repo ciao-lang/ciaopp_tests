@@ -55,16 +55,20 @@ write_file(FileOut) :-
     close(OutS).
 
 data_format(latex, ' & ', ' \\\\ ~n').
-data_format(csv, ' ; ', '~n').
+data_format(csv, ',', '~n').
 data_format(gnuplot, ' \t ', '~n').
 
 data_type_format(0't, '~q').
 data_type_format(0'0, '~3f').
 data_type_format(0'1, '~3f').
 
-write_table_header(_, _) :- 
-    retract_fact(tuple(_)). % Do not use header for any format
-%       T =.. [_|ColTitle],
+write_table_header(_, _) :-
+    current_fact(tuple(T), Ref),
+    arg(1,T,X),
+    \+ num(X), !,
+    erase(Ref). % remove header
+write_table_header(_, _).
+    % T =.. [_|[X|ColTitle]], 
 %       %format(OutS, '\#', []), % necessary?
 %       data_type_format(t, F)
 %       print_tuple(ColTitle, OutS, '\t', '\n').

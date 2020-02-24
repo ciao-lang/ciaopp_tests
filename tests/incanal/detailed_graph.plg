@@ -4,10 +4,11 @@ set output 'details.pdf'
 
 graph_title = system("echo $det_graph_title")
 
-set title "Fixpoint execution time for ".graph_title
+set title "Analysis execution time for ".graph_title noenhanced
+set key noenhanced
 set xlabel "# of clauses"
 set ylabel "Runtime (ms)"
-set pointsize 0.5
+set pointsize 0.4
 #set xtics 10
 #set logscale y
 

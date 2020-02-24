@@ -1,0 +1,40 @@
+set terminal pdfcairo size 4,4
+
+# external parameters
+domain = system("echo $gnuplot_domain")
+setting1 = system("echo $gnuplot_exp_setting1")
+setting2 = system("echo $gnuplot_exp_setting2")
+edit = system("echo $gnuplot_edit_type")
+HOME = system("echo $HOME")
+
+# general setting
+set title font "Source Code Pro,10" noenhanced
+set ylabel font "Source Code Pro,10" noenhanced
+set ytics font "Source Code Pro,10"
+set xlabel font "Source Code Pro,10" noenhanced
+set xtics font "Source Code Pro,10"
+set key font "Source Code Pro,10" noenhanced
+set pointsize 0.3
+set xlabel setting1
+set ylabel setting2
+set logscale
+set key left
+set title "Total time (ms) ".setting1." vs. ".setting2." time for ".domain
+
+test_base = HOME."/git/ciao-devel/bndls/ciaopp_tests/tests/incanal/test_results/
+
+file1 = "-".edit."-not_rand-1-".domain."-dd/".setting1."/stats/stats.pl_norm.data"
+file2 = "-".edit."-not_rand-1-".domain."-dd/".setting2."/stats/stats.pl_norm.data"
+
+benchmarks = "qsort ann bid boyer cleandirs hanoi peephole progeom prolog_read rdtok warplan witt"
+
+set output 'total-scatter.pdf'
+f(x) = x
+# 11 columns in total per file
+plot for [bench in benchmarks] "< paste ".test_base.bench.file1." ".test_base.bench.file2 using ($3+$7+$8+$9+$10):($14+$18+$19+$20) title bench, \
+     f(x) with lines linestyle 1 notitle
+
+set output 'fixpoint-scatter.pdf'
+plot for [bench in benchmarks] "< paste ".test_base.bench.file1." ".test_base.bench.file2 using 9:20 title bench, \
+     f(x) with lines linestyle 1 notitle
+

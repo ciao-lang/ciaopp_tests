@@ -1,6 +1,6 @@
 :- module(z_prolog_read, [parse/2], [assertions,nativeprops]).
 
-:- use_module(y_prolog_read2, [read/4]).
+:- use_module(y_prolog_read2, [read4/4]).
 :- use_module(syntax_error, [syntax_error/1, syntax_error/2]).
 
 goal :-
@@ -16,7 +16,7 @@ parse(Tokens,Answer) :-
     Answer=Term.
 
 'parse/2/1/$disj/1'(Tokens,Term) :-
-    read(Tokens,1200,Term,LeftOver),
+    read4(Tokens,1200,Term,LeftOver),
     all_read(LeftOver).
 'parse/2/1/$disj/1'(Tokens,Term) :-
     syntax_error(Tokens).

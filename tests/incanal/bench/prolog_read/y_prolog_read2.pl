@@ -1,10 +1,10 @@
-:- module(y_prolog_read2, [read/4], [assertions,nativeprops]).
+:- module(y_prolog_read2, [read4/4], [assertions,nativeprops]).
 
 :- use_module(syntax_error, [syntax_error/1, syntax_error/2]).
 
-read([Token|RestTokens],Precedence,Term,LeftOver) :-
+read4([Token|RestTokens],Precedence,Term,LeftOver) :-
     read(Token,RestTokens,Precedence,Term,LeftOver).
-read([],_X,_Y,_Z) :-
+read4([],_X,_Y,_Z) :-
     syntax_error([expression,expected],[]).
 
 :- trust success current_op(A,B,C) => (ground(A), ground(B), ground(C)).
@@ -53,7 +53,7 @@ ambigop(F,L1,O1,R1,L2,O2) :-
 
 read(var(Variable,_M),['('|S1],Precedence,Answer,S) :-
     !,
-    read(S1,999,Arg1,S2),
+    read4(S1,999,Arg1,S2),
     read_args(S2,RestArgs,S3),
     !,
     exprtl0(S3,apply(Variable,[Arg1|RestArgs]),Precedence,Answer,S).
@@ -66,7 +66,7 @@ read(atom(-),[integer(Integer)|S1],Precedence,Answer,S) :-
     exprtl0(S1,Negative,Precedence,Answer,S).
 read(atom(Functor),['('|S1],Precedence,Answer,S) :-
     !,
-    read(S1,999,Arg1,S2),
+    read4(S1,999,Arg1,S2),
     read_args(S2,RestArgs,S3),
     Term=..[Functor,Arg1|RestArgs],
     !,
@@ -86,19 +86,19 @@ read('[',[']'|S1],Precedence,Answer,S) :-
     exprtl0(S1,[],Precedence,Answer,S).
 read('[',S1,Precedence,Answer,S) :-
     !,
-    read(S1,999,Arg1,S2),
+    read4(S1,999,Arg1,S2),
     read_list(S2,RestArgs,S3),
     !,
     exprtl0(S3,[Arg1|RestArgs],Precedence,Answer,S).
 read('(',S1,Precedence,Answer,S) :-
     !,
-    read(S1,1200,Term,S2),
+    read4(S1,1200,Term,S2),
     expect(')',S2,S3),
     !,
     exprtl0(S3,Term,Precedence,Answer,S).
 read(' (',S1,Precedence,Answer,S) :-
     !,
-    read(S1,1200,Term,S2),
+    read4(S1,1200,Term,S2),
     expect(')',S2,S3),
     !,
     exprtl0(S3,Term,Precedence,Answer,S).
@@ -107,7 +107,7 @@ read('{',['}'|S1],Precedence,Answer,S) :-
     exprtl0(S1,{},Precedence,Answer,S).
 read('{',S1,Precedence,Answer,S) :-
     !,
-    read(S1,1200,Term,S2),
+    read4(S1,1200,Term,S2),
     expect('}',S2,S3),
     !,
     exprtl0(S3,{Term},Precedence,Answer,S).
@@ -121,7 +121,7 @@ read(Token,S0,_X,_Y,_Z) :-
 
 read_args([','|S1],[Term|Rest],S) :-
     !,
-    read(S1,999,Term,S2),
+    read4(S1,999,Term,S2),
     !,
     read_args(S2,Rest,S).
 read_args([')'|S],[],S) :- !.
@@ -130,12 +130,12 @@ read_args(S,_X,_Y) :-
 
 read_list([','|S1],[Term|Rest],S) :-
     !,
-    read(S1,999,Term,S2),
+    read4(S1,999,Term,S2),
     !,
     read_list(S2,Rest,S).
 read_list(['|'|S1],Rest,S) :-
     !,
-    read(S1,999,Rest,S2),
+    read4(S1,999,Rest,S2),
     !,
     expect(']',S2,S).
 read_list([']'|S],[],S) :- !.
@@ -151,7 +151,7 @@ after_prefix_op(Op,Oprec,_Aprec,S0,Precedence,Answer,S) :-
     prefix_is_atom(S1,Oprec),
     exprtl(S1,Oprec,Op,Precedence,Answer,S).
 after_prefix_op(Op,Oprec,Aprec,S1,Precedence,Answer,S) :-
-    read(S1,Aprec,Arg,S2),
+    read4(S1,Aprec,Arg,S2),
     Term=..[Op,Arg],
     !,
     exprtl(S2,Oprec,Term,Precedence,Answer,S).
@@ -193,13 +193,13 @@ exprtl0([atom(F)|S1],Term,Precedence,Answer,S) :-
 exprtl0([','|S1],Term,Precedence,Answer,S) :-
     Precedence>=1000,
     !,
-    read(S1,1000,Next,S2),
+    read4(S1,1000,Next,S2),
     !,
     exprtl(S2,1000,(Term,Next),Precedence,Answer,S).
 exprtl0(['|'|S1],Term,Precedence,Answer,S) :-
     Precedence>=1100,
     !,
-    read(S1,1100,Next,S2),
+    read4(S1,1100,Next,S2),
     !,
     exprtl(S2,1100,(Term;Next),Precedence,Answer,S).
 exprtl0([atom(end_of_file)],'<eof>',_1,[],[]) :- !.
@@ -210,9 +210,9 @@ exprtl0([Thing|S1],_X,_Y,_Z,_W) :-
     syntax_error([Culprit,follows,expression],[Thing|S1]).
 exprtl0(S,Term,_1,Term,S).
 
-'exprtl0/5/1/$disj/1'(Term,Precedence,Answer,S,S1,F,L1,O1,R1,L2,O2) :-
+'exprtl0/5/1/$disj/1'(Term,Precedence,Answer,S,S1,F,L1,O1,R1,_L2,_O2) :-
     exprtl([infixop(F,L1,O1,R1)|S1],0,Term,Precedence,Answer,S).
-'exprtl0/5/1/$disj/1'(Term,Precedence,Answer,S,S1,F,L1,O1,R1,L2,O2) :-
+'exprtl0/5/1/$disj/1'(Term,Precedence,Answer,S,S1,F,_L1,_O1,_R1,L2,O2) :-
     exprtl([postfixop(F,L2,O2)|S1],0,Term,Precedence,Answer,S).
 
 cant_follow_expr(atom(_1),atom).
@@ -228,7 +228,7 @@ exprtl([infixop(F,L,O,R)|S1],C,Term,Precedence,Answer,S) :-
     Precedence>=O,
     C=<L,
     !,
-    read(S1,R,Other,S2),
+    read4(S1,R,Other,S2),
     Expr=..[F,Term,Other],
     exprtl(S2,O,Expr,Precedence,Answer,S).
 exprtl([postfixop(F,L,O)|S1],C,Term,Precedence,Answer,S) :-
@@ -242,13 +242,13 @@ exprtl([','|S1],C,Term,Precedence,Answer,S) :-
     Precedence>=1000,
     C<1000,
     !,
-    read(S1,1000,Next,S2),
+    read4(S1,1000,Next,S2),
     exprtl(S2,1000,(Term,Next),Precedence,Answer,S).
 exprtl(['|'|S1],C,Term,Precedence,Answer,S) :-
     Precedence>=1100,
     C<1100,
     !,
-    read(S1,1100,Next,S2),
+    read4(S1,1100,Next,S2),
     exprtl(S2,1100,(Term;Next),Precedence,Answer,S).
 exprtl(S,_1,Term,_2,Term,S).
 
