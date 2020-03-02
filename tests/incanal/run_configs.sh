@@ -58,7 +58,7 @@ function run_config {
     inc=$2
     log_file_end=$3
 
-    log_file="$res_dir"/logs/"$bench_name"_"$test_type"_$domain_"$log_file_end".log
+    log_file="$res_dir"/logs/"$bench_name"_"$test_type"_"$domain"_"$log_file_end".log
 
     echo "Testing $bench_name for $mod $inc ..."
     rm -f "$log_file"

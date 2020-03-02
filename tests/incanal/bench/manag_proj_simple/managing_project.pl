@@ -21,13 +21,34 @@
 :- use_module(engine(io_basic)).
 :- use_module(library(format)).
 :- use_module(library(lists), [member/2, append/3]).
-:- use_module(library(aggregates), [findall/3]).
 
 :- use_module(committed_hours).
 :- use_module(planned).
 :- use_module(dates_and_facts).
 :- use_module(responsible_persons_upm).
 :- use_module(payments).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- use_package(datafacts).
+:- data d/1.
+my_findall(Tmpl, G, Xs) :-
+    asserta_fact(d(first)),
+    my_collect(Tmpl, G),
+    my_sols([],Xs0), Xs=Xs0.
+my_collect(Tmpl, G) :-
+    ( my_call(G),
+      asserta_fact(d(sol(Tmpl))),
+      fail
+    ; true
+    ).
+my_sols(Xs0,Xs) :-
+    retract_fact(d(Mark)),
+    !,
+    ( Mark = first -> Xs = Xs0
+    ; Mark = sol(X) -> Xs1 = [X|Xs0], my_sols(Xs1, Xs)
+    ).
+my_call(person(A)) :- person(A).
+
 
 :- entry effort(A,B,C,D,E,F) : ground([A,B,C,D,E]).
 
@@ -177,7 +198,7 @@ add_worker([P|Persons],W,Num_Hours,T,[P|N_Tmp]):-
    (should devote) to @var{Project} in the corresponding period.").
 
 cost_statement(Project,SM,SY,EM,EY,Efforts):-
-    findall(P,person(P),Persons),
+    my_findall(P,person(P),Persons),
     get_all_personal_project_efforts(Persons,Project,SM,SY,EM,EY,Efforts).
 
 :- doc(cost_statement_personnel(+Project,+SM,+SY,+EM,+EY,-Euros),
@@ -201,7 +222,7 @@ add_all_costs([(Person,Hours)|Efforts],Euros):-
 
 
 global_cost_statement(SM,SY,EM,EY,Efforts):-
-    findall(P,person(P),Persons),
+    my_findall(P,person(P),Persons),
     get_all_efforts(Persons,SM,SY,EM,EY,Efforts).
 
 get_all_efforts([],_SM,_SY,_EM,_EY,[]).
@@ -257,7 +278,7 @@ check_plan:-
      availability.").
 
 check_all_availabilities(SM,SY,EM,EY):-
-    findall(P,person(P),Persons),
+    my_findall(P,person(P),Persons),
     check_each_availability(Persons,SM,SY,EM,EY).
 
     

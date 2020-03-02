@@ -15,7 +15,7 @@ norm_opts="norm t01010111100"
 mask_all="t11111111111"
 empty_row="- - 0 0 0 0 0 0 0 0 0 0 0"
 
-paper_bench_order=(hanoi aiakl qsort progeom bid rdtok cleandirs prolog_read warplan boyer peephole witt ann)
+paper_bench_order=(hanoi aiakl qsort progeom bid rdtok cleandirs prolog_read warplan boyer peephole witt ann manag_proj_simple check_links)
 
 function check_args {
     #if [ "$1" -ne 1 ]; then

@@ -1,7 +1,5 @@
 :- module(planned,[planned/8,intersection/6,length/3],[assertions]).
 
-:- use_module(library(aggregates), [findall/3]).
-
 :- use_module(workplan).
 :- use_module(intended_effort).
 
@@ -22,8 +20,29 @@
    evenly distributed along the life of a task, which may not always
    be the case. ").
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- use_package(datafacts).
+:- data d/1.
+my_findall(Tmpl, G, Xs) :-
+    asserta_fact(d(first)),
+    my_collect(Tmpl, G),
+    my_sols([],Xs0), Xs=Xs0.
+my_collect(Tmpl, G) :-
+    ( my_call(G),
+      asserta_fact(d(sol(Tmpl))),
+      fail
+    ; true
+    ).
+my_sols(Xs0,Xs) :-
+    retract_fact(d(Mark)),
+    !,
+    ( Mark = first -> Xs = Xs0
+    ; Mark = sol(X) -> Xs1 = [X|Xs0], my_sols(Xs1, Xs)
+    ).
+my_call(task(Project,WP,T,S,E,Name)) :- task(Project,WP,T,S,E,Name).
+
 active_tasks(Project,Start,End,Tasks):-
-    findall(t(WP,T,S,E,Name),task(Project,WP,T,S,E,Name),All_Tasks),
+    my_findall(t(WP,T,S,E,Name),task(Project,WP,T,S,E,Name),All_Tasks),
     select_active(All_Tasks,Start,End,Tasks).
 
 select_active([],_,_,[]).

@@ -14,7 +14,7 @@ absint=$2
 edit=$3
 tests_location="test_results"
 test_dir="$_base"/$tests_location/"$bench-$edit-not_rand-1-$absint-dd"
-tmp_bench_dir=/tmp/$tmp_dir/$bench
+tmp_bench_dir=/tmp/$tmp_dir/$absint-$edit-$bench
 common_stat_file="$tmp_bench_dir"/common_"$bench"_"$absint"_$edit.csv
 final_csv="$tmp_bench_dir"/"$bench"_"$absint"_$edit.csv
 

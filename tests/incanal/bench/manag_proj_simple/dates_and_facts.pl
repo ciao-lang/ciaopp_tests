@@ -20,7 +20,26 @@
     ],
     [assertions]).
 
-:- use_module(library(aggregates), [findall/3]).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- use_package(datafacts).
+:- data d/1.
+my_findall(Tmpl, G, Xs) :-
+    asserta_fact(d(first)),
+    my_collect(Tmpl, G),
+    my_sols([],Xs0), Xs=Xs0.
+my_collect(Tmpl, G) :-
+    ( my_call(G),
+      asserta_fact(d(sol(Tmpl))),
+      fail
+    ; true
+    ).
+my_sols(Xs0,Xs) :-
+    retract_fact(d(Mark)),
+    !,
+    ( Mark = first -> Xs = Xs0
+    ; Mark = sol(X) -> Xs1 = [X|Xs0], my_sols(Xs1, Xs)
+    ).
+my_call(person(A)) :- person(A).
 
 % :- trust pred person(A) => ground(A).
 % :- trust pred get_list_people(A) => ground(A).
@@ -40,7 +59,7 @@ person(german).
 person(noone).
 
 get_list_people(L):-
-    findall(P, person(P), L).
+    my_findall(P, person(P), L).
 
 max_hours_per_month(143).
 
@@ -88,7 +107,7 @@ project(amos).
 project(colognet).
 
 get_list_projects(L):-
-    findall(P, project(P), L).
+    my_findall(P, project(P), L).
 
 start_period(jan,02).
 

@@ -208,16 +208,16 @@ my_own_select_tri(=, _, _, _, A, B, C, A, B, C).
 my_own_select_tri(>, A, B, C, _, _, _, A, B, C).
 
 universe(U):-
-    findall(A, attribute(A, _), Ats),
+    my_findall(A, attribute(A, _), Ats),
     length(Ats, N),
     Z is N *(N - 1) / 2,
-    findall(Instance, instance(Instance, Ats, Z), U).
+    my_findall(Instance, instance(Instance, Ats, Z), U).
 
 instance(ml([Name], OrdCars, Z, Mats), Ats, Z):-
     example(Name, Cars),
     intra_order(Cars, IntraCars),
     list_to_my_own_ordset(IntraCars, OrdCars),
-    findall(mat(D, Ai, Aj, M), cont_table(D, Ai, Aj, M, Ats, Cars), Mats).
+    my_findall(mat(D, Ai, Aj, M), cont_table(D, Ai, Aj, M, Ats, Cars), Mats).
 
 intra_order([], []).
 intra_order([A-Vs|Cs], [A-Ovs|Os]):-

@@ -1,17 +1,37 @@
 :- module(payments,[payment/7,received/7],[assertions]).
 
-:- use_module(library(aggregates), [findall/3]).
-
 :- use_module(dates_and_facts).
 :- use_module(planned).
 % :- trust pred payment(A,B,C,D,E,F,G) => ground([A,B,C,D,E,F,G]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- use_package(datafacts).
+:- data d/1.
+my_findall(Tmpl, G, Xs) :-
+    asserta_fact(d(first)),
+    my_collect(Tmpl, G),
+    my_sols([],Xs0), Xs=Xs0.
+my_collect(Tmpl, G) :-
+    ( my_call(G),
+      asserta_fact(d(sol(Tmpl))),
+      fail
+    ; true
+    ).
+my_sols(Xs0,Xs) :-
+    retract_fact(d(Mark)),
+    !,
+    ( Mark = first -> Xs = Xs0
+    ; Mark = sol(X) -> Xs1 = [X|Xs0], my_sols(Xs1, Xs)
+    ).
+my_call(payment(Person,Project,SM1,SY1,EM1,EY1,Total)) :- payment(Person,Project,SM1,SY1,EM1,EY1,Total).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 payment(herme,asap,nov,02,jan,04,1).
 
 :- check success received(Person,Project,SM,SY,EM,EY,Amount) => ground(Amount).
 
 received(Person,Project,SM,SY,EM,EY,Amount):-
-    findall(p(SM1,SY1,EM1,EY1,Total),
+    my_findall(p(SM1,SY1,EM1,EY1,Total),
         payment(Person,Project,SM1,SY1,EM1,EY1,Total),L),
         add_wages(L,SM,SY,EM,EY,Amount).
 

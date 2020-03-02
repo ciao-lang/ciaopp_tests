@@ -18,6 +18,10 @@ test_dir(z_boyer, boyer, Dir, manual) :-
     basic_incanal_dir(boyer,Dir).
 test_dir(simple, simple, Dir, manual) :-
     basic_incanal_dir(simple,Dir).
+test_dir(managing_project, manag_proj_simple, Dir, manual) :-
+    basic_incanal_dir(manag_proj_simple,Dir).
+test_dir(main_check_links, check_links, Dir, manual) :-
+    basic_incanal_dir(check_links,Dir).
 % test_dir(mchat, chat80, Dir, manual) :-
 %       basic_incanal_dir(chat80,Dir).
 test_dir(peephole, peephole, Dir, manual) :-
