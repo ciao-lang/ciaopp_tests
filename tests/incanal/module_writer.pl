@@ -10,11 +10,11 @@
 :- use_module(library(system), [make_directory/1]).
 :- use_module(library(process), [process_call/3]).
 :- use_module(library(source_tree), [current_file_find/3]).
-:- use_module(library(lists), [append/3]).
+:- use_module(library(lists), [append/3, member/2]).
 :- use_module(library(terms)).
+:- use_module(library(glob), [glob/3]).
 
 :- use_module(ciaopp_tests(incanal/git_wrapper)).
-
 :- use_module(ciaopp_tests(incanal/naive_reader)).
 :- use_module(ciaopp_tests(incanal/incanal_intermod_bench_driver), [monolithic/0]).
 
@@ -46,8 +46,20 @@ write_dir_state_sequence(Seq,DirType,Dir) :-
 
 copy_list_directories([],_).
 copy_list_directories([S|Seq],Dir) :-
-    process_call(path(cp), ['-r', S, Dir], []),
+    copy_directory(S,Dir),
     copy_list_directories(Seq,Dir).
+
+%% same as:
+%     process_call(path(cp), ['-r', S, Dir], []),
+copy_directory(SrcDir,DstDir) :-
+    glob(SrcDir, '*', Fs),
+    ( member(F, Fs),
+      path_concat(SrcDir, F, SrcF),
+      path_concat(DstDir, F, DstF),
+        process_call(path(cp), ['-r',SrcF, DstF], []),
+        fail
+    ; true
+    ).
 
 write_dir_state_sequence_([], _, _, _).
 write_dir_state_sequence_([St|Seq], DirType, Dir, N) :-
