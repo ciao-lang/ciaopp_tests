@@ -157,6 +157,9 @@ test_config(X, Conf) :-
     test_config_(X, Conf), !.
 test_config(_, 'no').
 
+config(monolithic_driver) :- !, % warning!!! this only works if the program is
+                                % self-contained
+    set_pp_flag(intermod, off).
 config(incremental) :- !,
     set_pp_flag(incremental, on).
 config(modular) :- !,

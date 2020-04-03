@@ -42,6 +42,10 @@ test_dir(main_leancop, leancop, Dir, manual) :-
     basic_incanal_dir(leancop,Dir).
 test_dir(bu_doctree,bibutils, Dir, manual) :-
     basic_incanal_dir(bibutils,Dir).
+% monolithic driver tests
+test_dir(hanoi, hanoi_mon, Dir, manual) :-
+    mon_incanal_dir(hanoi_mon, Dir).
+
 % for incverif paper
 % TODO: hardwired path!
 % test_dir('cmds/lpdoccl.pl',lpdoc_backends,'~/clip/Papers/incverif/incanal_assrts_paper/src/lpdoc_backends',states).
@@ -60,6 +64,10 @@ test_dir(trust,X, Dir,git) :-
 
 basic_incanal_dir(Id,Dir) :-
     path_concat('tests/incanal/bench',Id,D1),
+    bundle_path(ciaopp_tests, D1, Dir).
+
+mon_incanal_dir(Id,Dir) :-
+    path_concat('tests/incanal/bench/mon',Id,D1),
     bundle_path(ciaopp_tests, D1, Dir).
 
 basic_inc_trust_test(trust_calls).

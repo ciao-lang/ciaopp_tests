@@ -31,10 +31,6 @@ for k in "${configs[@]}" ; do
     done
 done
 
-domains=($1)
-
-errors=0
-
 # for i in "${tests[@]}" ; do
 #     for j in "${domains[@]}" ; do
 #         ./check_config.sh $i $j
@@ -44,12 +40,3 @@ errors=0
 
 popd > /dev/null 2>&1
 
-echo "$errors BENCHMARKS WITH ERROR(S) FOUND."
-
-if [ "$errors" -ne 0 ]; then
-    errors=1
-else
-    errors=0
-fi
-
-exit $errors
