@@ -147,8 +147,8 @@ Runs a test of analysis. The configuration has is expressed as follows:
 the test_dirs.pl file as the name of the directory in the bench
 directory that contains the test to be performed.
 @item @var{TestTopLevel}: Main module of the (modular) program.
-%@item @var{NEdits}: Number of editions each step of the test (number
-%of clauses to be added or deleted).
+@comment{@item @var{NEdits}: Number of editions each step of the test (number
+of clauses to be added or deleted).}
 @item @var{EditType}: States whether the test is about adding or removing clauses
 @item @var{TestDir}: Directory of the test.
 @item @var{AbsInt}: Abstract domain that will be used for testing

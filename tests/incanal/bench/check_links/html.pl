@@ -487,9 +487,7 @@ prolog_term_args(N, M, T) -->
    @end{itemize}
 
    As an example, suposse the following HTML template:
-@begin{verbatim}
-@includeverbatim{examples/template.html}
-@end{verbatim}
+@includecode{examples/template.html}
    The following query in the Ciao toplevel shows how the template is
    parsed, and the dictionary returned:
 @begin{verbatim}
