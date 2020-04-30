@@ -7,7 +7,7 @@
 :- use_module(library(streams), [flush_output/1,close/1]).
 % for http_transaction
 :- use_module(library(sockets)).
-:- use_module(library(stream_utils), [write_string/2, read_to_end/2]).
+:- use_module(library(stream_utils), [write_string/2, read_string_to_end/2]).
 :- use_module(library(messages), [warning_message/1]).
 
 :- use_module(lib_pillow_aux).
@@ -80,7 +80,7 @@ http_transaction(Host, Port, Request, Timeout, Response) :-
     Timeout_ms is Timeout*1000,
     select_socket(_,_,Timeout_ms,[Stream],R),
     R \== [],  % Fail if timeout
-    read_to_end(Stream,Response),
+    read_string_to_end(Stream,Response),
     close(Stream).
 
 http_req([]) -->  http_crlf.
