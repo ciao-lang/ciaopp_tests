@@ -54,7 +54,7 @@ will perform a test of adding 5 random clauses in the files of
 benchmark qsort with an incremental modular analysis.
 
 The benchmarks that can be currently performed are present in @tt{test_dirs.pl}.
-.").
+").
 
 :- export(monolithic/0).
 :- doc(monolithic/0, "Flag to store whether the analysis is monolithic or not.").
