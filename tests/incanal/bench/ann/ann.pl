@@ -20,7 +20,7 @@
 :- use_module(engine(io_basic)).
 
 goal(Result) :-
-    ( data Clauses ),
+    ( data(Clauses) ),
     analyze_all(Clauses,Result).
 
 analyze_all([X|Y],[X1|Y1]) :-
@@ -178,7 +178,7 @@ time(A) :-
     statistics(runtime,[_N,A]).
 
 prepare(N,ManyClauses) :-
-    ( data Clauses ),
+    ( data(Clauses) ),
     mlist(N,Clauses,ManyClauses),
     time(_N).
 
@@ -200,7 +200,7 @@ mlist(X,SList,LList) :-
     term_basic:copy_term(SList,NewSlist),
     append(NewSlist,MList,LList).
 
-data[clause(f(X,Z),(p(X,Y),q(Y,Z))),clause(f(X1,Y1,Z1),(p(X1,Y1),q(Y1,Z1))),clause(f(X2,Y2,Z2),(Y2 is X2+Z2,p(X2,Y2),r(Y2),q(Y2,Z2))),clause(f(X3,Y3,Z3),(var(X3),f(X3),q(Y3),r(X3,Y3,Z3),q(X3))),clause(f(X4,Y4,Z4),(r(X4,Y4),p(X4,Y4),p(W4),s(X4),q(Y4,W4,Z4)))].
+data([clause(f(X,Z),(p(X,Y),q(Y,Z))),clause(f(X1,Y1,Z1),(p(X1,Y1),q(Y1,Z1))),clause(f(X2,Y2,Z2),(Y2 is X2+Z2,p(X2,Y2),r(Y2),q(Y2,Z2))),clause(f(X3,Y3,Z3),(var(X3),f(X3),q(Y3),r(X3,Y3,Z3),q(X3))),clause(f(X4,Y4,Z4),(r(X4,Y4),p(X4,Y4),p(W4),s(X4),q(Y4,W4,Z4)))]).
 
 
 
