@@ -143,6 +143,9 @@ make_config(['--rand', A|Cfs]) :- !,
     atom_number(A, Seed),
     set_test_config('--rand', Seed),
     make_config(Cfs).
+make_config(['--debug'|Cfs]) :- !,
+    set_test_config('--debug', 0),
+    make_config(Cfs).
 make_config([X, A|Cfs]) :-
     get_test_config(X, _), !,
     set_test_config(X, A),

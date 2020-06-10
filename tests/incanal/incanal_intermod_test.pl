@@ -164,7 +164,10 @@ test(bench(TestId, TestTopLevel, SrcDir,DirType), Opts) :-
     set_fact(test_dir(TestId)),
     init_results_directories(ResDir), % move before generating sim seq
     write_sequence_file(ResDir,Seq),
-    write_dir_state_sequence(Seq, DirType,ResDir),
+    ( get_test_config('--debug', _) ->
+        write_dir_state_sequence(Seq, DirType,ResDir)
+    ;   true
+    ),
     clean_ana_dir(AnaDir),
     path_concat(AnaDir,TestTopLevel,TLPath),
     perform_seq_analysis(Seq,DirType,TLPath,AnaDir).
