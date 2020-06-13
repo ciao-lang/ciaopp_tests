@@ -13,20 +13,14 @@ if [ "$#" -ne 1 ]; then
     exit
 fi
 
+./gen_lib_cache.sh
+
 pushd $_base > /dev/null 2>&1
 
 bench_driver=incanal_intermod_bench_driver
 res_dir=test_results
 trace=""
 trace=trace # comment to remove tracing
-
-# TODO: hardwired directory
-cached_assertions="../../../../build/data/ciaopp_lib_cache"
-mkdir -p "../../../../build/data"
-mkdir -p "../../../../build/data/ciaopp_lib_cache"
-echo "Generating cached assertions for libraries $cached_assertions ..."
-gen_lib_cache $cached_assertions
-
 
 domain=$1
 tag=incanal-assrts

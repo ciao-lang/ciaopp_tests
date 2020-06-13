@@ -5,12 +5,7 @@ _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
 
 set -x
 
-# TODO: hardwired directory
-cached_assertions="../../../../build/data/ciaopp_lib_cache"
-mkdir -p "../../../../build/data"
-mkdir -p "../../../../build/data/ciaopp_lib_cache"
-echo "Generating cached assertions for libraries $cached_assertions ..."
-gen_lib_cache $cached_assertions
+./gen_lib_cache.sh
 
 pushd $_base > /dev/null 2>&1
 

@@ -11,10 +11,7 @@ if [ "$#" -ne 1 ] && [ "$#" -ne 2 ]; then
     exit
 fi
 
-# TODO: hardwired directory
-cached_assertions="../../../../build/data/ciaopp_lib_cache"
-echo "Generating cached assertions for libraries $cached_assertions ..."
-gen_lib_cache $cached_assertions
+./gen_lib_cache.sh
 
 pushd $_base > /dev/null 2>&1
 
