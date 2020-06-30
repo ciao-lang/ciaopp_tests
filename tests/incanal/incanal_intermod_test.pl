@@ -27,7 +27,7 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(ciaopp(preprocess_flags), [current_pp_flag/2]).
 :- use_module(ciaopp(analyze_driver), [analyze/2]).
 :- use_module(ciaopp(frontend_driver), [module/1]).
-:- use_module(ciaopp(plai/intermod), [modular_analyze/3]).
+:- use_module(ciaopp(plai/intermod), [intermod_analyze/3]).
 :- use_module(ciaopp(p_unit/p_dump), [dump_dir/1, dump/2]).
 :- use_module(ciaopp(p_unit/p_abs), [registry/3, registry_headers/2, write_registry_file/3]).
 :- use_module(ciaopp(raw_printer)).
@@ -326,7 +326,7 @@ perform_seq_analysis1(St, DirType, TopLevel, Dir) :-
     ( ( current_pp_flag(intermod, off) ->
         module(TopLevel),
         analyze(AbsInt, _Stats)
-    ;  modular_analyze(AbsInt, TopLevel, _Stats)
+    ;  intermod_analyze(AbsInt, TopLevel, _Stats)
     )
       ->
         ( get_test_config('--show-gat',_) -> show_global_answer_table(AbsInt) ; true ),
