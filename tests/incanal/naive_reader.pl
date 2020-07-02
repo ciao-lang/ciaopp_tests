@@ -15,9 +15,9 @@
 
 :- export(module_clause/6).
 :- doc(module_clause/6, "A clause writen in a module, it is of the form
- module_clause(ClType, Pred, A, Mod, ClN, Head, Body).").
+@tt{module_clause(Mod, ClType, Pred, A, ClN, Head, Body)}.").
 :- data module_clause/6.
-% module_clause(ClType, Pred, A, Mod, ClN, Clause).
+% module_clause(Mod, ClType, Pred, A, ClN, Clause).
 
 :- data naive_loaded/2.
 
@@ -32,7 +32,7 @@ clean_reader :-
 for module @var{Mod} will be cleaned.".
 read_module(Mod, ModPath) :-
     runtime_ops,
-    retractall_fact(module_clause(_, _, _, Mod, _, _)),
+    retractall_fact(module_clause(Mod, _, _, _, _, _)),
     open(ModPath, read, S),
     assertz_fact(naive_loaded(Mod, ModPath)),
     repeat,
@@ -44,26 +44,26 @@ read_module(Mod, ModPath) :-
 
 process(Mod, Clause) :-
     (Clause = (:- module(_, _, _)) ; Clause = (:- module(_, _))), !,
-    assertz_fact(module_clause(module, _, _, Mod, _, Clause)).
+    assertz_fact(module_clause(Mod, module, _, _, _, Clause)).
 process(Mod, Clause) :-
     (Clause = (:- use_module(_, _)) ;
      Clause = (:- use_module(_))
     ), !,
-    assertz_fact(module_clause(directive, _, _, Mod, _, Clause)).
+    assertz_fact(module_clause(Mod, directive, _, _, _, Clause)).
 process(Mod, Clause) :-
     Clause = ':-'(data(_)), !,
-    assertz_fact(module_clause(directive, _, _, Mod, _, Clause)).
+    assertz_fact(module_clause(Mod, directive, _, _, _, Clause)).
 process(Mod, Clause) :- % entries
     Clause = ':-'(Decl),
     Decl = entry(Head:_Call), !,
     functor(Head, P, A),
-    assertz_fact(module_clause(assertion, P, A, Mod, _, Clause)).
+    assertz_fact(module_clause(Mod, assertion, P, A, _, Clause)).
 process(Mod, Clause) :- % directives
     Clause = ':-'(_), !,
-    assertz_fact(module_clause(directive, _, _, Mod, _, Clause)).
+    assertz_fact(module_clause(Mod, directive, _, _, _, Clause)).
 process(Mod, Clause) :- % clauses
     is_clause(Clause, P, A), !,
-    assertz_fact(module_clause(clause, P, A, Mod, _, Clause)).
+    assertz_fact(module_clause(Mod, clause, P, A, _, Clause)).
 
 % Detect if a term corresponds do a clause and obtain the predicate
 % name and arity (simulating some of the syntactic extensions)
@@ -87,14 +87,14 @@ present in each of the modules loaded in the database. The format of
 @var{Sum} is compatible with the input of
 edition_sequence_generator.".
 get_code_summary(Sum, NCls) :-
-    findall(Cl, module_clause(clause, _, _, _, _, Cl), Cls),
+    findall(Cl, module_clause(_, clause, _, _, _, Cl), Cls),
     length(Cls, NCls),
     findall(Mod, naive_loaded(Mod, _), Mods),
     get_mods_summary(Mods, Sum).
 
 get_mods_summary([], []).
 get_mods_summary([Mod|Mods], [Mod-N|Sum]) :-
-    findall(Cl, module_clause(clause, _, _, Mod, _, Cl), Cls),
+    findall(Cl, module_clause(Mod, clause, _, _, _, Cl), Cls),
     length(Cls, N),
     get_mods_summary(Mods, Sum).
 

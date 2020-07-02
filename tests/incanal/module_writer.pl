@@ -139,15 +139,15 @@ mod_replace_state(Mod, ClList) :-
     assertz_fact(mod_prev_state(Mod, ClList)).
 
 write_mod_header(Mod, ModS) :-
-    module_clause(module, _, _, Mod, _, Cl),
+    module_clause(Mod, module, _, _, _, Cl),
     write_cl(module, Cl, ModS),
     fail.
 write_mod_header(Mod, ModS) :-
-    module_clause(directive, _, _, Mod, _, Cl),
+    module_clause(Mod, directive, _, _, _, Cl),
     write_cl(directive, Cl, ModS),
     fail.
 write_mod_header(Mod, ModS) :-   % Write here entries also
-    module_clause(assertion, _, _, Mod, _, Cl),
+    module_clause(Mod,assertion, _, _, _, Cl),
     write_cl(assertion, Cl, ModS),
     fail.
 write_mod_header(_, _).
@@ -160,7 +160,7 @@ add_written(P, A) :-
     ; assertz_fact(written_pred(P, A))).
 
 write_failures(Mod, S) :-
-    module_clause(clause, P, A, Mod, _, _),
+    module_clause(Mod, clause, P, A, _, _),
     \+ written_pred(P, A),
     write_failure((P, A), S),
     add_written(P, A),
@@ -172,7 +172,7 @@ write_failure((P, A), S) :-
     portray_clause(S, ':-'(F, fail)).
 
 write_state_cls(ClList, Mod, ModS) :-
-    findall(Cl, module_clause(clause, _, _, Mod, _, Cl), Cls),
+    findall(Cl, module_clause(Mod,clause, _, _, _, Cl), Cls),
     write_state_cls_(Cls, ClList, Mod, ModS).
 
 write_state_cls_([], [], _, _).
@@ -206,7 +206,7 @@ remove_itf_file(DstDir, Mod) :-
 % ------------------------------------------------------------
 % write the whole program
 write_program(S, Mod) :-
-    module_clause(A, _, _, Mod, _, Cl),
+    module_clause(Mod,A, _, _, _, Cl),
     write_cl(A, Cl, S),
     fail.
 write_program(_, _).
