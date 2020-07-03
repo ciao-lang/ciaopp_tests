@@ -36,7 +36,6 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(ciaopp_tests(incanal/naive_reader)).
 :- use_module(ciaopp_tests(incanal/edition_sequence_generator)).
 :- use_module(ciaopp_tests(incanal/module_writer)).
-
 :- use_module(ciaopp_tests(incanal/git_wrapper)).
 
 :- export(all_tests_results_dir/1).
@@ -70,12 +69,12 @@ code_test_all_config_dir(Dir, Id, CDir) :-
     ),
     ( current_pp_flag(incremental, on) -> Inc = inc ; Inc = noninc),
     get_test_config('n_edits', NE),
-    number_atom(NE, NEAtm),
+    atom_number(NEAtm, NE),
     get_test_config('domain', AI),
     get_test_config('--user_tag', UId0),
     ( UId0 = '' -> UIdL = [] ; UIdL = ['-', UId0]),
     ( get_test_config('--rand', Seed) ->
-      number_atom(Seed, SeedAtm),
+        atom_number(SeedAtm, Seed),
         Rand = [rand, '-', SeedAtm|X]
     ;   Rand = [not_rand|X]
     ),
@@ -89,10 +88,6 @@ code_test_all_config_dir(Dir, Id, CDir) :-
     atom_concat(SubDir, SD),
     path_concat(D1, SD, CDir),
     decide_make_dir(CDir).
-
-number_atom(N, A) :-
-    number_codes(N, C),
-    atom_codes(A, C).
 
 :- export(set_test_config/2).
 set_test_config(K,_) :-
@@ -173,8 +168,7 @@ test(bench(TestId, TestTopLevel, SrcDir,DirType), Opts) :-
     perform_seq_analysis(Seq,DirType,TLPath,AnaDir).
 
 get_analysis_dir(TestId,AnaDir) :- % TODO: hardwired
-    atom_codes(TestId,TestIdL),
-    append("lpdoc", _, TestIdL), !,
+    atom_concat('lpdoc',_,TestId), !,
     bundle_path(lpdoc_asr_inc, '.', AnaDir).
 get_analysis_dir(TestId,AnaDir) :-
     get_results_dir(TestId,AnaDir).
