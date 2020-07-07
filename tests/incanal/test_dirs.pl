@@ -45,6 +45,12 @@ test_dir(bu_doctree,bibutils, Dir, manual) :-
 % monolithic driver tests
 test_dir(hanoi, hanoi_mon, Dir, manual) :-
     mon_incanal_dir(hanoi_mon, Dir).
+test_dir(ren, renaming_test, Dir, manual) :-
+    basic_incanal_dir(renaming_test, Dir).
+test_dir(parents_test, parents1, Dir, manual) :-
+    basic_incanal_dir(parents1, Dir).
+test_dir(parents_test, parents2, Dir, manual) :-
+    basic_incanal_dir(parents2, Dir).
 
 % for incverif paper
 % TODO: hardwired path!

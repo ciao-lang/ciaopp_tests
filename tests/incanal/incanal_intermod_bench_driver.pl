@@ -9,7 +9,7 @@
 :- use_module(library(streams), [fixed_absolute_file_name/3]).
 :- use_module(library(errhandle), [error_protect/2]).
 
-:- use_module(ciaopp(preprocess_flags), [set_pp_flag/2]).
+:- use_module(ciaopp(preprocess_flags)).
 :- use_module(ciaopp_tests(incanal/incanal_intermod_test),
     [test/2, set_test_config/2, get_test_config/2]).
 :- use_module(ciaopp(plai/incanal/incanal_persistent_db), [set_inc_persistent/1]).
@@ -47,7 +47,7 @@ The seed is used to be able to repeat the same 'random' sequence in several test
 For example:
 
 @begin{verbatim}
-./exec qsort 5 add gr incremental modular under_all --rand 1
+./exec qsort 5 add gr incremental modular --rand 1
 @end{verbatim}
 
 will perform a test of adding 5 random clauses in the files of
@@ -98,7 +98,9 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(clique_widen, amgu),
     set_pp_flag(clique_widen_type, panic_1),
     set_pp_flag(clique_widen_ub, 10),
-    set_pp_flag(clique_widen_lb, 10).
+    set_pp_flag(clique_widen_lb, 10),
+    current_pp_flag(pplog, Logs),
+    set_pp_flag(pplog, [incremental_high|Logs]).
 %        set_pp_flag(timestamp_trace, on).
 %  set_pp_flag(fact_info, on). % Necessary for incanal trust success
 
@@ -172,6 +174,8 @@ config(bottom_up) :- !,
     set_pp_flag(del_strategy, bottom_up).
 config(top_down) :- !,
     set_pp_flag(del_strategy, top_down).
+config(bottom_up_cls) :- !,
+    set_pp_flag(del_strategy, bottom_up_cls).
 config(monolithic) :- !,
     set_pp_flag(module_loading, all),
     set_fact(monolithic).

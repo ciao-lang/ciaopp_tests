@@ -3,7 +3,7 @@
 _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
         cd "$d";done;cd "$(dirname "$e")";pwd -P)
 
-set -x
+# set -x
 
 ./gen_lib_cache.sh
 

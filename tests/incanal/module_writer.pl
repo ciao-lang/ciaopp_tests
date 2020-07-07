@@ -1,5 +1,5 @@
 :- module(module_writer, [write_dir_state/4, write_dir_state_sequence/3],
-    [assertions, datafacts,hiord]).
+          [assertions, datafacts,hiord]).
 
 :- use_module(engine(stream_basic)).
 :- use_module(engine(internals), [itf_filename/2]).

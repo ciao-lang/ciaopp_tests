@@ -39,7 +39,7 @@ ana_checker=analysis_results_checker
 
 mod_config=(monolithic modular)
 inc_config=("" "incremental")
-del_config=("top_down" "bottom_up")
+del_config=("top_down" "bottom_up" "bottom_up_cls")
 
 echo "Performing tests..."
 
