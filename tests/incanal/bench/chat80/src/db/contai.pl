@@ -1,19 +1,11 @@
-:- module(contai, [contains/2], [assertions]).
+:- module(contai, [contains/2], [assertions,isomodes]).
 % Inversion of the 'in' relation.
 
-%% :- mode contains0(+,?).
-
-:- trust calls contains0(X,_) : gnd(X).
-
-%:- true pred contains(A,B) % TODO: replace by trust??
-%        => ( term_typing:ground([A,B]) ).
-
+:- pred contains0(+,?).
 contains(X,Y) :- contains0(X,Y).
 contains(X,Y) :- contains0(X,W), contains(W,Y).
 
-%:- true pred contains0(A,B) % TODO: replace by trust??
-%        => ( term_typing:ground([A,B]) ).
-
+:- pred contains0(+,?).
 contains0(africa,central_africa).
 contains0(africa,east_africa).
 contains0(africa,north_africa).

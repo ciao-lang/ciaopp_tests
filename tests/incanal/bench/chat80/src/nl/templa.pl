@@ -17,7 +17,7 @@
     ],
     [assertions]).
 
-:- use_module(world0, 
+:- use_module('../db/world0', 
     [ circle_of_latitude/1,
       city/1,
       continent/1,
@@ -32,7 +32,7 @@
 
 /* Nouns */
 
-:- trust success property(A,B,C,D,E,F,G,_,_) => (gnd(A), gnd(B), gnd(G)).
+:- success property(A,B,C,D,E,F,G,_,_) => (gnd(A), gnd(B), gnd(G)).
 property(area,'&'(measure,area),X,'&'(feature,'&'(place,_)),Y,area(Y,X),[],_,_).
 property(capital,'&'(feature,city),X,'&'(feature,'&'(place,country)),Y,capital(Y,X),[],_,_).
 property(latitude,'&'(measure,position),X,'&'(feature,_),Y,latitude(Y,X),[],_,_).
@@ -57,20 +57,20 @@ thing(river,'&'(feature,river),X,river(X),[],_).
 thing(sea,'&'(feature,'&'(place,seamass)),X,sea(X),[],_).
 thing(seamass,'&'(feature,'&'(place,seamass)),X,seamass(X),[],_).
 
-:- trust success aggr_noun(A,B,C,D) => (gnd(A), gnd(D)).
+:- success aggr_noun(A,B,C,D) => (gnd(A), gnd(D)).
 aggr_noun(average,_,_,average).
 aggr_noun(sum,_,_,total).
 aggr_noun(total,_,_,total).
 
-:- trust success meta_noun(A,B,C,D,E,F,G) => gnd(A).
-:- trust success meta_noun(A,B,C,D,E,F,G)
+:- success meta_noun(A,B,C,D,E,F,G) => gnd(A).
+:- success meta_noun(A,B,C,D,E,F,G)
     : (gnd(C),gnd(E),gnd(F))
     => (gnd(A), gnd(G)).
 meta_noun(number,_,V,'&'(feature,_),X,P,numberof(X,P,V)).
 
 /* Proper nouns */
 
-:- trust success name_template(A,B) : gnd(A) => gnd(A).
+:- success name_template(A,B) : gnd(A) => gnd(A).
 name_template(X,'&'(feature,circle)) :-
     circle_of_latitude(X).
 name_template(X,'&'(feature,city)) :-
@@ -88,12 +88,12 @@ name_template(X,'&'(feature,'&'(place,seamass))) :-
 
 /* Verbs */
 
-:- trust success trans(A,_,_,_,_,_B,_,_,_) => (gnd(A), gnd(B)).
+:- success trans(A,_,_,_,_,_B,_,_,_) => (gnd(A), gnd(B)).
 trans(border,'&'(feature,'&'(place,_)),X,'&'(feature,'&'(place,_)),Y,borders(X,Y),[],_,_).
 trans(contain,'&'(feature,'&'(place,_)),X,'&'(feature,_),Y,in(Y,X),[],_,_).
 trans(exceed,'&'(measure,Type),X,'&'(measure,Type),Y,exceeds(X,Y),[],_,_).
 
-:- trust success intrans(A,B,C,D,E,F) => (gnd(A), gnd(B)).
+:- success intrans(A,B,C,D,E,F) => (gnd(A), gnd(B)).
 intrans(drain,'&'(feature,river),X,drains(X,Y),[slot(prep(into),'&'(feature,'&'(place,_)),Y,_,free)],_).
 intrans(flow,'&'(feature,river),X,flows(X,Y),[slot(prep(through),'&'(feature,'&'(place,_)),Y,_,free)],_).
 intrans(flow,'&'(feature,river),X,flows(X,Y,Z),[slot(prep(into),'&'(feature,'&'(place,_)),Z,_,free),
@@ -103,21 +103,21 @@ intrans(rise,'&'(feature,river),X,rises(X,Y),
 
 /* Adjectives */
 
-:- trust success restriction(A,B,C,D) => gnd(A).
-:- trust success restriction(A,B,C,D) : gnd(C) => (gnd(A), gnd(C), gnd(D)).
+:- success restriction(A,B,C,D) => gnd(A).
+:- success restriction(A,B,C,D) : gnd(C) => (gnd(A), gnd(C), gnd(D)).
 restriction(african,'&'(feature,_),X,african(X)).
 restriction(american,'&'(feature,_),X,american(X)).
 restriction(asian,'&'(feature,_),X,asian(X)).
 restriction(european,'&'(feature,_),X,european(X)).
 
-:- trust success attribute(A,B,C,D,E,F) => gnd(A).
-:- trust success attribute(A,B,C,D,E,F) : gnd(B) => (gnd(A), gnd(B), gnd(D)).
+:- success attribute(A,B,C,D,E,F) => gnd(A).
+:- success attribute(A,B,C,D,E,F) : gnd(B) => (gnd(A), gnd(B), gnd(D)).
 attribute(large,'&'(feature,'&'(place,_)),X,'&'(measure,area),Y,area(X,Y)).
 attribute(small,'&'(feature,'&'(place,_)),X,'&'(measure,area),Y,area(X,Y)).
 attribute(great,'&'(measure,Type),X,'&'(measure,Type),Y,X=Y).
 attribute(populous,'&'(feature,_),X,'&'(measure,heads),Y,population(X,Y)).
 
-:- trust success aggr_adj(A,B,C,D) => (gnd(A), gnd(B)).
+:- success aggr_adj(A,B,C,D) => (gnd(A), gnd(B)).
 aggr_adj(average,_,_,average).
 aggr_adj(total,_,_,total).
 aggr_adj(minimum,_,_,minimum).
@@ -133,19 +133,19 @@ adjunction(northof,'&'(feature,_)-X,'&'(feature,_)-Y,northof(X,Y)).
 adjunction(southof,'&'(feature,_)-X,'&'(feature,_)-Y,southof(X,Y)).
 
 /* Measure */
-:- trust success measure(A,B,C,D) => (gnd(A), gnd(B), gnd(C), gnd(D)).
+:- success measure(A,B,C,D) => (gnd(A), gnd(B), gnd(C), gnd(D)).
 measure(ksqmile,'&'(measure,area),[],ksqmiles).
 measure(sqmile,'&'(measure,area),[],sqmiles).
 measure(degree,'&'(measure,position),[],degrees).
 measure(thousand,'&'(measure,heads),[],thousand).
 measure(million,'&'(measure,heads),[],million).
 
-:- trust success units(A,B) => gnd(A).
+:- success units(A,B) => gnd(A).
 units(large,'&'(measure,_)).
 units(small,'&'(measure,_)).
 
 %sign(big,+).        % added by PBC: without it (1) loops forever
-:- trust success sign(A,B) => (gnd(A), gnd(B)).
+:- success sign(A,B) => (gnd(A), gnd(B)).
 sign(large,+).
 sign(small,-).
 sign(great,+).
@@ -154,7 +154,7 @@ sign(populous,+).
 % (1) which is the biggest country.
 
 /* Proportions and the like */
-:- trust success comparator(A,B,C,D,E) => (gnd(A), gnd(D)).
-:- trust success comparator(A,B,C,D,E) : gnd(C) => (gnd(A), gnd(D), gnd(C), gnd(E)).
+:- success comparator(A,B,C,D,E) => (gnd(A), gnd(D)).
+:- success comparator(A,B,C,D,E) : gnd(C) => (gnd(A), gnd(D), gnd(C), gnd(E)).
 comparator(proportion,_,V,[],proportion(V)).
 comparator(percentage,_,V,[],proportion(V)).

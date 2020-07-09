@@ -1,8 +1,7 @@
 :- module(rivers, [river/2], [assertions]).
 % Facts about rivers.
 
-%:- true pred river(A,B)
-%        => ( term_typing:ground([A,B]) ).
+:- pred river(A,B) => ( ground([A,B]) ).
 
 river(amazon,[atlantic,brazil,peru]).
 river(amu_darya,[aral_sea,soviet_union,afghanistan]).

@@ -3,24 +3,9 @@
 
 :- set_prolog_flag(discontiguous_warnings,off).
 
-/*
-:-mode
-   nd(+,-,-),
-   nd(+,-,-,-),
-   nd(+,-,-,-,-).
-*/
-% :- true pred nd(A,B,C)
-%         => ( ground([A,B,C]) ).
-% 
-% :- true pred nd(A,B,C,D)
-%         => ( ground([A,B,C,D]) ).
-% 
-% :- true pred nd(A,B,C,D,E)
-%         => ( ground([A,B,C,D,E]) ).
-
-:- trust calls nd(X,Y,V) : (gnd(X), var(Y), var(V)).
-:- trust calls nd(X,Y,V,W) : (gnd(X), var(Y), var(V), var(W)).
-:- trust calls nd(X,Y,V,W,Z) : (gnd(X), var(Y), var(V), var(W), var(Z)).
+:- pred nd(X,Y,V) : (gnd(X), var(Y), var(V)).
+:- pred nd(X,Y,V,W) : (gnd(X), var(Y), var(V), var(W)).
+:- pred nd(X,Y,V,W,Z) : (gnd(X), var(Y), var(V), var(W), var(Z)).
 
 nd(african,19,26).
 nd(american,19,26).

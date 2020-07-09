@@ -1,29 +1,18 @@
-:- module(ptree, [print_tree/1] , [assertions]).
+:- module(ptree,[print_tree/1],[assertions,isomodes]).
 /* Print term as a tree */
 
-:- use_module(engine(io_basic)).
+:- use_module(library(streams)).
 :- use_module(library(write)).
 
 %:- include(chatops).
 
-/*
- :- mode print_tree(+).
- :- mode pt(+,+).
- :- mode pl(+,+).
- :- mode as_is(+).
-*/
-
-
-:- trust calls print_tree(X) : gnd(X).
-:- trust calls pt(X,Y) : (gnd(X), gnd(Y)).
-:- trust calls pl(X,Y) : (gnd(X), gnd(Y)).
-:- trust calls as_is(X) : gnd(X).
-
+:- pred print_tree(+).
 print_tree(T) :-
    numbervars(T,1,_),
    pt(T,0), nl, fail.
 print_tree(_).
 
+:- pred pt(+,+).
 pt(A,I) :-
    as_is(A), !,
    tab(I), write(A), nl.
@@ -36,11 +25,13 @@ pt(T,I) :- !,
    I0 is I+3,
    pl(As,I0).
 
+:- pred pl(+,+).
 pl([],_) :- !.
 pl([A|As],I) :- !,
    pt(A,I),
    pl(As,I).
 
+:- pred as_is(+).
 as_is(A) :- atomic(A), !.
 as_is('$VAR'(_)) :- !.
 as_is(X) :-

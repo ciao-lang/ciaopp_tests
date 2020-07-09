@@ -19,6 +19,7 @@
 :- data module_clause/6.
 % module_clause(Mod, ClType, Pred, A, ClN, Clause).
 
+:- export(naive_loaded/2).
 :- data naive_loaded/2.
 
 % do this before loading new directories

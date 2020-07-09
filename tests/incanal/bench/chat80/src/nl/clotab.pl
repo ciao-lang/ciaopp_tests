@@ -30,25 +30,25 @@ is_trace(#(_,_,1,_)).
 
 is_adv(#(_,_,_,1)).
 
-:- trust success trace(_,A) => (gnd(A)).
+:- success trace(_,A) => (gnd(A)).
 trace(#(_,_,1,_),#(0,0,0,0)).
 
-:- trust success trace(A) => (gnd(A)).
+:- success trace(A) => (gnd(A)).
 trace(#(0,0,1,0)).
 
-:- trust success adv(A) => (gnd(A)).
+:- success adv(A) => (gnd(A)).
 adv(#(0,0,0,1)).
 
-:- trust success empty(A) => (gnd(A)).
+:- success empty(A) => (gnd(A)).
 empty(#(0,0,0,0)).
 
-:- trust success np_all(A) => (gnd(A)).
+:- success np_all(A) => (gnd(A)).
 np_all(#(1,1,1,0)).
 
-:- trust success s_all(A) => (gnd(A)).
+:- success s_all(A) => (gnd(A)).
 s_all(#(1,0,1,1)).
 
-:- trust success np_no_trace(A) => (gnd(A)).
+:- success np_no_trace(A) => (gnd(A)).
 np_no_trace(#(1,1,0,0)).
 
 % Mask operations
@@ -75,7 +75,7 @@ anot(_X,1,0).
 
 % Noun phrase position features
 
-:- trust success role(A,_,_) => (gnd(A)).
+:- success role(A,_,_) => (gnd(A)).
 role(subj,_,#(1,0,0)).
 role(compl,_,#(0,_,_)).
 role(undef,main,#(_,0,_)).
@@ -83,13 +83,13 @@ role(undef,aux,#(0,_,_)).
 role(undef,decl,_).
 role(nil,_,_).
 
-:- trust success subj_case(A) => (gnd(A)).
+:- success subj_case(A) => (gnd(A)).
 subj_case(#(1,0,0)).
 
-:- trust success verb_case(A) => (gnd(A)).
+:- success verb_case(A) => (gnd(A)).
 verb_case(#(0,1,0)).
 
-:- trust success prep_case(A) => (gnd(A)).
+:- success prep_case(A) => (gnd(A)).
 prep_case(#(0,0,1)).
 
 compl_case(#(0,_,_)).

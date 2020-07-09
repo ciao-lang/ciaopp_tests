@@ -3,12 +3,9 @@
 :- use_module(templa).
 :- use_module(newdic, [verb_type/2]).
 
-:- trust calls i_sentence(_,A) : var(A).
+:- pred i_sentence(_,A) : var(A).
 
-%%:- use_module('undefine',[ adv_template/4, ditrans/12, standard/4 ]).
-standard(_,_,_,_):- fail.
-adv_template(_,_,_,_):- fail.
-ditrans(_,_,_,_,_,_,_,_,_,_,_,_):- fail.
+:- use_module('../undefine', [adv_template/4, ditrans/12, standard/4]).
 
 %:- include(chatops).
 

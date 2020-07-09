@@ -1,10 +1,9 @@
-:- module(cities,[ city/3 ],[assertions]).
+:- module(cities, [city/3],[assertions]).
 
 % Facts about cities.
 % ------------------
 
-%:- true pred city(A,B,C) % TODO: replace by trust
-%        => ( ground([A,B,C]) ).
+:- pred city(A,B,C) => ( ground([A,B,C]) ).
 
 city(athens,greece,1368).
 city(bangkok,thailand,1178).

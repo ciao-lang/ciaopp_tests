@@ -8,8 +8,8 @@
 
 :- set_prolog_flag(multi_arity_warnings,off).
 
-:- trust calls sentence(V,_,A,B,C) : (var(V), gnd(A), gnd(B), gnd(C)).
-:- trust success sentence(V,W,A,B,C) : (var(V), gnd(A), gnd(B), gnd(C))
+:- calls sentence(V,_,A,B,C) : (var(V), gnd(A), gnd(B), gnd(C)).
+:- success sentence(V,W,A,B,C) : (var(V), gnd(A), gnd(B), gnd(C))
     => (gnd(A), gnd(B), gnd(C), gnd(W)).
 
 sentence(B,C,D,E,F) :-
@@ -89,13 +89,11 @@ variable_q(B,_C,compl,D,E,F,G,x(gap,nonterminal,pred(adj,value(H,wh(B)),I),J)) :
    empty(I),
    verb_case(D).
 
-
 adv_phrase(B,C,D,E,E,F,G) :-
    virtual(adv_phrase(B,C,D),F,G).
 adv_phrase(pp(B,C),D,E,F,G,H,I) :-
    loc_pred(B,F,J,H,K),
    pp(pp(prep(of),C),compl,D,E,J,G,K,I).
-
 
 pred(B,C,D,E,E,F,G) :-
    virtual(pred(B,C,D),F,G).
@@ -108,7 +106,6 @@ pred(_B,C,D,E,F,G,H) :-
    s_all(I),
    adv_phrase(C,I,D,E,F,G,H).
 
-
 whq(B,C,D,undef,E,F,G,H) :-
    int_det(B,C,E,I,G,J),
    s_all(K),
@@ -116,12 +113,10 @@ whq(B,C,D,undef,E,F,G,H) :-
 whq(B,3+C,np(3+C,wh(B),[]),D,E,F,G,H) :-
    int_pron(D,E,F,G,H).
 
-
 int_det(B,3+C,D,E,F,G) :-
    whose(B,C,D,E,F,G).
 int_det(B,3+C,D,E,F,G) :-
    int_art(B,C,D,E,F,G).
-
 
 np_head0(B,C,D,E,E,F,G) :-
    virtual(np_head0(B,C,D),F,G).
@@ -136,17 +131,14 @@ np_head0(B,C,def+proper,D,E,F,x(nogap,nonterminal,gen_marker,G)) :-
 np_head0(np_head(B,[],C),3+sin,indef+common,D,E,F,G) :-
    quantifier_pron(B,C,D,E,F,G).
 
-
 gen_marker(B,B,C,D) :-
    virtual(gen_marker,C,D).
 gen_marker(B,C,D,E) :-
    `('''',B,F,D,G),
    an_s(F,C,G,E).
 
-
 whose(B,C,D,E,F,x(nogap,nonterminal,np_head0(wh(B),C,proper),x(nogap,nonterminal,gen_marker,G))) :-
    `(whose,D,E,F,G).
-
 
 question(B,C,D,E,F,G,H) :-
    subj_question(B),
@@ -156,7 +148,6 @@ question(B,C,D,E,F,G,H) :-
    fronted_verb(B,C,E,I,G,J),
    s(D,_K,I,F,J,H).
 
-
 det(B,C,D,E,E,F,G) :-
    virtual(det(B,C,D),F,G).
 det(det(B),C,D,E,F,G,H) :-
@@ -164,21 +155,15 @@ det(det(B),C,D,E,F,G,H) :-
    det(I,C,B,D).
 det(generic,_B,generic,C,C,D,D).
 
-
 int_art(B,C,D,E,F,x(nogap,nonterminal,det(G,C,def),H)) :-
    int_art(B,C,G,D,E,F,H).
 
-
-subj_qustion(subj).
-
-
+subj_question(subj).
 subj_question(undef).
-
 
 yn_question(q(B),C,D,E,F) :-
    fronted_verb(nil,_G,C,H,E,I),
    s(B,_J,H,D,I,F).
-
 
 verb_form(B,C,D,E,F,F,G,H) :-
    virtual(verb_form(B,C,D,E),G,H).

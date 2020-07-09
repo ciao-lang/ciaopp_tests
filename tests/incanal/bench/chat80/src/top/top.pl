@@ -1,28 +1,29 @@
-%:- module(top,[ hi/0, control/3 ],[]).
-:- module(top, [hi/0] ,[assertions, datafacts]).
+:- module(top, [hi/0], [datafacts,assertions,isomodes]).
 % Chat-80 : A small subset of English for database querying.
 % New top for WWW inteface (MH)
 
-:- use_module(library(format), [format/2]).
 :- use_module(library(lists), [length/2]).
 :- use_module(engine(runtime_control), [statistics/2]).
-:- use_module(engine(io_basic)).
+
 :- use_module(library(ttyout), [ttyflush/0]).
+:- use_module(engine(io_basic), [nl/0]).
+:- use_module(library(format), [format/2]).
 :- use_module(library(write), [numbervars/3, write/1]).
 %% 
-:- use_module(ptree, [print_tree/1]).
+
 :- use_module(readin, [read_in/1]).
-%% 
-:- use_module(newdic, [word/1]).
-:- use_module(newerg, [sentence/5]).
-:- use_module(qplan, [qplan/2]).
-:- use_module(scopes, [clausify/2]).
-:- use_module(slots, [i_sentence/2]).
-:- use_module(talkr, [answer/2, dlst/3, write_tree/1]).
+:- use_module(ptree, [print_tree/1]).
 
-pp_quant(_,_):- fail.
+:- use_module('../nl/newdic', [word/1]).
+:- use_module('../nl/newerg', [sentence/5]).
+:- use_module('../nl/qplan', [qplan/2]).
+:- use_module('../nl/scopes', [clausify/2]).
+:- use_module('../nl/slots', [i_sentence/2]).
+:- use_module('../nl/talkr', [answer/2, dlst/3, write_tree/1]).
 
-%:- include(chatops).
+:- use_module('../undefine', [pp_quant/2]).
+
+% :- include(chatops).
 
 /* Control loop  -- tail recursive M.H. */
 
@@ -38,17 +39,13 @@ hi :-
        ; hi ).
 
 % Changed from failing by default, fixed output M.H.
-control([bye,'.'],"Cheerio.",[]) :- 
-    !.
+control([bye,'.'],"Cheerio.",[]) :- !.
 control([trace,'.'],"Tracing from now on!",[]) :-
-    '`='(tracing,on),
-    !.
+    '`='(tracing,on), !.
 control([do,not,trace,'.'],"No longer tracing.",[]) :-
-    '`='(tracing,off),
-    !.
+    '`='(tracing,off), !.
 control(U,A,T) :-
-    check_words(U,[]),
-    !,
+    check_words(U,[]), !,
     process(U,A,T).
 control(U,L,[]) :-
     check_words(U,WrongWords),
@@ -92,7 +89,7 @@ chars(_,2).
 %% T the tree etc. instead of simple writes. M.H. 
 process(U,A,_T) :-
     statistics(runtime,_),
-    sentence_(E,U,[],[],[]),
+    sentence(E,U,[],[],[]),
     statistics(runtime,Et0),
     report(E,'Parse',Et0,tree),
     statistics(runtime,_),
@@ -115,9 +112,6 @@ process(_,A,[]) :-
 failure("I do not understand the question. Please rephrase it.").
 %% failure :-
 %%    write('I do no''t understand!'), nl.
-
-sentence_(E,U,A,B,C):-
-    sentence(E,U,A,B,C).
 
 report(Item,Label,Time,Mode) :-
     '=:'(tracing,on), !,
@@ -228,7 +222,8 @@ exquant('$VAR'(I),V,M,P0,P) :-
 irev(I,J,I,J) :- I>J, !.
 irev(I,J,J,I).
 
-:- trust calls check_words(X,Y) : (gnd(X), var(Y)).
+%% :- mode check_words(+,-).  %% This is false
+:- pred check_words(+,?). 
 
 %% M.H.
 check_words([],[]).
@@ -239,7 +234,8 @@ check_words([Word|Words],WrongWords) :-
 check_words([WrongWord|Words],[WrongWord|WrongWords]) :-
     check_words(Words,WrongWords).
 
-%:- trust calls check_word(X,Y) : (gnd(X), var(Y)).
+%% :- mode check_word(+,-).
+%% :- pred check_word(+,-).
 
 %% M.H.
 %% check_word(Word,Word) :- word(Word).
@@ -252,10 +248,12 @@ check_words([WrongWord|Words],[WrongWord|WrongWords]) :-
 %   write('I do not understand "'), write(Word), write('".'), ttyflush,
 %   fail.
 
+%% Uurgh... Changed to use assert. M.H. 
 
- :- trust calls '`='(X,Y) : (gnd(X), gnd(Y)).
-% :- trust calls '=+'(X,Y) : (gnd(X), var(Y)).
- :- trust calls '=:'(X,_) : (gnd(X)).
+%% :- mode `=(+,+), =+(+,-), =:(+,?).
+:- pred '`='(+,+).
+%% :- pred '=+'(+,-).
+:- pred '=:'(+,?).
 
 :- data chat_value/2.
 chat_value(tracing,off).
@@ -275,7 +273,7 @@ chat_value(tracing,off).
 %%       ;      true), !,
 %%  recordz(Var,val(Val),_).
 %% 
-%% %% This lokks very wrong to me... M.H.
+%% %% This looks very wrong to me... M.H.
 %% Var =+ Val :-
 %%  ( recorded(Var,val(Val0),P), erase(P)
 %%      ; Val0 is 0), !,
@@ -284,4 +282,3 @@ chat_value(tracing,off).
 %% 
 %% Var =: Val :-
 %%    recorded(Var,val(Val),_).
-

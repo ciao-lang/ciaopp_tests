@@ -4,7 +4,7 @@
 
 %:- include(chatops).
 
-:- trust calls clausify(A, B) : (var(B), indep(A,B)).
+:- calls clausify(A, B) : (var(B), indep(A,B)).
 
 clausify(question(V0,P),(answer(V):-B)) :-
    quantify(P,Quants,[],R0),
@@ -187,8 +187,8 @@ det_apply(quant(Det,Type-X,P,_-Y),Q0,Q) :-
 apply(generic,_,X,P,X,Q,X^(P,Q)).
 apply(proportion(_Type-V),_,X,P,Y,Q,
       S^(setof(X,P,S),
-     N^(numberof(Y,(one_of(S,Y),Q),N),
-        M^(card(S,M),ratio(N,M,V))))).
+         N^(numberof(Y,(one_of(S,Y),Q),N),
+            M^(card(S,M),ratio(N,M,V))))).
 apply(id,_,X,P,X,Q,(P,Q)).
 apply(void,_,X,P,X,Q,X^(P,Q)).
 apply(set,_,Index:X,P0,S,Q,S^(P,Q)) :-
@@ -300,6 +300,4 @@ op_apply(not,P,\+P).
 bubble(not,det(any),det(every)) :- !.
 bubble(_,D,D).
 
-
 conj_apply(and,P,Q,(P,Q)).
-

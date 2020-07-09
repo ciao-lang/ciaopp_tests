@@ -1,49 +1,29 @@
-:- module(aggreg,[ aggregate/3, one_of/2, ratio/3, card/2 ],[assertions]).
+:- module(aggreg, [aggregate/3, one_of/2, ratio/3, card/2],
+    [assertions, isomodes]).
 
 :- use_module(library(lists), [length/2]).
 
-:- use_module(world0, [ratio/4]).
+:- use_module('../db/world0', [ratio/4]).
 
 %:- include(chatops).
 
-/*
-:- mode aggregate(+,+,?),
-    dimensioned(+),
-    one_of(+,?),
-    i_aggr(+,+,?),
-    u_aggr(+,+,?),
-    i_total(+,?),
-    i_maxs(+,?),
-    i_mins(+,?),
-    i_maxs0(+,+,+,?,?),
-    i_mins0(+,+,+,?,?),
-    u_total(+,?),
-    u_sum(+,+,?),
-    u_maxs(+,?),
-    u_mins(+,?),
-    i_maxs0(+,+,+,?,?),
-    i_mins0(+,+,+,?,?),
-    u_lt(+,+).
-*/
-
-:- trust calls aggregate(X,Y,_) : (gnd(X), gnd(Y)).
-:- trust calls dimensioned(X) : gnd(X).
-:- trust calls one_of(X,_) : gnd(X).
-:- trust calls i_aggr(X,Y,_) : (gnd(X), gnd(Y)).
-:- trust calls u_aggr(X,Y,_) : (gnd(X), gnd(Y)).
-:- trust calls i_total(X,_) : gnd(X).
-:- trust calls i_maxs(X,_) : gnd(X).
-:- trust calls i_mins(X,_) : gnd(X).
-:- trust calls i_maxs0(X,Y,Z,_,_) : (gnd(X), gnd(Y), gnd(Z)).
-:- trust calls i_mins0(X,Y,Z,_,_) : (gnd(X), gnd(Y), gnd(Z)).
-:- trust calls u_total(X,_) : gnd(X).
-:- trust calls u_sum(X,Y,_) : (gnd(X), gnd(Y)).
-:- trust calls u_maxs(X,_) : gnd(X).
-:- trust calls u_mins(X,_) : gnd(X).
-:- trust calls i_maxs0(X,Y,Z,_,_) : (gnd(X), gnd(Y), gnd(Z)).
-:- trust calls i_mins0(X,Y,Z,_,_) : (gnd(X), gnd(Y), gnd(Z)).
-:- trust calls u_lt(X,Y) : (gnd(X), gnd(Y)).
-
+:- pred aggregate(+,+,?).
+:- pred dimensioned(+).
+:- pred one_of(+,?).
+:- pred i_aggr(+,+,?).
+:- pred u_aggr(+,+,?).
+:- pred i_total(+,?).
+:- pred i_maxs(+,?).
+:- pred i_mins(+,?).
+:- pred i_maxs0(+,+,+,?,?).
+:- pred i_mins0(+,+,+,?,?).
+:- pred u_total(+,?).
+:- pred u_sum(+,+,?).
+:- pred u_maxs(+,?).
+:- pred u_mins(+,?).
+:- pred i_maxs0(+,+,+,?,?).
+:- pred i_mins0(+,+,+,?,?).
+:- pred u_lt(+,+).
 
 aggregate(Fn,Set,Val) :-
    dimensioned(Set), !,
@@ -166,5 +146,3 @@ one_of([_|R],X) :-
 ratio(N,M,R) :- R is (N*100)//M.
 
 card(S,N) :- length(S,N).
-
-

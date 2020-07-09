@@ -1,29 +1,17 @@
-:- module(readin, [read_in/1, sentences/3], [assertions, dcg]).
+:- module(readin, [read_in/1],[assertions, isomodes, dcg]).
 /* Read a sentence */
 
 :- use_module(engine(io_basic)).
 
-/*
- :- mode initread(-).
- :- mode readrest(+,-).
- :- mode word(-,?,?).
- :- mode words(-,?,?).
- :- mode alphanum(+,-).
- :- mode alphanums(-,?,?).
- :- mode digits(-,?,?).
- :- mode digit(+).
- :- mode lc(+,-).
-*/
-
-:- trust calls initread(Y) : (var(Y)).
-:- trust calls readrest(X,Y) : (gnd(X), var(Y)).
-:- trust calls word(Y,_,_) : (var(Y)).
-:- trust calls words(Y,_,_) : (var(Y)).
-:- trust calls alphanum(X,Y) : (gnd(X), var(Y)).
-:- trust calls alphanums(Y,_,_) : (var(Y)).
-:- trust calls digits(Y,_,_) : (var(Y)).
-:- trust calls digit(X) : (gnd(X)).
-:- trust calls lc(X,Y) : (gnd(X), var(Y)).
+:- pred initread(-).
+:- pred readrest(+,-).
+:- pred word(-,?,?).
+:- pred words(-,?,?).
+:- pred alphanum(+,-).
+:- pred alphanums(-,?,?).
+:- pred digits(-,?,?).
+:- pred digit(+).
+:- pred lc(+,-).
 
 
 /* Read sentence */
@@ -63,7 +51,8 @@ blanks--> [K],{K=<32},!,blanks.
 %% Added carriage return and newline
 blanks--> [K],{K=0'
 },!,blanks.
-blanks--> [K],{K=0'},!,blanks.
+blanks--> [K],{K=0'
+},!,blanks.
 blanks --> [].
 
 digit(K):-K>47,K<58.
@@ -79,7 +68,7 @@ terminator(0'!).
 
 to_nl :-
    repeat,
-   get0(10), !.
+   get0(0'\n), !.
 
 get(C):- get1_code(C).
 

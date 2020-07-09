@@ -19,15 +19,11 @@
 :- use_module(countr, [country/10]).
 :- use_module(rivers, [river/2]).
 
-:- use_module(aggreg, [aggregate/3, one_of/2, ratio/3, card/2]).
+:- use_module('../nl/aggreg', [aggregate/3, one_of/2, ratio/3, card/2]).
 
-%%:- use_module(undefine,[ person/1 ]).
-person(_):- fail.
+:- use_module('../undefine', [person/1]).
 
 :- set_prolog_flag(multi_arity_warnings,off).
-
-%:- include(chatops).
-%%PBC??? :- op(500,xfy,--).
 
 % Interface.
 % ---------
@@ -190,5 +186,3 @@ last([_|L],X) :- last(L,X).
 
 links([X1,X2|_],X1,X2).
 links([_|L],X1,X2) :- links(L,X1,X2).
-
-

@@ -20,6 +20,7 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(engine(runtime_control), [garbage_collect/0]).
 :- use_module(engine(stream_basic)).
 :- use_module(library(messages), [error_message/2,show_message/3]).
+:- use_module(library(source_tree), [current_file_find/3]).
 :- use_module(engine(messages_basic)).
 :- use_module(library(terms), [atom_concat/2]).
 :- use_module(ciaobld(ciaoc_aux), [clean_tree/1]).
@@ -120,16 +121,19 @@ stat_test_results_dir(RDir, STDir) :-
     path_concat(RDir, 'stats', STDir).
 
 :- data test_toplevel/1.
-:- data test_dir/1.
+
+:- export(test_dir/2).
+:- data test_dir/2.
 
 code_db_from_dir(D) :-
     clean_reader,
-    directory_files(D, Fs0),
+    findall(File, current_file_find([proj(compilable), srctype(module)], D, File), Fs0),
+    % TODO: get also included files (although not present in the current benchmarks)
     sort(Fs0, Fs1),
     reverse(Fs1, Fs),
-    ( member(F, Fs),  % failure driven loop: read the code in all modules
-        atom_concat(ModName, '.pl', F),
-        path_concat(D, F, ModPath),
+    ( member(ModPath, Fs),  % failure driven loop: read the code in all modules
+        path_basename(ModPath,ModBase),
+        path_splitext(ModBase,ModName,'.pl'),
         read_module(ModName, ModPath),
         fail
     ; true ).
@@ -155,9 +159,9 @@ test(bench(TestId, TestTopLevel, SrcDir,DirType), Opts) :-
     set_fact(test_toplevel(TestTopLevel)),
     get_analysis_dir(TestId,AnaDir), % directory where analysis is performed
     get_results_dir(TestId,ResDir), % directory where results are stored
-    generate_simulation_sequence(DirType,SrcDir,Seq),
-    set_fact(test_dir(TestId)),
     init_results_directories(ResDir), % move before generating sim seq
+    generate_simulation_sequence(DirType,SrcDir,Seq),
+    set_fact(test_dir(TestId,SrcDir)),
     write_sequence_file(ResDir,Seq),
     ( get_test_config('--debug', _) ->
         write_dir_state_sequence(Seq, DirType,ResDir)
@@ -184,7 +188,7 @@ clean_ana_dir(AnaDir) :-
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.reg', '-delete'], []),
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.dump', '-delete'], []),
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.dump_inc', '-delete'], []).
-    
+
 generate_simulation_sequence(manual, SrcDir, Seq) :-
     code_db_from_dir(SrcDir),
     get_code_summary(Sum, NCls),
@@ -340,7 +344,7 @@ write_sequence_file(DstDir, Seq) :-
     close(S).
 
 edition_stat_file(StatFile) :-
-    test_dir(Name),
+    test_dir(Name,_),
     test_iteration(N),
     get_results_dir(Name, RDir),
     stat_test_results_dir(RDir, StatF),
@@ -356,7 +360,7 @@ inc_test_iteration(N1) :-
     set_fact(test_iteration(N1)).
 
 dump_gat :-
-    test_dir(Name),
+    test_dir(Name,_),
     test_iteration(N),
     it_dump_gat_file(Name, N, DumpDir),
     ( current_pp_flag(intermod, off) ->
@@ -368,7 +372,7 @@ dump_gat :-
     ).
 
 set_dir_dump_lat :- % CurrMod has the full path
-    test_dir(Name),
+    test_dir(Name,_),
     test_iteration(N),
     it_dump_gat_file(Name, N, DumpDir),
     set_fact(dump_dir(DumpDir)).

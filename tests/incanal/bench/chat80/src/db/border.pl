@@ -1,10 +1,7 @@
 :- module(border,[ borders/2 ],[ assertions ]).
 % Facts about Europe.
 
-:- use_module(engine(term_typing), [var/1, nonvar/1]).
-
-%:- true pred borders(A,B) % TODO: replace by trust
-%        => ( ground([A,B]) ).
+:- pred borders(A,B) => ( ground([A,B]) ).
 
 borders(X,C) :- var(X), nonvar(C), !, borders(C,X).
 

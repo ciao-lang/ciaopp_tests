@@ -1,84 +1,83 @@
-:- module(qplan, [qplan/2], [assertions]).
+
+:- module(qplan, [qplan/2], [assertions,isomodes]).
 % qplan - supplies the control information (ie. sequencing and cuts) needed
 %         for efficient execution of a query.
 
 :- use_module(library(sort), [keysort/2]).
 :- use_module(library(write), [numbervars/3]).
 
-:- use_module(ndtabl, [nd/3, nd/4, nd/5]).
+:- use_module('../db/ndtabl', [nd/3, nd/4, nd/5]).
 
 :- set_prolog_flag(multi_arity_warnings,off).
 
-/*
-:-mode
-   qplan(+,-),
-   qplan(+,+,-,-),
-   mark(+,-,+,-),
-   subquery(+,-,?,?,?,?),
-   negate(+,+,-),
-   negationcost(+,-),
-   setofcost(+,+,-),
-   variables(+,+,-),
-   variables(+,+,+,-),
-   quantificate(+,+,?,-),
-   log2(+,-),
-   schedule(+,+,-),
-   schedule1(+,+,-),
-   maybe_cut(+,+,?,-),
-   plan(+,+,+,+,-),
-   is_conjunction(+),
-   marked(+,?,?,?),
-   freevars(+,?),
-   best_goal(+,+,+,?,?,-),
-   instantiate(+,+,-),
-   instantiate0(+,+,-),
-   recombine(+,+,-),
-   incorporate(+,+,+,+,+,-),
-   incorporate0(+,+,+,+,-),
-   minimum(+,+,-),
-   add_keys(+,-),
-   strip_keys(+,-),
-   strip_key(+,?),
-   variablise(+,+,-),
-   variablise(+,+,+,+),
-   cost(+,+,-),
-   cost(+,+,+,+,-),
-   instantiated(+,+,-).
-*/
+%% :-mode
+%% qplan(+,-),
+%% qplan(+,+,-,-),
+%% mark(+,-,+,-),
+%% subquery(+,-,?,?,?,?),
+%% negate(+,+,-),
+%% negationcost(+,-),
+%% setofcost(+,+,-),
+%% variables(+,+,-),
+%% variables(+,+,+,-),
+%% quantificate(+,+,?,-),
+%% log2(+,-),
+%% schedule(+,+,-),
+%% schedule1(+,+,-),
+%% maybe_cut(+,+,?,-),
+%% plan(+,+,+,+,-),
+%% is_conjunction(+),
+%% marked(+,?,?,?),
+%% freevars(+,?),
+%% best_goal(+,+,+,?,?,-),
+%% instantiate(+,+,-),
+%% instantiate0(+,+,-),
+%% recombine(+,+,-),
+%% incorporate(+,+,+,+,+,-),
+%% incorporate0(+,+,+,+,-),
+%% minimum(+,+,-),
+%% add_keys(+,-),
+%% strip_keys(+,-),
+%% strip_key(+,?),
+%% variablise(+,+,-),
+%% variablise(+,+,+,+),
+%% cost(+,+,-),
+%% cost(+,+,+,+,-),
+%% instantiated(+,+,-).
 
-:- trust calls   qplan(X,Y) : (gnd(X), var(Y)).
-:- trust calls   qplan(X,Z,Y,V) : (gnd(X), var(Y), gnd(Z), var(V)).
-:- trust calls   mark(X,Y,Z,V) : (gnd(X), var(Y), gnd(Z), var(V)).
-:- trust calls   subquery(X,Y,_,_,_,_) : (gnd(X), var(Y)).
-:- trust calls   negate(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   negationcost(X,Y) : (gnd(X), var(Y)).
-:- trust calls   setofcost(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   variables(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   variables(X,Z,U,Y) : (gnd(X), var(Y), gnd(Z), gnd(U)).
-:- trust calls   quantificate(X,Z,_,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   log2(X,Y) : (gnd(X), var(Y)).
-:- trust calls   schedule(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   schedule1(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   maybe_cut(X,Z,_,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   plan(X,Z,U,W,Y) : (gnd(X), var(Y), gnd(Z), gnd(U), gnd(W)).
-:- trust calls   is_conjunction(X) : gnd(X).
-:- trust calls   marked(X,_,_,_) : gnd(X).
-:- trust calls   freevars(X,_) : gnd(X).
-:- trust calls   best_goal(X,Z,U,_,_,Y) : (gnd(X), var(Y), gnd(Z), gnd(U)).
-:- trust calls   instantiate(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   instantiate0(X,Z,Y,_) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   recombine(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   incorporate(X,Z,U,V,W,Y) : (gnd(X), var(Y), gnd(Z), gnd(U), gnd(V), gnd(W)).
-:- trust calls   incorporate0(X,Z,U,W,Y) : (gnd(X), var(Y), gnd(Z), gnd(U), gnd(W)).
-:- trust calls   minimum(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   add_keys(X,Y) : (gnd(X), var(Y)).
-:- trust calls   strip_keys(X,Y) : (gnd(X), var(Y)).
-:- trust calls   strip_key(X,_) : gnd(X).
-:- trust calls   variablise(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   variablise(X,Z,U,W) : (gnd(X), gnd(Z), gnd(U), gnd(W)).
-:- trust calls   cost(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
-:- trust calls   cost(X,Z,U,W,Y) : (gnd(X), var(Y), gnd(Z), gnd(U), gnd(W)).
-:- trust calls   instantiated(X,Z,Y) : (gnd(X), var(Y), gnd(Z)).
+:- pred qplan(+,-).
+:- pred qplan(+,+,-,-).
+:- pred mark(+,-,+,-).
+:- pred subquery(+,-,?,?,?,?).
+:- pred negate(+,+,-).
+:- pred negationcost(+,-).
+:- pred setofcost(+,+,-).
+:- pred variables(+,+,-).
+:- pred variables(+,+,+,-).
+:- pred quantificate(+,+,?,-).
+:- pred log2(+,-).
+:- pred schedule(+,+,-).
+:- pred schedule1(+,+,-).
+:- pred maybe_cut(+,+,?,-).
+:- pred plan(+,+,+,+,-).
+:- pred is_conjunction(+).
+:- pred marked(+,?,?,?).
+:- pred freevars(+,?).
+:- pred best_goal(+,+,+,?,?,-).
+:- pred instantiate(+,+,-).
+:- pred instantiate0(+,+,-,?).
+:- pred recombine(+,+,-).
+:- pred incorporate(+,+,+,+,+,-).
+:- pred incorporate0(+,+,+,+,-).
+:- pred minimum(+,+,-).
+:- pred add_keys(+,-).
+:- pred strip_keys(+,-).
+:- pred strip_key(+,?).
+:- pred variablise(+,+,-).
+:- pred variablise(+,+,+,+).
+:- pred cost(+,+,-).
+:- pred cost(+,+,+,+,-).
+:- pred instantiated(+,+,-).
 
 qplan((P:-Q),(P1:-Q1)) :- qplan(P,Q,P1,Q1), !.
 qplan(P,P).
@@ -312,17 +311,14 @@ precedes(G1,[G2|_]) :- goal_info(G1,_,N1), goal_info(G2,_,N2), N1 =< N2.
 
 -------------------------------------------------------------*/
 
-/*
-:-mode
-   nonempty(+),
-   setplus(+,+,-),
-   setminus(+,+,-),
-   mkset(+,+,-),
-   setplusitem(+,+,-),
-   setcontains(+,+),
-   intersect(+,+),
-   disjoint(+,+).
-*/
+:- pred nonempty(+).
+:- pred setplus(+,+,-).
+:- pred setminus(+,+,-).
+:- pred mkset(+,+,-).
+:- pred setplusitem(+,+,-).
+:- pred setcontains(+,+).
+:- pred intersect(+,+).
+:- pred disjoint(+,+).
 
 nonempty(0) :- !, fail.
 nonempty(_).
@@ -359,4 +355,3 @@ disjoint(W1-V1,W2-V2) :- !, V1 /\ V2 =:= 0, disjoint(W1,W2).
 disjoint(_W-V1,V2) :- !, V1 /\ V2 =:= 0.
 disjoint(V1,_W-V2) :- !, V1 /\ V2 =:= 0.
 disjoint(V1,V2) :- V1 /\ V2 =:= 0.
-

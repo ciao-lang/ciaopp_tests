@@ -5,18 +5,19 @@
 :- use_module(engine(internals), [itf_filename/2]).
 :- use_module(library(write), [portray_clause/2]).
 :- use_module(library(aggregates)).
-:- use_module(library(pathnames), [path_concat/3, path_get_relative/3]).
+:- use_module(library(pathnames)).
 :- use_module(library(system_extra), [del_file_nofail/1]).
 :- use_module(library(system), [make_directory/1]).
 :- use_module(library(process), [process_call/3]).
 :- use_module(library(source_tree), [current_file_find/3]).
 :- use_module(library(lists), [append/3, member/2]).
-:- use_module(library(terms)).
 :- use_module(library(glob), [glob/3]).
+:- use_module(library(process), [process_call/3]).
 
 :- use_module(ciaopp_tests(incanal/git_wrapper)).
 :- use_module(ciaopp_tests(incanal/naive_reader)).
 :- use_module(ciaopp_tests(incanal/incanal_intermod_bench_driver), [monolithic/0]).
+:- use_module(ciaopp_tests(incanal/incanal_intermod_test), [test_dir/2]).
 
 :- doc(title, "Modular program printer").
 
@@ -58,8 +59,7 @@ copy_directory(SrcDir,DstDir) :-
       path_concat(DstDir, F, DstF),
         process_call(path(cp), ['-r',SrcF, DstF], []),
         fail
-    ; true
-    ).
+    ; true ).
 
 write_dir_state_sequence_([], _, _, _).
 write_dir_state_sequence_([St|Seq], DirType, Dir, N) :-
@@ -72,8 +72,8 @@ write_dir_state_sequence_([St|Seq], DirType, Dir, N) :-
     write_dir_state_sequence_(Seq, DirType, Dir, N1).
 
 :- meta_predicate write_dir_state(?,?,?,pred(3)).
-:- pred write_dir_state(+State, +DirType, +DstDir,CheckoutPred) #"Writes @var{State} of clauses
-    in modules in directory @var{DstDir}.".
+:- pred write_dir_state(+State, +DirType, +DstDir,CheckoutPred)
+   #"Writes @var{State} of clauses in modules in directory @var{DstDir}.".
 write_dir_state(St, states, Dir, _) :- !,
     atom_concat(St,'/',AllSt),
     process_call(path(cp), ['-r', AllSt, Dir], []),
@@ -83,9 +83,7 @@ write_dir_state(St, states, Dir, _) :- !,
         path_get_relative(St,File,RelP),
         remove_itf_file(Dir,RelP),
         fail
-    ;
-        true
-    ).
+    ; true ).
 write_dir_state(State, manual, DstDir,_) :- !,
     retractall_fact(modified(_)),
     write_dir_state_(State, DstDir),
@@ -97,28 +95,23 @@ write_dir_state(State, git, DstDir,Checkout) :-
       member(F,Files),
         remove_itf_file(DstDir, F),
         fail
-    ;
-        true
-    ).
+    ; true ).
 
 remove_before_state([P|T],[P|T]) :-
-    state_dir(P), !.
+    atom_concat('state_', _, P), !. % state_dir
 remove_before_state([_|T],R) :-
     remove_before_state(T,R).
 
-state_dir(DirName) :-
-    atom_codes(DirName,L),
-    append("state_", _, L), !.
-
 write_dir_state_([], _).
 write_dir_state_([present(ModName, ClList)|IniState], DstDir) :-
-    mod_full_path(ModName, DstDir, ModPath),
-    write_mod_state(ModName, ClList, ModPath),
+    naive_loaded(ModName, OrigModPath),
+    test_dir(_TestId,TestSrcDir),
+    path_get_relative(TestSrcDir,OrigModPath,RelPath),
+    path_concat(DstDir,RelPath,AbsModPath),
+    path_dirname(AbsModPath,Dir),
+    process_call(path(mkdir), ['-p',Dir], []), % create dir and parents if necessary
+    write_mod_state(ModName, ClList, AbsModPath),
     write_dir_state_(IniState, DstDir).
-
-mod_full_path(ModName, Dir, ModPath) :-
-    path_concat(Dir, ModName, A),
-    atom_concat(A, '.pl', ModPath).
 
 write_mod_state(Mod, ClList, _) :- % this file did not change
     current_fact(mod_prev_state(Mod, PrevClList)),

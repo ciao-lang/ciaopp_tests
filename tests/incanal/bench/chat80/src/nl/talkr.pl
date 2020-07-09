@@ -1,4 +1,4 @@
-:- module(talkr, [answer/2, dlst/3, satisfy/1, write_tree/1], [assertions]).
+:- module(talkr, [answer/2, dlst/3, satisfy/1, write_tree/1],[assertions, isomodes]).
 /* Simplifying and executing the logical form of a NL query. */
 % Changed answer to return output in an argument. M.H.
 
@@ -7,27 +7,16 @@
 :- use_module(engine(io_basic)).
 :- use_module(library(write), [numbervars/3, write/1]).
 
-:- use_module(world0, [database/1]).
+:- use_module('../db/world0', [database/1]).
 
 %:- include(chatops).
 
-/*
-:-mode write_tree(+).
-:-mode wt(+,+).
-:-mode header(+).
-:-mode decomp(+,-,-).
-:-mode complex(+).
-:-mode othervars(+,-,-).
-*/
-
-
-:- trust calls write_tree(X) : gnd(X).
-:- trust calls wt(X,Y) : (gnd(X), gnd(Y)).
-:- trust calls header(X) : gnd(X).
-:- trust calls decomp(X,Y,Z) : (gnd(X), var(Y), var(Z)).
-:- trust calls complex(X) : gnd(X).
-:- trust calls othervars(X,Y,Z) : (gnd(X), var(Y), var(Z)).
-
+:- pred write_tree(+).
+:- pred wt(+,+).
+:- pred header(+).
+:- pred decomp(+,-,-).
+:- pred complex(+).
+:- pred othervars(+,-,-).
 
 write_tree(T):-
    numbervars(T,0,_),
@@ -67,37 +56,25 @@ complex(_^_).
 complex(\+P) :- complex(P).
 
 % Query execution.
-
-/*
-:-mode respond(?).
-:-mode holds(+,?).
-:-mode answer(+).
-:-mode yesno(+).         :-mode replies(+).
-:-mode reply(+).
-:-mode seto(?,+,-).
-:-mode satisfy(+).
-:-mode pickargs(+,+,+).
-:-mode pick(+,?).
-*/
-
-% :- trust calls respond(?). % Not necessary
-:- trust calls holds(X,?) : (gnd(X)).
-:- trust calls answer(X,_) : (gnd(X)).
-:- trust calls yesno(X,_) : (gnd(X)).
-:- trust calls replies(X,_,_) : (gnd(X)).
-:- trust calls reply(X,_) : (gnd(X)).
-:- trust calls seto(_,X,Y) : (gnd(X), var(Y)).
-:- trust calls satisfy(X) : (gnd(X)).
-:- trust calls pickargs(X,Y,Z) : (gnd(X), var(Y), var(Z)).
-:- trust calls pick(X,_) : (gnd(X)).
-
+:- pred holds(+,?).
+:- pred answer(+,?).
+:- pred yesno(+,?).
+:- pred replies(+,?,?).
+:- pred reply(+,?,?).
+:- pred seto(?,+,-).
+:- pred satisfy(+).
+:- pred pickargs(+,+,+).
+:- pred pick(+,?).
 
 respond([],"Nothing satisfies your question.").
 respond([A|L],Ans) :- 
-    reply(A,Ans,Ansrs), 
-    replies(L,Ansrs,[]).
+    respond_([A|L],Ans,[0'.]).
 %% respond([]) :- write('Nothing satisfies your question.'), nl.
 %% respond([A|L]) :- reply(A), replies(L).
+
+respond_([A|L],Ans,Ansrs):-
+    reply(A,Ans,Ans0), 
+    replies(L,Ans0,Ansrs).
 
 answer((answer([]):-E),A) :- !, holds(E,B), yesno(B,A).
 answer((answer([X]):-E),A) :- !, seto(X,E,S), respond(S,A).
@@ -114,11 +91,10 @@ yesno(false,"No.").
 %% yesno(true) :- write('Yes.').
 %% yesno(false) :- write('No.').
 
-replies([],[0'.|R],R).
+replies([],R,R).
 replies([A],Ans,Ansrs) :- 
-    dlst(" and ",Ans,Q1),
-    reply(A,Q1,Q2), 
-    Q2 = [0'.|Ansrs].
+    dlst(" and ",Ans,Ans1),
+    reply(A,Ans1,Ansrs).
 replies([A|X],Ans,Ansrs) :- 
     dlst(", ",Ans,Q1),
     reply(A,Q1,Q2), 
@@ -127,15 +103,26 @@ replies([A|X],Ans,Ansrs) :-
 %% replies([A]) :- write(' and '), reply(A), write('.').
 %% replies([A|X]) :- write(', '), reply(A), replies(X).
 
-reply('--'(N,A),As) :- 
+reply('--'(N,U),A,As) :- 
     !, 
     name(N,Ns),
     dlst(Ns,A,[0' |Q1]),
-    name(_U,Us),
+    name(U,Us),
     dlst(Us,Q1,As).
 reply(X,A,As) :- 
+    atomic(X), !,
     name(X,Xs),
     dlst(Xs,A,As).
+% PBC: What are the capitals of the countries bordering the Baltic?
+% returns a list of terms [...]:[...]
+reply([X|Xs],A,As) :- !,
+    respond_([X|Xs],A,As).
+reply(X:Y,A,As) :- !,
+    dlst("for ",A,A0),
+    reply(X,A0,[C1,C2|A1]),
+    reply(Y,A1,As),
+    name(': ',[C1,C2]).
+reply(X,A,A) :- throw(no_parsing(X)).
 %% reply(N--U) :- !, write(N), write(' '), write(U).
 %% reply(X) :- write(X).
 

@@ -22,7 +22,7 @@
       verb_type/2,
       word/1
     ],
-    [assertions]).
+    [assertions, isomodes]).
 
 :- use_module(templa, [name_template/2]).
 
@@ -30,68 +30,37 @@
 
 :- set_prolog_flag(discontiguous_warnings,off).
 
-/*
-% Modes
-:- mode word(+).
-:- mode `(+).
-:- mode conj(+).
-:- mode adverb(+).
-:- mode sup_adj(+,?).
-:- mode rel_adj(+,?).
-:- mode adj(+,?).
-:- mode name_template(+,-).
-:- mode name(+).
-:- mode terminator(+,?).
-:- mode pers_pron(+,?,?,?,?).
-:- mode poss_pron(+,?,?,?).
-:- mode rel_pron(+,?).
-:- mode regular_past(+,?).
-:- mode regular_pres(+).
-:- mode verb_root(+).
-:- mode verb_form(+,?,?,?).
-:- mode noun_sin(+).
-:- mode noun_plu(+,?).
-:- mode noun_form(+,?,?).
-:- mode prep(+).
-:- mode quantifier_pron(+,?,?).
-:- mode tr_number(+,?).
-:- mode number(+,?,?).
-:- mode det(+,?,?,?).
-:- mode int_art(+,?,?,?).
-:- mode int_pron(+,?).
-*/
+:- pred word(+).
+:- pred `(+).
+:- pred conj(+).
+:- pred adverb(+).
+:- pred sup_adj(+,?).
+:- pred rel_adj(+,?).
+:- pred adj(+,?).
+:- pred name_template(+,-).
+:- pred name(+).
+:- pred terminator(+,?).
+:- pred pers_pron(+,?,?,?,?).
+:- pred poss_pron(+,?,?,?).
+:- pred rel_pron(+,?).
+:- pred regular_past(+,?).
+:- pred regular_pres(+).
+:- pred verb_root(+).
+:- pred verb_form(+,?,?,?).
+:- pred noun_sin(+).
+:- pred noun_plu(+,?).
+:- pred noun_form(+,?,?).
+:- pred prep(+).
+:- pred quantifier_pron(+,?,?).
+:- pred tr_number(+,?).
+:- pred number(+,?,?).
+:- pred det(+,?,?,?).
+:- pred int_art(+,?,?,?).
+:- pred int_pron(+,?).
+
 
 % =================================================================
-    % General Dictionary
-
-:- trust calls word(X) : gnd(X).
-:- trust calls '`'(X) : gnd(X).
-:- trust calls conj(X) : gnd(X).
-:- trust calls adverb(X) : gnd(X).
-:- trust calls sup_adj(X,_) : gnd(X).
-:- trust calls rel_adj(X,_) : gnd(X).
-:- trust calls adj(X,_) : gnd(X).
-:- trust calls name_template(X,Y) : (gnd(X), var(Y)).
-:- trust calls name(X) : gnd(X).
-:- trust calls terminator(X,_) : gnd(X).
-:- trust calls pers_pron(X,_,_,_,_) : gnd(X).
-:- trust calls poss_pron(X,_,_,_) : gnd(X).
-:- trust calls rel_pron(X,_) : gnd(X).
-:- trust calls regular_past(X,_) : gnd(X).
-:- trust calls regular_pres(X) : gnd(X).
-:- trust calls verb_root(X) : gnd(X).
-:- trust calls verb_form(X,_,_,_) : gnd(X).
-:- trust calls noun_sin(X) : gnd(X).
-:- trust calls noun_plu(X,_) : gnd(X).
-:- trust calls noun_form(X,_,_) : gnd(X).
-:- trust calls prep(X) : gnd(X).
-:- trust calls quantifier_pron(X,_,_) : gnd(X).
-:- trust calls tr_number(X,_) : gnd(X).
-:- trust calls number(X,_,_) : gnd(X).
-:- trust calls det(X,_,_,_) : gnd(X).
-:- trust calls int_art(X,_,_,_) : gnd(X).
-:- trust calls int_pron(X,_) : gnd(X).
-
+% General Dictionary
 
 word(Word) :- '`'((Word)).
 word(Word) :- conj(Word).
@@ -432,4 +401,3 @@ verb_type(flow,main+intrans).
 
 adverb(yesterday).
 adverb(tomorrow).
-

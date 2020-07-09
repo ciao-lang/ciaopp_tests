@@ -1,15 +1,13 @@
 :- module(countr, [country/10], [assertions]).
 % Facts about countries.
 
-:- use_module(engine(arithmetic), [(is)/2, (>)/2]).
-
 % country(Country,Region,Latitude,Longitude,
 %         Area/1000,Area mod 1000,
 %         Population/1000000,Population mod 1000000 / 1000,
 %         Capital,Currency)
 
-%:- true pred country(A,B,C,D,E,F,G,H,I,J)
-%        => ( term_typing:ground([A,B,C,D,E,F,G,H,I,J]) ).
+:- pred country(A,B,C,D,E,F,G,H,I,J)
+       => ( ground([A,B,C,D,E,F,G,H,I,J]) ).
 
 country(Country,Region,Latitude,Longitude,
     AreaDiv,AreaMod,PopulationDiv,PopulationMod,
@@ -18,13 +16,13 @@ country_db(Country,Region,Latitude,Longitude,
     AreaDiv,AreaMod,PopulationDiv,PopulationMod,
     Capital,Currency).
 
-%:- true pred country_db(A,B,C,D,E,F,G,H,I,J)
-%        => ( term_typing:ground([A,B,C,D,E,F,G,H,I,J]) ).
+:- pred country_db(A,B,C,D,E,F,G,H,I,J)
+        => ( ground([A,B,C,D,E,F,G,H,I,J]) ).
 
 country_db(afghanistan,indian_subcontinent,33,-65,254,861,18,290,kabul,afghani).
 country_db(albania,southern_europe,41,-20,11,100,2,350,tirana,lek).
 country_db(algeria,north_africa,35,-11,919,951,15,770,algiers,dinar).
-country_db(andorra,southern_europe,42,-1,0,179,0,25,andorra_la_villa,
+country_db(andorra,southern_europe,42,-1,0,179,0,25,andorra_la_vella,
     franc_peseta).
 country_db(angola,southern_africa,-12,-18,481,351,5,810,luanda,?).
 country_db(argentina,south_america,-35,66,1072,67,23,920,buenos_aires,peso).
