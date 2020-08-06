@@ -2,10 +2,10 @@
 
 - [Playground](ciaopp_extra/examples/resource_analysis_verification/)
 - [resources (ver.)](ciaopp_extra/examples/Resource_verification/)
-- [HO](svn+ssh://cliplab.org/home/clip/Papers/ho-analysis)
-- [Clip](svn+ssh://clip.dia.fi.upm.es/home/clip/SvnReps/Benchmarks)
-  - [Clip](home/clip/SvnReps/Benchmarks/ciaopp/resources)
-  - [Clip](home/clip/SvnReps/Benchmarks/Debray)
-  - [Clip](home/clip/SvnReps/Benchmarks/Granul)
-  - [Clip](home/clip/SvnReps/Benchmarks/ciaopp/comp)
+- (HO) svn+ssh://cliplab.org/home/clip/Papers/ho-analysis
+- (Clip) svn+ssh://clip.dia.fi.upm.es/home/clip/SvnReps/Benchmarks
+  - ciaopp/resources
+  - Debray
+  - Granul
+  - ciaopp/comp
 - [Xcore](ciao-devel/bndls/ciaopp_extra/xcore/examples)
