@@ -100,7 +100,8 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(clique_widen_ub, 10),
     set_pp_flag(clique_widen_lb, 10),
     current_pp_flag(pplog, Logs),
-    set_pp_flag(pplog, [incremental_high|Logs]).
+    set_pp_flag(pplog, [incremental_high|Logs]),
+    set_pp_flag(types,deftypes).
 %        set_pp_flag(timestamp_trace, on).
 %  set_pp_flag(fact_info, on). % Necessary for incanal trust success
 
@@ -147,6 +148,14 @@ make_config(['--rand', A|Cfs]) :- !,
     make_config(Cfs).
 make_config(['--debug'|Cfs]) :- !,
     set_test_config('--debug', 0),
+    make_config(Cfs).
+make_config(['--debug-mod-reg'|Cfs]) :- !,
+    current_pp_flag(pplog, Logs),
+    set_pp_flag(pplog, [intermod_reg|Logs]),
+    make_config(Cfs).
+make_config(['--debug-mod-ana'|Cfs]) :- !,
+    current_pp_flag(pplog, Logs),
+    set_pp_flag(pplog, [intermod_dump|Logs]),
     make_config(Cfs).
 make_config([X, A|Cfs]) :-
     get_test_config(X, _), !,
