@@ -1,11 +1,10 @@
 :- use_module(library(bundle/bundle_paths),[bundle_path/3]).
 :- use_module(library(pathnames), [path_concat/3]).
 
+:- doc(section, "Benchmarks").
 % test_dir(TopLevel, BenchId, DirName, EditionSimulationType).
 test_dir(test, qsort, Dir, manual) :-
     basic_incanal_dir(qsort,Dir).
-test_dir(m1, mmutr, Dir, manual) :-
-    basic_incanal_dir(mmutr,Dir).
 test_dir(hanoi, hanoi, Dir, manual) :-
     basic_incanal_dir(hanoi,Dir).
 test_dir(ann, ann, Dir, manual) :-
@@ -42,21 +41,24 @@ test_dir(main_leancop, leancop, Dir, manual) :-
     basic_incanal_dir(leancop,Dir).
 test_dir(bu_doctree,bibutils, Dir, manual) :-
     basic_incanal_dir(bibutils,Dir).
-% monolithic driver tests
+
+:- doc(section, "Tests cases").
+% types
+test_dir(main, min_types, Dir, manual) :-
+    basic_incanal_dir(min_types,Dir).
+% mutually recursive
+test_dir(m1, mmutr, Dir, manual) :-
+    basic_incanal_dir(mmutr,Dir).
+% monolithic
 test_dir(hanoi, hanoi_mon, Dir, manual) :-
     mon_incanal_dir(hanoi_mon, Dir).
+% bu delete clauses
 test_dir(ren, renaming_test, Dir, manual) :-
     basic_incanal_dir(renaming_test, Dir).
 test_dir(parents_test, parents1, Dir, manual) :-
     basic_incanal_dir(parents1, Dir).
 test_dir(parents_test, parents2, Dir, manual) :-
     basic_incanal_dir(parents2, Dir).
-
-% for incverif paper
-% TODO: hardwired path!
-% test_dir('cmds/lpdoccl.pl',lpdoc_backends,'~/clip/Papers/incverif/incanal_assrts_paper/src/lpdoc_backends',states).
-% test_dir('cmds/lpdoccl.pl',lpdoc_inc_asr,'~/clip/Papers/incverif/incanal_assrts_paper/src/lpdoc_inc_asr',states).
-
 % assertions
 test_dir('trust_success.pl',X,Dir,states) :-
     inc_trust_succ_test(X), !,
