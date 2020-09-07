@@ -48,7 +48,7 @@ for i in "${tests[@]}" ; do
 
     bench_res_dir=$(find $res_dir -name "$i*$domain*$tag")
     echo "Checking $i"
-    ciaopp-dump cmp "$bench_res_dir"/mon-noninc/detailed_step_results "$bench_res_dir"/mon-inc/detailed_step_results $domain
+    ciaopp-dump cmp --sequence "$bench_res_dir"/mon-noninc/detailed_step_results "$bench_res_dir"/mon-inc/detailed_step_results $domain
     errors=$(($errors+$?)) # add errors
 done
 

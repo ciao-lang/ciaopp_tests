@@ -23,7 +23,7 @@ function compare_directories_add {
     echo "%%%%%%%%%%%%%%%%%%%%%%%% COMPARING $i $k for $j $mon %%%%%%%%%%%%%% "
     echo
     echo
-          ciaopp-dump cmp "test_results/$k-$i-not_rand-1-$j-dd/$mon-noninc/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd/$mon-inc/detailed_step_results" "$j"
+    ciaopp-dump cmp --sequence "test_results/$k-$i-not_rand-1-$j-dd/$mon-noninc/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd/$mon-inc/detailed_step_results" "$j"
     echo "%%%%%%%%%%%%%%%%%%% END OF COMPARISON $i $k for $j mon %%%%%%%%%%%% "
     echo
     echo
@@ -39,7 +39,7 @@ function compare_directories_del {
     echo "%%%%%%%%%%%%%%%%%%%%%%%% COMPARING $i $k for $j $mon $bu %%%%%%%%%%%%%% "
     echo
     echo
-    ciaopp-dump cmp "test_results/$k-$i-not_rand-1-$j-dd/$mon-noninc-top_down/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd/$mon-inc-$bu/detailed_step_results" "$j"
+    ciaopp-dump cmp --sequence "test_results/$k-$i-not_rand-1-$j-dd/$mon-noninc-top_down/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd/$mon-inc-$bu/detailed_step_results" "$j"
     echo "%%%%%%%%%%%%%%%%%%% END OF COMPARISON $i $k for $j $mon $bu %%%%%%%%%%%% "
     echo
     echo

@@ -43,7 +43,7 @@ for i in "${tests[@]}" ; do
     echo "Checking $i"
     for f in "$bench_res_dir"/mon-noninc/detailed_step_results/*; do
         base="$(basename -- $f)"
-        ciaopp-dump cmp "$f"/*.dump "$bench_res_dir"/mon-inc/detailed_step_results/$base/*.dump $domain
+        ciaopp-dump cmp --sequence "$f"/*.dump "$bench_res_dir"/mon-inc/detailed_step_results/$base/*.dump $domain
         errors=$(($errors+$?)) # add errors
     done
     if [ "$errors" -ne 0 ]; then

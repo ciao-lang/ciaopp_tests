@@ -27,8 +27,8 @@ function compare_directories_add {
     extra=$5
 
     echo "CHECKING $k $i for $j $mon ... "
-    echo "COMMAND: ciaopp-dump cmp test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc/detailed_step_results test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc/detailed_step_results $j"
-    ciaopp-dump cmp "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc/detailed_step_results" "$j"
+    echo "COMMAND: ciaopp-dump cmp --sequence test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc/detailed_step_results test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc/detailed_step_results $j"
+    ciaopp-dump cmp --sequence "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc/detailed_step_results" "$j"
 }
 
 function compare_directories_del {
@@ -40,8 +40,8 @@ function compare_directories_del {
     extra=$6
 
     echo "CHECKING $k $i for $j $mon $bu... "
-    echo "COMMAND: ciaopp-dump cmp test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc-top_down/detailed_step_results test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc-$bu/detailed_step_results $j"
-    ciaopp-dump cmp "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc-top_down/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc-$bu/detailed_step_results" "$j"
+    echo "COMMAND: ciaopp-dump cmp --sequence test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc-top_down/detailed_step_results test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc-$bu/detailed_step_results $j"
+    ciaopp-dump cmp --sequence "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-noninc-top_down/detailed_step_results" "test_results/$k-$i-not_rand-1-$j-dd$extra/$mon-inc-$bu/detailed_step_results" "$j"
 }
 
 pushd $_base > /dev/null 2>&1
