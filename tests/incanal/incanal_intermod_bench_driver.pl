@@ -1,24 +1,5 @@
 :- module(incanal_intermod_bench_driver, [main/1], [assertions, regtypes, datafacts]).
 
-:- use_module(library(lists), [member/2]).
-:- use_module(library(messages), [show_message/3]).
-:- use_module(library(pathnames), [path_concat/3]).
-:- use_module(library(system), [working_directory/2]).
-:- use_module(library(bundle/bundle_paths), [bundle_path/3]).
-:- use_module(engine(runtime_control), [set_prolog_flag/2]).
-:- use_module(library(streams), [fixed_absolute_file_name/3]).
-:- use_module(library(errhandle), [error_protect/2]).
-
-:- use_module(ciaopp(preprocess_flags)).
-:- use_module(ciaopp_tests(incanal/incanal_intermod_test),
-    [test/2, set_test_config/2, get_test_config/2]).
-:- use_module(ciaopp(plai/incanal/incanal_persistent_db), [set_inc_persistent/1]).
-:- use_module(ciaopp(frontend_driver), [module/1, ensure_lib_sources_loaded/0]).
-:- use_module(ciaopp(analyze_driver)).
-:- use_module(ciaopp(raw_printer), [show_analysis/0]).
-
-:- include(test_dirs).
-
 :- doc(title, "Benchmark driver for incremental modular experiments").
 
 :- doc(module, "
@@ -55,6 +36,25 @@ benchmark qsort with an incremental modular analysis.
 
 The benchmarks that can be currently performed are present in @tt{test_dirs.pl}.
 ").
+
+:- use_module(library(lists), [member/2]).
+:- use_module(library(messages), [show_message/3]).
+:- use_module(library(pathnames), [path_concat/3]).
+:- use_module(library(system), [working_directory/2]).
+:- use_module(library(bundle/bundle_paths), [bundle_path/3]).
+:- use_module(engine(runtime_control), [set_prolog_flag/2]).
+:- use_module(library(streams), [fixed_absolute_file_name/3]).
+:- use_module(library(errhandle), [error_protect/2]).
+
+:- use_module(ciaopp(preprocess_flags)).
+:- use_module(ciaopp_tests(incanal/incanal_intermod_test),
+    [test/2, set_test_config/2, get_test_config/2]).
+:- use_module(ciaopp(plai/incanal/incanal_persistent_db), [set_inc_persistent/1]).
+:- use_module(ciaopp(frontend_driver), [module/1, ensure_lib_sources_loaded/0]).
+:- use_module(ciaopp(analyze_driver)).
+:- use_module(ciaopp(raw_printer), [show_analysis/0]).
+
+:- include(test_dirs).
 
 :- export(monolithic/0).
 :- doc(monolithic/0, "Flag to store whether the analysis is monolithic or not.").
@@ -100,10 +100,9 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(clique_widen_ub, 10),
     set_pp_flag(clique_widen_lb, 10),
     current_pp_flag(pplog, Logs),
-    set_pp_flag(pplog, [incremental_high|Logs]),
+    set_pp_flag(pplog, [p_abs,incremental_high|Logs]),
     set_pp_flag(types,deftypes).
 %        set_pp_flag(timestamp_trace, on).
-%  set_pp_flag(fact_info, on). % Necessary for incanal trust success
 
 test(Bench, EditT, ConfigOpts, NCh, Domain) :-
     retractall_fact(test_config_(_,_)),

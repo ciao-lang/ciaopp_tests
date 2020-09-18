@@ -35,7 +35,6 @@ domain=$3
 user_opts=$4
 
 bench_driver=incanal_intermod_bench_driver
-ana_checker=analysis_results_checker
 
 mod_config=(monolithic modular)
 inc_config=("" "incremental")

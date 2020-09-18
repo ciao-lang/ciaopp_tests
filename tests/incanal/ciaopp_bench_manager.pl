@@ -48,13 +48,6 @@ qsort-add-not_rand-1-shfr-dd
 
 @end{verbatim}
 
-Checking the correctness of a performed test:
-
-@begin{verbatim}
-?- check_tests_semantic_results(shfr, ['test_results/aiakl-add-not_rand-1-shfr-dd']).
-@end{verbatim}
-
-
 ").
 
 :- use_module(engine(io_basic)).
@@ -110,15 +103,6 @@ show_performed_tests_directory :-
     ;
         true
     ).
-
-:- export(check_tests_semantic_results/2).
-:- pred check_tests_semantic_results(Domain, Dirs) : atm * list(atm)
-    #"Checks the correctness of analysis results in an already
-    performed benchmark. @var{Dirs} is a (sub)list of the
-    directories displayed by
-    @pred{show_performed_tests_directory}.".
-check_tests_semantic_results(Domain, Dirs) :-
-    process_call('./analysis_results_checker', [Domain|Dirs], []).
 
 % ---------------------------------------------------------------------------
 
