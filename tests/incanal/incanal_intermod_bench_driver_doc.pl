@@ -18,11 +18,11 @@ Run the benchmark of modular analysis with incremental modular analysis.
 
 @begin{enumerate}
 @item Compile the command @tt{ciaoc incanal_intermod_bench_driver}.
-@item Execute @tt{./incanal_intermod_bench_driver <bench_dir_name> <add/del> <#changes/iteration> <domain> Opts}.
+@item Execute @tt{ciaopp-test incanal <bench_dir_name> <add/del> <#changes/iteration> <domain> Opts}.
 @item Example (with no options):
 
 @begin{verbatim}
-./incanal_intermod_bench_driver qsort add 1 gr
+ciaopp-test incanal qsort add 1 gr
 @end{verbatim}
 
 will perform a test of adding clauses 1 by 1 in the files of benchmark
@@ -102,7 +102,7 @@ each of the benchmarks). To express @tt{N} and @tt{M} in
 For example:
 
 @begin{verbatim}
-./incanal_intermod_bench_driver hanoi add 2 shfr --rand 2132 --start 20 --steps 80 --seq_sz rel
+ciaopp-test incanal hanoi add 2 shfr --rand 2132 --start 20 --steps 80 --seq_sz rel
 @end{verbatim}
 
 Will simulate editing the program hanoi starting from a random program

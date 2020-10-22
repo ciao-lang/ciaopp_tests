@@ -47,7 +47,6 @@ qsort-add-not_rand-1-shfr-dd
 .
 
 @end{verbatim}
-
 ").
 
 :- use_module(engine(io_basic)).

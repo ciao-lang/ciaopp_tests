@@ -12,7 +12,6 @@ fi
 
 pushd $_base > /dev/null 2>&1
 
-bench_driver=incanal_intermod_bench_driver
 res_dir=test_results
 
 ./gen_lib_cache.sh
@@ -35,8 +34,8 @@ for i in "${tests[@]}" ; do
     echo "Running $i"
     for k in "${inc_configs[@]}" ; do
         log_file="$res_dir"/logs/"$i"_"$k"_"$domain"_assertions.log
-        echo "COMMAND ./$bench_driver $i add 1 $domain $k monolithic_driver"
-        ./$bench_driver "$i" add 1 $domain $k monolithic_driver --user_tag $tag
+        echo "COMMAND ciaopp-test incanal $i add 1 $domain $k monolithic_driver"
+        ciaopp-test incanal "$i" $domain $k monolithic_driver --user_tag $tag
     done
 
     bench_res_dir=$(find $res_dir -name "$i*$domain*$tag*")

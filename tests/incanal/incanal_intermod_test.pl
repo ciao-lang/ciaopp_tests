@@ -1,4 +1,4 @@
-:- module(incanal_intermod_test, [test/2], [assertions, datafacts]).
+:- module(incanal_intermod_test, [test/2], [assertions, dynamic, fsyntax]).
 
 :- doc(title, "Incremental analysis tester").
 
@@ -8,9 +8,9 @@ This is a low-level interface, for analyzing consistently with ciaopp
 flags, use the incanal_intermod_bench_driver module.").
 
 :- use_module(library(sort), [sort/2]).
-:- use_module(library(lists), [member/2, reverse/2,append/3]).
-:- use_module(library(system), [directory_files/2, make_directory/1, file_exists/1]).
-:- use_module(library(pathnames), [path_concat/3, path_splitext/3, path_split/3, path_basename/2]).
+:- use_module(library(lists)).
+:- use_module(library(system)).
+:- use_module(library(pathnames)).
 :- use_module(library(fastrw), [fast_write/2]).
 :- use_module(library(bundle/bundle_paths), [bundle_path/3,reverse_bundle_path/3]).
 :- use_module(library(arithpreds), [ceiling/2]).
@@ -18,12 +18,15 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(library(random), [srandom/1]).
 :- use_module(library(process), [process_call/3]).
 :- use_module(engine(runtime_control), [garbage_collect/0]).
-:- use_module(engine(stream_basic)).
+:- use_module(library(streams)).
+:- use_module(library(format), [format/2]).
 :- use_module(library(messages), [error_message/2,show_message/3]).
-:- use_module(library(source_tree), [current_file_find/3]).
-:- use_module(engine(messages_basic)).
+:- use_module(library(source_tree), [current_file_find/3, copy_file_or_dir/2]).
 :- use_module(library(terms), [atom_concat/2]).
 :- use_module(ciaobld(ciaoc_aux), [clean_tree/1]).
+:- use_module(engine(internals), [ciao_root/1]).
+:- use_module(library(operators)).
+:- use_module(library(hiordlib), [maplist/3]).
 
 :- use_module(ciaopp(preprocess_flags), [current_pp_flag/2]).
 :- use_module(ciaopp(analyze_driver), [analyze/2]).
@@ -37,6 +40,7 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(ciaopp_tests(incanal/naive_reader)).
 :- use_module(ciaopp_tests(incanal/edition_sequence_generator)).
 :- use_module(ciaopp_tests(incanal/module_writer)).
+:- use_module(ciaopp_tests(incanal/config_db)).
 :- use_module(ciaopp_tests(incanal/git_wrapper)).
 
 :- export(all_tests_results_dir/1).
@@ -44,36 +48,16 @@ all_tests_results_dir(Dir) :-
     bundle_path(ciaopp_tests, 'tests/incanal/test_results', Dir),
     decide_make_dir(Dir).
 
-:- data test_config/2.
-% default opts
-test_config('--group', clause). % clause ; pred % TODO: pred not implemented yet
-test_config('--one_mod', yes). % yes ; no
-test_config('--seq_sz', abs). % abs ; rel
-%test_config('rand', yes). % yes ; no
-test_config('edit_type', add). % add ; del
-test_config('n_edits', 1). % int
-test_config('domain', shfr).
-test_config('--user_tag', '').
-
-:- export(get_test_config/2).
-get_test_config(A, B) :-
-    test_config(A, B), !.
-
 code_test_all_config_dir(Dir, Id, CDir) :-
-    ( get_test_config('edit_type', 1) ->
-        ET = add,
-        DE = []
+    ( get_test_config('--edit_type', add) ->
+        ET = add, DE = []
     ;
         current_pp_flag(del_strategy, Del),
-        ET = del,
-        DE = ['-', Del]
+        ET = del, DE = ['-', Del]
     ),
     ( current_pp_flag(incremental, on) -> Inc = inc ; Inc = noninc),
-    get_test_config('n_edits', NE),
-    atom_number(NEAtm, NE),
-    get_test_config('domain', AI),
-    get_test_config('--user_tag', UId0),
-    ( UId0 = '' -> UIdL = [] ; UIdL = ['-', UId0]),
+    atom_number(NEAtm, ~get_test_config('--n_edits')),
+    ( get_test_config('--user_tag', UId0) -> UIdL = ['-', UId0] ; UIdL = []),
     ( get_test_config('--rand', Seed) ->
         atom_number(SeedAtm, Seed),
         Rand = [rand, '-', SeedAtm|X]
@@ -81,21 +65,92 @@ code_test_all_config_dir(Dir, Id, CDir) :-
     ),
     current_pp_flag(fixpoint, FP),
     ( current_pp_flag(module_loading, all) -> Mod = mon ; Mod = mod ),
-    X = ['-',NEAtm,'-',AI,'-',FP|UIdL],
-    SubDir = [Mod,'-',Inc|DE],
-    atom_concat([Id,'-',ET,'-'|Rand], TC),
-    path_concat(Dir, TC, D1),
-    decide_make_dir(D1),
-    atom_concat(SubDir, SD),
-    path_concat(D1, SD, CDir),
-    decide_make_dir(CDir).
+    X = ['-',NEAtm,'-',~get_test_config('--domain'),'-',FP|UIdL],
+    D1 = ~path_concat(Dir, ~atom_concat([Id,'-',ET,'-'|Rand])),
+    decide_make_dir(D1),   % bundle test dir
+    CDir = ~path_concat(D1, ~atom_concat([Mod,'-',Inc|DE])),
+    decide_make_dir(CDir). % config dir
 
-:- export(set_test_config/2).
-set_test_config(K,_) :-
-    retract_fact(test_config(K, _)),
+:- pred get_results_dir(BenchId, TDir) #"@var{TDir} is the location of results
+   in this bundle. A directory is created.".
+get_results_dir(BenchId, TDir) :-
+    get_test_config('--config-exp',CFile), !,
+    path_dirname(CFile, Base),
+    get_file_config(experiment_dir(RelDir)),
+    code_test_all_config_dir(~path_concat_list([Base,RelDir]), BenchId, TDir).
+get_results_dir(BenchId, TDir) :-
+    code_test_all_config_dir(~all_tests_results_dir, BenchId, TDir).
+
+:- export(gat_test_results_dir/2).
+gat_test_results_dir(RDir, GTDir) :-
+    path_concat(RDir, 'detailed_step_results', GTDir).
+
+stat_test_results_dir(RDir, STDir) :-
+    path_concat(RDir, 'stats', STDir).
+
+code_db_from_dir(BaseDir) :-
+    clean_reader,
+    test_dir(BenchId,_),
+    set_bundle_ops,
+    ( % failure-driven loop
+      test_file(BaseDir,BenchId,ModPath),
+        path_splitext(~path_basename(ModPath),ModName,'.pl'),
+        \+ naive_loaded(ModName,_),
+        show_message(simple, 'Reading ~w~n',[ModPath]),
+        read_module(ModName, ModPath),
+        fail
+    ; true ).
+
+:- pred test_file(+,+,-). % enumerates the files to be tested -- included files not working
+% TODO: get also included files (although not present in the current benchmarks)
+test_file(BaseDir,BenchId,File) :-
+    file_config(edit_dir(D)), % backtracking here
+    path_concat(~path_concat(BaseDir,BenchId),D,Dir),
+    current_file_find([proj(compilable), srctype(module)], Dir, File).
+test_file(BaseDir,_,File) :-
+    \+ file_config(edit_dir(_)),
+    current_file_find([proj(compilable), srctype(module)], BaseDir, File).
+
+set_bundle_ops :-
+    file_config(bundle_op(A,B,C)),
+    op(A,B,C),
     fail.
-set_test_config(K,V) :-
-    assertz_fact(test_config(K,V)).
+set_bundle_ops.
+
+:- pred test(BenchId, Opts)
+   #"Runs a test of analysis. The configuration has is expressed as follows:
+
+   @begin{itemize}
+   @item @var{TestId}: Identifier of the test, it must be specified in
+   the test_dirs.pl file as the name of the directory in the bench
+   directory that contains the test to be performed.
+   @item @var{TestTopLevel}: Main module of the (modular) program.
+   @comment{@item @var{NEdits}: Number of editions each step of the test (number
+   of clauses to be added or deleted).}
+   @item @var{EditType}: States whether the test is about adding or removing clauses
+   @item @var{TestDir}: Directory of the test.
+   @item @var{AbsInt}: Abstract domain that will be used for testing
+   @end{itemize}  ".
+test(BenchId, Opts) :-
+    set_configs(Opts),
+    bench_config(BenchId,SrcDir,TopLevel,DirType),
+    set_fact(test_it(0)),
+    set_fact(test_toplevel(TopLevel)),
+    get_analysis_dir(BenchId,AnaDir), % directory where analysis is performed
+    get_results_dir(BenchId,ResDir),  % directory where results are stored
+    init_results_directories(ResDir), % move before generating sim seq
+    set_fact(test_dir(BenchId,SrcDir)),
+    generate_simulation_sequence(DirType,SrcDir,Seq),
+    write_sequence_file(ResDir,Seq),
+    ( get_test_config('--debug-steps', _) ->
+        write_dir_state_sequence(Seq, DirType,ResDir)
+    ;   true
+    ),
+    clean_ana_dir(AnaDir),
+    ( (test_dir(TopLevel,BenchId,_,bundle) ; get_file_config(bundle_location(_))) ->
+        activate_bundle(BenchId,AnaDir,SrcDir)
+    ; true ),
+    perform_seq_analysis(Seq,DirType,~path_concat(AnaDir,TopLevel),AnaDir).
 
 set_configs([]).
 set_configs([C|Cs]) :-
@@ -107,75 +162,20 @@ set_configs([C|Cs]) :-
     error_message("Option not available: ~w", [C]),
     set_configs(Cs).
 
-:- pred get_results_dir(Id, TDir) #"@var{TDir} is the location of results
-    in this bundle. A directory is created.".
-get_results_dir(Id, TDir) :-
-    all_tests_results_dir(Dir),
-    code_test_all_config_dir(Dir, Id, TDir).
+bench_config(BenchId,SrcDir,TopLevel,manual) :-
+    get_file_config(bundle_location(RelSrcDir)), !, % configuration using file
+    bndls_dir(BundlesDir),
+    path_concat(BundlesDir,RelSrcDir,SrcDir),
+    get_file_config(entry_module(RTL)),
+    path_concat(BenchId,RTL,TopLevel).% assuming only one for now
+bench_config(BenchId,SrcDir,TopLevel,DirType) :-
+    test_dir(TopLevel,BenchId,SrcDir,DirType).
 
-:- export(gat_test_results_dir/2).
-gat_test_results_dir(RDir, GTDir) :-
-    path_concat(RDir, 'detailed_step_results', GTDir).
-
-stat_test_results_dir(RDir, STDir) :-
-    path_concat(RDir, 'stats', STDir).
-
-:- data test_toplevel/1.
-
-:- export(test_dir/2).
-:- data test_dir/2.
-
-code_db_from_dir(D) :-
-    clean_reader,
-    findall(File, current_file_find([proj(compilable), srctype(module)], D, File), Fs0),
-    % TODO: get also included files (although not present in the current benchmarks)
-    sort(Fs0, Fs1),
-    reverse(Fs1, Fs),
-    ( member(ModPath, Fs),  % failure driven loop: read the code in all modules
-        path_basename(ModPath,ModBase),
-        path_splitext(ModBase,ModName,'.pl'),
-        read_module(ModName, ModPath),
-        fail
-    ; true ).
-
-:- pred test(Bench, Opts) #"
-Runs a test of analysis. The configuration has is expressed as follows:
-
-@begin{itemize}
-@item @var{TestId}: Identifier of the test, it must be specified in
-the test_dirs.pl file as the name of the directory in the bench
-directory that contains the test to be performed.
-@item @var{TestTopLevel}: Main module of the (modular) program.
-@comment{@item @var{NEdits}: Number of editions each step of the test (number
-of clauses to be added or deleted).}
-@item @var{EditType}: States whether the test is about adding or removing clauses
-@item @var{TestDir}: Directory of the test.
-@item @var{AbsInt}: Abstract domain that will be used for testing
-@end{itemize}
-".
-test(bench(TestId, TestTopLevel, SrcDir,DirType), Opts) :-
-    set_configs(Opts),
-    set_fact(test_iteration(0)),
-    set_fact(test_toplevel(TestTopLevel)),
-    get_analysis_dir(TestId,AnaDir), % directory where analysis is performed
-    get_results_dir(TestId,ResDir), % directory where results are stored
-    init_results_directories(ResDir), % move before generating sim seq
-    generate_simulation_sequence(DirType,SrcDir,Seq),
-    set_fact(test_dir(TestId,SrcDir)),
-    write_sequence_file(ResDir,Seq),
-    ( get_test_config('--debug', _) ->
-        write_dir_state_sequence(Seq, DirType,ResDir)
-    ;   true
-    ),
-    clean_ana_dir(AnaDir),
-    path_concat(AnaDir,TestTopLevel,TLPath),
-    perform_seq_analysis(Seq,DirType,TLPath,AnaDir).
-
-get_analysis_dir(TestId,AnaDir) :- % TODO: hardwired
-    atom_concat('lpdoc',_,TestId), !,
+get_analysis_dir(BenchId,AnaDir) :- % TODO: hardwired -> remove now?
+    atom_concat('lpdoc',_,BenchId), !,
     bundle_path(lpdoc_asr_inc, '.', AnaDir).
-get_analysis_dir(TestId,AnaDir) :-
-    get_results_dir(TestId,AnaDir).
+get_analysis_dir(BenchId,AnaDir) :-
+    get_results_dir(BenchId,AnaDir).
 
 clean_ana_dir(AnaDir) :-
     path_concat(AnaDir,'src/version_auto.pl',VPath),  % TODO: !!
@@ -189,84 +189,78 @@ clean_ana_dir(AnaDir) :-
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.dump', '-delete'], []),
     process_call(path(find), [AnaDir, '-type', 'f', '-name', '*.dump_inc', '-delete'], []).
 
+% -----------------------------------------------------------------
+:- doc(section, "Prepare test edition sequence").
+% -----------------------------------------------------------------
+
 generate_simulation_sequence(manual, SrcDir, Seq) :-
     code_db_from_dir(SrcDir),
-    get_code_summary(Sum, NCls),
-    get_test_config('n_edits', NEdits),
-    TotalNSteps is NCls / NEdits,
-    ceiling(TotalNSteps, IntSteps),
-    generate_sim_seq_(Sum, NCls, IntSteps, NEdits, Seq2, EditType),
-    get_seq_limits(IntSteps, StepStart, NSteps),
-    limit_sequence(Seq2, StepStart, NSteps, Seq),
-    complementary_edit_type_(EditType, CET),
-    fill_seq(Seq, CET).
+    get_code_summary(Sum0, NCls),
+    prioritize_modules(Sum0,Sum),
+    get_test_config('--n_edits', NEdits),
+    generate_sim_seq_(Sum, NCls, ~ceiling(NCls/NEdits), NEdits, Seq, EditType),
+    fill_seq(Seq, ~complementary_edit_type_(EditType)).
 generate_simulation_sequence(git, SrcDir, Seq) :-
     load_git_repo(SrcDir,incanal_git),
     % currenlty for git repos, only the order of commit is available
     findall(Commit, git_log(incanal_git,_,Commit), Seq),
     ( reverse_bundle_path(SrcDir,_,_) ->
-      clean_ana_dir(SrcDir)
+        clean_ana_dir(SrcDir)
     ; true
     ).
 generate_simulation_sequence(states,SrcDir,Seq) :-
-    directory_files(SrcDir,Seq0),
-    sort(Seq0,Seq1),
+    sort(~directory_files(SrcDir),Seq1),
     findall(X, filter_directories(Seq1,SrcDir,X), Seq).
 
 filter_directories(Seq, SrcDir, X) :-
     member(D,Seq),
-    atom_codes(D,LD),
-    ( append("state_", _, LD) -> true ; fail ),
+    ( atom_concat('state_', _, D) -> true ; fail ),
     path_concat(SrcDir,D,X).
 
 % edit not_rand mod_by_mod
 generate_sim_seq_(Sum, NCls, Steps, NEdits, Seq, 1) :-
-    \+ get_test_config('--rand', _),
-    get_test_config('--one_mod', OneMod), !,
-    ( OneMod = yes ->
-        generate_edit_sequence_mods(Sum, NCls, Steps, NEdits, 1, Seq1)
+    get_seq_limits(NCls,PreSkip0,MaxS),
+    get_test_config('--edit_type', EditT),
+    ( EditT = del -> PreSkip = ~(NCls-PreSkip0-MaxS) ; PreSkip = PreSkip0 ),
+    Cfg = cfg(NCls, Steps, NEdits,1,PreSkip,MaxS),
+    ( get_test_config('--rand', Seed) ->
+        srandom(Seed),
+        gen_edit_sequence(Sum, Cfg, gen_random_sorted_sequence, Seq)
     ;
-        generate_edit_sequence_uniform_mods(Sum, NCls, Steps, NEdits, 1, Seq1)
+        ( get_edit_mode(predicate) ->
+            gen_edit_sequence(Sum, Cfg, gen_pred_num, Seq1)
+        ;
+            gen_edit_sequence(Sum, Cfg, gen_num_sequence, Seq1)
+        )
     ),
-    get_test_config('edit_type', EditT),
-    ( EditT = 0 -> % for deleting
-      reverse(Seq1, Seq)
-    ; Seq = Seq1).
-% edit rand
-generate_sim_seq_(Sum, NCls, Steps, NEdits, Seq, EditT) :-
-    get_test_config('--rand', Seed),
-    srandom(Seed),
-    get_test_config('edit_type', EditT),
-    generate_random_edit_sequence(Sum, NCls, Steps, NEdits, EditT, Seq).
+    ( EditT = del -> reverse(Seq1, Seq) ; Seq = Seq1).
 
-get_seq_limits(_, Start, Steps) :-
+edit_number(add,1).
+edit_number(del,0).
+
+get_seq_limits(TotalSteps, Start, Steps) :-
     get_test_config('--seq_sz', abs), !,
-    ( get_test_config('--start', Start) -> true
-    ; Start = no ),
-    ( get_test_config('--steps', Steps) -> true
-    ; Steps = no
-    ).
+    ( get_test_config('--start', Start) -> true ; Start = 0 ),
+    ( get_test_config('--steps', Steps) -> true ; Steps is TotalSteps - Start).
 get_seq_limits(TotalSteps, Start, Steps) :-
     ( get_test_config('--start', StartRatio) ->
-        FStart is (StartRatio/100) * TotalSteps,
-        ceiling(FStart, Start)
+        Start = ~ceiling((StartRatio/100) * TotalSteps)
     ; Start = no ),
     ( get_test_config('--steps', StepsRatio) ->
-        FSteps is (StepsRatio/100) * TotalSteps,
-        ceiling(FSteps, Steps)
+        Steps = ~ceiling((StepsRatio/100) * TotalSteps)
     ; Steps = no
     ).
 
-init_results_directories(ResDir) :-
-    gat_test_results_dir(ResDir, GDir),
-    catch(make_directory(GDir), E, dir_exists_handler(GDir)),
-    stat_test_results_dir(ResDir, SDir),
-    catch(make_directory(SDir), E, dir_exists_handler(SDir)).
+prioritize_modules(Sum,Sum) :-
+    ( \+ get_file_config(priority_modules(_)) ;
+        get_file_config(priority_modules([])) ), !.
+prioritize_modules(Sum0,Sum) :-
+    get_file_config(priority_modules(Prior)),
+    maplist(tr_sum,Prior,PriorSum), % create list with the shape of the summary
+    % remove priority modules and sort the rest
+    append(PriorSum,~sort(~difference(Sum0,PriorSum)), Sum).
 
-dir_exists_handler(Dir) :-
-    path_split(Dir, Base, _),
-    error_message("Directory exists, remove it to redo the test: \n~w",[Base]),
-  abort.
+tr_sum(X,X-_).
 
 complementary_edit_type_(1,0).
 complementary_edit_type_(0,1).
@@ -277,9 +271,19 @@ fill_seq([St|Seq], EditType) :-
     fill_seq(Seq, EditType).
 
 fill_dir([], _).
-fill_dir([present(_, ClList)|IniState], EditType) :-
-    fill_list(ClList, EditType),
+fill_dir([p(_, ClList)|IniState], EditType) :-
+    ( get_edit_mode(predicate) ->
+        fill_pred(ClList, EditType)
+    ;
+        fill_list(ClList,EditType)
+    ),
     fill_dir(IniState, EditType).
+
+:- export(fill_pred/2).
+fill_pred([], _).
+fill_pred([_P/_A-LCls|Xs], EditType) :- !,
+    fill_list(LCls,EditType),
+    fill_pred(Xs, EditType).
 
 fill_list([], _).
 fill_list([X|Xs], EditType) :-
@@ -288,37 +292,22 @@ fill_list([X|Xs], EditType) :-
 fill_list([_|Xs], EditType) :-
     fill_list(Xs, EditType).
 
+% -----------------------------------------------------------------
+:- doc(section, "Perform analysis").
+% -----------------------------------------------------------------
+
 perform_seq_analysis([], _, _, _).
 perform_seq_analysis([St|Seq], DirType, TopLevel, Dir) :-
-    % '$metachoice'(Chpt),
-    % display(user_error, chpt_seq_analysis(Chpt)), nl(user_error),
-    %
     perform_seq_analysis1(St, DirType, TopLevel, Dir), !,
     % TODO: This cut removes choicepoints (the choicepoints were making
     % retracting facts very slow, because it had to check them)
     perform_seq_analysis(Seq, DirType, TopLevel, Dir).
 
-:- op(970, fx, (nochpt)).
-
-:- use_module(engine(hiord_rt), [call/1]).
-
-% TODO: move??
-:- meta_predicate nochpt(goal).
-:- export(nochpt/1).
-nochpt(G) :-
-    '$metachoice'(Chpt0),
-    call(G),
-    '$metachoice'(Chpt),
-    ( Chpt == Chpt0 -> true
-    ; error_message("WARNING: expected NOCHPT!! ~q", [G])
-    ).
-
 perform_seq_analysis1(St, DirType, TopLevel, Dir) :-
     write_dir_state(St, DirType, Dir,git_checkout_copy),
-    test_config(domain, AbsInt), !,
+    get_test_config('--domain', AbsInt),
     clean_stat_steps,
-    inc_test_iteration(N),
-    display_list(['\n---------- Edition iteration ', N, ' ----------\n\n']),
+    format('~n---------- Edition iteration ~d ----------~n~n', [~inc_test_it]),
     garbage_collect,
     set_dir_dump_lat,
     ( ( current_pp_flag(intermod, off) ->
@@ -333,75 +322,67 @@ perform_seq_analysis1(St, DirType, TopLevel, Dir) :-
         ( get_test_config('--show-raw-output',_) -> raw_output(user) ; true )
     ; error_message("ANALYSIS FAILED", [])
     ),
-    edition_stat_file(StatFile),
-    dump_steps(StatFile),
+    dump_steps(~edition_stat_file),
     dump_gat.
 
 write_sequence_file(DstDir, Seq) :-
-    path_concat(DstDir, 'seq.bin', F),
-    open(F, write, S),
+    open(~path_concat(DstDir, 'seq.bin'), write, S),
     fast_write(S, Seq),
     close(S).
 
 edition_stat_file(StatFile) :-
     test_dir(Name,_),
-    test_iteration(N),
-    get_results_dir(Name, RDir),
-    stat_test_results_dir(RDir, StatF),
-    atom_number(A, N),
-    atom_concat(A, '.stat', F),
-    path_concat(StatF, F, StatFile).
+    stat_test_results_dir(~get_results_dir(Name), StatF),
+    atom_number(A, ~test_it),
+    path_concat(StatF, ~atom_concat(A, '.stat'), StatFile).
+
+init_results_directories(ResDir) :-
+    gat_test_results_dir(ResDir, GDir),
+    catch(make_directory(GDir), _, dir_exists_handler(GDir)),
+    stat_test_results_dir(ResDir, SDir),
+    catch(make_directory(SDir), _, dir_exists_handler(SDir)).
+
+dir_exists_handler(Dir) :-
+    error_message("Dir exists, remove it to redo the test: \n~w",[~path_dirname(Dir)]),
+    abort.
 
 % ----------------------------------------------------------------
-:- data test_iteration/1.
-inc_test_iteration(N1) :-
-    retract_fact(test_iteration(N)),
-    N1 is N+1,
-    set_fact(test_iteration(N1)).
+:- data test_it/1.
+inc_test_it(N) :-
+    retract_fact(test_it(N)),
+    set_fact(test_it(~(N+1))).
 
 dump_gat :-
     test_dir(Name,_),
-    test_iteration(N),
-    it_dump_gat_file(Name, N, DumpDir),
+    it_dump_gat_file(Name, ~test_it, DumpDir),
     ( current_pp_flag(intermod, off) ->
-        path_concat(DumpDir, Name, N1),
-        atom_concat(N1, '.dump', N0),
-        dump(N0, [incremental])
+        dump(~atom_concat(~path_concat(DumpDir, Name), '.dump'), [incremental])
     ;
         dump_registries(DumpDir)
     ).
 
 set_dir_dump_lat :- % CurrMod has the full path
     test_dir(Name,_),
-    test_iteration(N),
-    it_dump_gat_file(Name, N, DumpDir),
-    set_fact(dump_dir(DumpDir)).
+    set_fact(dump_dir(~it_dump_gat_file(Name, ~test_it))).
 
 :- export(it_dump_gat_file/3).
-:- pred it_dump_gat_file(TestId, N, DumpF)
-    #"Dumps the global answer table, i.e., the registry
-      information in modular analysis of the state @var{N} of the
-      sequence of states of test with id @var{TestId}, in file
-      @var{DumpF}.".
-it_dump_gat_file(TestId, N, F) :-
-    it_dump_gat_file_(TestId, N, F),
-    ( file_exists(F) -> true ;
-        make_directory(F)
-    ).
-
-it_dump_gat_file_(TestId, N, DumpDir) :-
-    get_results_dir(TestId, RDir),
-    gat_test_results_dir(RDir, T),
+:- pred it_dump_gat_file(BenchId, N, DumpF)
+   #"Dumps the global answer table, i.e., the registry
+     information in modular analysis of the state @var{N} of the
+     sequence of states of test with id @var{BenchId}, in file
+     @var{DumpF}.".
+it_dump_gat_file(BenchId, N, DumpDir) :-
     atom_number(A, N),
-    atom_concat('inc_reg_', A, F),
-    path_concat(T, F, DumpDir). % add extension
+    path_concat(~gat_test_results_dir(~get_results_dir(BenchId)),
+                ~atom_concat('inc_reg_', A),
+                DumpDir),
+    decide_make_dir(DumpDir).
 
 dump_registries(DumpDir) :- % This registry should contain the GAT
     findall(X, analyzed_module(X), Modules),
     ( % failure-driven loop
       member(Mod, Modules),
-        path_concat(DumpDir, Mod, NewBase),
-        write_registry_file(NewBase, Mod, quiet), % locate
+        write_registry_file(~path_concat(DumpDir, Mod), Mod, quiet),
         fail
     ; true).
 
@@ -414,38 +395,47 @@ analyzed_module(Mod) :-
     ; fail
     ).
 
-% This predicate is thought to skip steps of sequences (i.e. so the
-% test is not forced to start with 0 clauses)
-limit_sequence(OrigSeq, StepStart, NSteps, Seq) :-
-    ( StepStart = no ->
-        Seq2 = OrigSeq
-    ;
-        remove_first_elems_list(OrigSeq, StepStart, Seq2)
-    ),
-    ( NSteps = no ->
-        Seq = Seq2
-    ;
-        get_first_elems_list(Seq2, NSteps, Seq)
-    ).
-
-:- export(remove_first_elems_list/3).
-:- pred remove_first_elems_list(Ls, N, NLs) : (list(Ls), int(N)) => list(NLs)
-    #"Removes the first @var{N} elems of @var{Ls}.".
-remove_first_elems_list(Ls, N, NLs) :-
-    remove_first_elems_list_(Ls, 0, N, NLs).
-
-remove_first_elems_list_(S, I, I, S) :- !.
-remove_first_elems_list_([_|Ls1], I, LsStart, Ls) :-
-    I1 is I + 1,
-    remove_first_elems_list_(Ls1, I1, LsStart, Ls).
-
-:- export(get_first_elems_list/3).
-get_first_elems_list(_, 0, []) :- !.
-get_first_elems_list([E|Ls], N, [E|NLs]) :-
-    N1 is N - 1,
-    get_first_elems_list(Ls, N1, NLs).
-
 decide_make_dir(Dir) :-
     \+ file_exists(Dir), !,
     make_directory(Dir).
 decide_make_dir(_).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- doc(section, "Bundle").
+
+% :- use_package(trace).
+:- use_module(ciaobld(bundle_scan), [scan_bundles_at_path/1]).
+:- use_module(ciaopp_tests(incanal/dynamic_workspace)).
+
+activate_bundle(BenchId,AnaDir,SrcDir) :-
+    path_concat(SrcDir,BenchId,BndlDir),
+    path_concat(AnaDir,BenchId,BndlAnaDir),
+    %% copy manifest file or directory
+    copy_file_or_dir(~path_concat(BndlDir,'Manifest'),BndlAnaDir),
+    %% copy the packages
+    ( % failure-driven loop
+        ( current_file_find([srctype(package)], BndlDir, File) ;
+            current_file_find([srctype(include)], BndlDir, File) ),
+        path_relocate(BndlDir,BndlAnaDir,File,AnaFile),
+        process_call(path(mkdir), ['-p', ~path_dirname(AnaFile)], []),
+        copy_file_or_dir(File,AnaFile),
+        fail
+    ; true),
+    show_message(simple, 'Activating bundle ~w at~n~t ~w~n',[BenchId,AnaDir]),
+    activate_workspace(AnaDir),
+    reload_ciaopath,
+    scan_bundles_at_path(AnaDir).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% :- op(970, fx, (nochpt)).
+%% :- use_module(engine(hiord_rt), [call/1]).
+%% % TODO: move??
+%% :- meta_predicate nochpt(goal).
+%% :- export(nochpt/1).
+%% nochpt(G) :-
+%%     '$metachoice'(Chpt0),
+%%     call(G),
+%%     '$metachoice'(Chpt),
+%%     ( Chpt == Chpt0 -> true
+%%     ; error_message("WARNING: expected NOCHPT!! ~q", [G])
+%%     ).

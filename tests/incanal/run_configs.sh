@@ -34,8 +34,6 @@ test_type=$2 #add or del
 domain=$3
 user_opts=$4
 
-bench_driver=incanal_intermod_bench_driver
-
 mod_config=(monolithic modular)
 inc_config=("" "incremental")
 del_config=("top_down" "bottom_up" "bottom_up_cls")
@@ -63,8 +61,8 @@ function run_config {
     rm -f "$log_file"
     echo "Logs are being printed in $log_file"
 
-    echo "COMMAND: ./$bench_driver $bench_name $test_type 1 $domain $rand $mod $inc $bench_opts $user_opts"
-    ./$bench_driver "$bench_name" "$test_type" 1 $domain $rand "$mod" $inc $bench_opts $user_opts &> "$log_file"
+    echo "COMMAND: ciaopp-test incanal $bench_name $domain --edit_type $test_type $rand $mod $inc $bench_opts $user_opts"
+    ciaopp-test incanal "$bench_name" $domain --edit_type $test_type $rand "$mod" $inc $bench_opts $user_opts &> "$log_file"
 }
 
 if [ "$test_type" == "add" ]; then

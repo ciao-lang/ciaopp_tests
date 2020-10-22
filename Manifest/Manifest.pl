@@ -8,4 +8,6 @@ alias_paths([
     ciaopp_tests = 'tests'
 ]).
 
-%manual('ciaopp_tests', [main='doc/SETTINGS.pl']).
+manual('ciaopp_tests', [main='doc/SETTINGS.pl']).
+
+cmd('cmds/ciaopp-test').

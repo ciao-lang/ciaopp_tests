@@ -152,9 +152,9 @@ $
 
 ## Running one single test
 
-The bench driver of single execution is `incanal_intermod_bench_driver`.
+The bench driver of single execution is `ciaopp-test` with the `incanal` option.
 
-The program accepts several parameters: `./incanal_intermod_bench_driver bench_name add/del #changes/it domain [Opts]`
+The program accepts several parameters: `ciaopp-test incanal bench_name add/del #changes/it domain [Opts]`
 
   * `bench_name`: name of the benchmark (one of the described earlier).
   * `edits/iteration`: number of changes (additions or deletions) that
@@ -180,7 +180,7 @@ with the modular incremental approach:
 ``` shell
 $ cd ~/ciao/ciaopp/src/plai/incanal/tests
 $ rm -rf test_results/qsort* # remove previous results (if existing)
-$ ./incanal_intermod_bench_driver qsort add 1 shfr modular incremental
+$ ciaopp-test incanal qsort add 1 shfr modular incremental
 ```
 
 * Analyze `aiakl` adding 3 clauses each iteration with groundness
@@ -188,20 +188,20 @@ $ ./incanal_intermod_bench_driver qsort add 1 shfr modular incremental
 
 ``` shell
 $ rm -rf test_results/aiakl-* # remove previous results (if existing)
-$ ./incanal_intermod_bench_driver aiakl add 3 gr modular
+$ ciaopp-test incanal aiakl add 3 gr modular
 ```
 
 * Analyze `bid` removing clauses 1 by 1 for sharing and freenes domain
 with the monolithic incremental approach, with user tag "testing":
 ``` shell
 $ rm -rf test_results/bid*
-$ ./incanal_intermod_bench_driver bid add 1 shfr monolithic incremental top_down not_rand --user_tag testing
+$ ciaopp-test incanal bid add 1 shfr monolithic incremental top_down not_rand --user_tag testing
 ```
 
 * Analyze `cleandirs` adding 3 clauses each iteration with def domain with the modular incremental approach, starting in iteration 10 (e.g. from 30 clauses), and performing 5 steps (e.g. add 15 clauses):
 ``` shell
 $ rm -rf test_results/cleandirs*
-$ ./incanal_intermod_bench_driver cleandirs add 3 def modular incremental --start 10 --steps 5
+$ ciaopp-test incanal cleandirs add 3 def modular incremental --start 10 --steps 5
 ```
 
 ## Structure of the results directory
@@ -229,7 +229,7 @@ table is updated (see algorithm in paper), we display it in the log.
 
 Example, the first iteration of
 ``` shell
-$ ./incanal_intermod_bench_driver qsort add 1 shfr modular incremental
+$ ciaopp-test incanal qsort add 1 shfr modular incremental
 ```
 
 ```shell

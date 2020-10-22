@@ -3,72 +3,81 @@
 
 :- doc(section, "Benchmarks").
 % test_dir(TopLevel, BenchId, DirName, EditionSimulationType).
-test_dir(test, qsort, Dir, manual) :-
-    basic_incanal_dir(qsort,Dir).
-test_dir(hanoi, hanoi, Dir, manual) :-
-    basic_incanal_dir(hanoi,Dir).
-test_dir(ann, ann, Dir, manual) :-
-    basic_incanal_dir(ann,Dir).
-test_dir(aiakl, aiakl, Dir, manual) :-
-    basic_incanal_dir(aiakl,Dir).
-test_dir(zbid, bid, Dir, manual) :-
-    basic_incanal_dir(bid,Dir).
-test_dir(z_boyer, boyer, Dir, manual) :-
-    basic_incanal_dir(boyer,Dir).
-test_dir(simple, simple, Dir, manual) :-
-    basic_incanal_dir(simple,Dir).
-test_dir(managing_project, manag_proj_simple, Dir, manual) :-
-    basic_incanal_dir(manag_proj_simple,Dir).
-test_dir(main_check_links, check_links, Dir, manual) :-
-    basic_incanal_dir(check_links,Dir).
-test_dir('cmds/chat', chat80, Dir, manual) :-
-    basic_incanal_dir(chat80,Dir).
-test_dir(peephole, peephole, Dir, manual) :-
-    basic_incanal_dir(peephole,Dir).
-test_dir(z_prolog_read, prolog_read, Dir, manual) :-
-    basic_incanal_dir(prolog_read,Dir).
-test_dir(witt, witt, Dir, manual) :-
-    basic_incanal_dir(witt,Dir).
-test_dir(progeom, progeom, Dir, manual) :-
-    basic_incanal_dir(progeom,Dir).
-test_dir(rdtok, rdtok, Dir, manual) :-
-    basic_incanal_dir(rdtok,Dir).
-test_dir(warplan, warplan, Dir, manual) :-
-    basic_incanal_dir(warplan,Dir).
-test_dir(main_cleandirs, cleandirs, Dir, manual) :-
-    basic_incanal_dir(cleandirs,Dir).
-test_dir(main_leancop, leancop, Dir, manual) :-
-    basic_incanal_dir(leancop,Dir).
-test_dir(bu_doctree,bibutils, Dir, manual) :-
-    basic_incanal_dir(bibutils,Dir).
+test_dir(TopLevel, BenchId, Dir, manual) :-
+    basic_test(BenchId,TopLevel), !,
+    basic_incanal_dir(BenchId, Dir).
+% bundles (they need to be deactivated in your local copy)
+% This is not autmatically sync, it could be done by reading at the Manifest
+test_dir(BundleEntry, Bundle, Dir, bundle) :-
+    bundle_test(Bundle, BundleEntry), !,
+    bndls_dir(BundlesDir),
+    path_concat(BundlesDir,Bundle,Dir).
+    % assertions
 
 :- doc(section, "Tests cases").
 % types
-test_dir(main, min_types, Dir, manual) :-
-    basic_incanal_dir(min_types,Dir).
-% mutually recursive
-test_dir(m1, mmutr, Dir, manual) :-
-    basic_incanal_dir(mmutr,Dir).
-% monolithic
-test_dir(hanoi, hanoi_mon, Dir, manual) :-
-    mon_incanal_dir(hanoi_mon, Dir).
-% bu delete clauses
-test_dir(ren, renaming_test, Dir, manual) :-
-    basic_incanal_dir(renaming_test, Dir).
-test_dir(parents_test, parents1, Dir, manual) :-
-    basic_incanal_dir(parents1, Dir).
-test_dir(parents_test, parents2, Dir, manual) :-
-    basic_incanal_dir(parents2, Dir).
-% assertions
+test_dir(T, X, Dir, manual) :-
+    test_case(X,T),
+    basic_incanal_dir(X,Dir).
 test_dir('trust_success.pl',X,Dir,states) :-
     inc_trust_succ_test(X), !,
     incanal_trusts_dir(X,Dir).
-test_dir('trust_calls.pl',X, Dir,states) :-
+test_dir(trust_calls,X, Dir,states) :-
     inc_trust_call_test(X), !,
     incanal_trusts_dir(X,Dir).
 test_dir(trust,X, Dir,git) :-
     basic_inc_trust_test(X), !,
     incanal_trusts_dir(X,Dir).
+
+:- pred basic_test(TestId,TestTopLevel) => atm * atm.
+
+basic_test(qsort, test).
+basic_test(mmutr, m1).
+basic_test(hanoi, hanoi).
+basic_test(ann, ann).
+basic_test(aiakl, aiakl).
+basic_test(bid, zbid).
+basic_test(boyer, z_boyer).
+basic_test(simple, simple).
+basic_test(manag_proj_simple, managing_project).
+basic_test(check_links, main_check_links).
+basic_test(peephole, peephole).
+basic_test(prolog_read, z_prolog_read).
+basic_test(witt, witt).
+basic_test(progeom, progeom).
+basic_test(rdtok, rdtok).
+basic_test(warplan, warplan).
+
+% types
+test_case(min_types, main).
+% mutually recursive
+test_case(mmutr, m1).
+% renaming
+test_case(renaming_test,ren).
+% monolithic
+test_case(hanoi_mon, hanoi).
+% bu delete clauses
+test_case(renaming_test, ren).
+test_case(parents1, parents_test).
+test_case(parents2, parents_test).
+
+:- pred bundle_test(BundleId,BundleTopLevel) => atm * atm.
+
+% bundle entry may be overwritten by the configuration file
+bundle_test(gendot,'lib/gendot/gendot.pl').
+bundle_test(leancop,'src/leancop_main').
+bundle_test(ciao_gui,'ciao_gui/cmds/ciao_gui.pl').
+bundle_test(ciaofmt,'cmds/ciaofmt').
+bundle_test(bibutils,'cmds/pl2pubs.pl').
+bundle_test(cleandirs,'cmds/cleandirs').
+bundle_test(synch_actions,'cmds/synch_actions').
+bundle_test(tptp2X,'src/tptp2X.main.pl'). % no entries, add exports?
+bundle_test(provrml,'lib/provrml/provrml.pl').
+bundle_test(mycin,'lib/mycin/mycin_support.pl').
+bundle_test(xml_extra,'tests/xdr_handle_test/xdr_handle_test.pl'). % more tests available
+bundle_test(lpmake,'cmds/lpmake.pl').
+bundle_test(lpdoc,'cmds/lpdoccl.pl').
+bundle_test(davinci,'lib/davinci/davinci.pl').
 
 basic_incanal_dir(Id,Dir) :-
     path_concat('tests/incanal/bench',Id,D1),

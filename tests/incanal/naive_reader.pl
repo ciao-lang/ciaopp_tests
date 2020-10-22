@@ -1,17 +1,20 @@
 :- module(naive_reader, [read_module/2, clean_reader/0], [assertions, datafacts]).
 
-:- use_module(engine(stream_basic)).
-:- use_module(library(read), [read/2]).
-:- use_module(library(aggregates), [findall/3]).
-:- use_module(library(lists), [length/2]).
-:- use_module(library(operators)).
-
 :- doc(title, "Naive reader of Ciao modules").
 
 :- doc(author, "Isabel Garcia-Contreras").
 
 :- doc(module, "This module assumes that all directives are present at
     the beginning of the module.").
+
+:- use_module(engine(stream_basic)).
+:- use_module(library(read), [read/2]).
+:- use_module(library(aggregates), [findall/3, bagof/3]).
+:- use_module(library(lists), [length/2]).
+:- use_module(library(operators)).
+:- use_module(config_db, [get_file_config/1]).
+
+:- use_module(library(hiordlib),[foldl/4]).
 
 :- export(module_clause/6).
 :- doc(module_clause/6, "A clause writen in a module, it is of the form
@@ -20,6 +23,7 @@
 % module_clause(Mod, ClType, Pred, A, ClN, Clause).
 
 :- export(naive_loaded/2).
+:- pred naive_loaded(Mod,ModPath).
 :- data naive_loaded/2.
 
 % do this before loading new directories
@@ -83,11 +87,18 @@ is_clause(Head, P, A) :- !, % a fact
     functor(Head, P, A).
 
 :- export(get_code_summary/2).
-:- pred get_code_summary(Sum, NCls) #"Summarizes the number of clauses
+:- pred get_code_summary(Sum, N) #"Summarizes the number of clauses
 present in each of the modules loaded in the database. The format of
 @var{Sum} is compatible with the input of
 edition_sequence_generator.".
-get_code_summary(Sum, NCls) :-
+get_code_summary(Sum,N) :-
+    ( get_file_config(edition_mode(predicate)) ->
+        get_preds_summary(Sum, N)
+    ;
+        get_cls_summary(Sum, N)
+    ).
+
+get_cls_summary(Sum, NCls) :-
     findall(Cl, module_clause(_, clause, _, _, _, Cl), Cls),
     length(Cls, NCls),
     findall(Mod, naive_loaded(Mod, _), Mods),
@@ -98,6 +109,39 @@ get_mods_summary([Mod|Mods], [Mod-N|Sum]) :-
     findall(Cl, module_clause(Mod, clause, _, _, _, Cl), Cls),
     length(Cls, N),
     get_mods_summary(Mods, Sum).
+
+get_preds_summary(PredSum,NPreds) :-
+    findall(Mod, naive_loaded(Mod, _), Mods),
+    findall(M-PS, (member(M,Mods), summ_preds_mod(M,PS)), PredSum),
+    foldl(add_mods,PredSum,0,NPreds).
+
+summ_preds_mod(Mod,PS) :-
+    findall(Pred/A-N,
+            (bagof(Cl, (module_clause(Mod,clause,Pred,A,_,Cl)),PredSum),
+             length(PredSum, N)),
+            PS0),
+    reorder_summary(PS0,Mod,PS).
+
+:- data proc_pred/3.
+% reorder predicates to keep order in source -- lost because bagof sorts
+reorder_summary(Sum,Mod,Sum_s) :-
+    retractall_fact(proc_pred(_,_,_)),
+    ( % failured-driven loop
+      module_clause(Mod,clause,Pred,A,_,_),
+        get_member(Pred/A-N, Sum),
+        ( proc_pred(Pred,A,N) -> true
+        ; assertz_fact(proc_pred(Pred,A,N))
+        ),
+        fail
+    ; findall(P/A-N, proc_pred(P,A,N), Sum_s)
+    ).
+
+get_member(A,L) :-
+    member(A,L), !.
+
+add_mods(_-Ps,V0,V):-
+    length(Ps, L),
+    V is V0 + L.
 
 % assertions, fsyntax, dcg, regtypes
 runtime_ops :-
@@ -127,4 +171,3 @@ runtime_ops :-
     op(  25,  fy, (^)),
     op(1100, xfy, ('|')),
     op(1050, xfy, (?)).
-

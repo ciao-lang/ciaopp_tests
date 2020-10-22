@@ -1,5 +1,5 @@
 :- module(module_writer, [write_dir_state/4, write_dir_state_sequence/3],
-          [assertions, datafacts,hiord]).
+          [assertions, datafacts,hiord,fsyntax]).
 
 :- use_module(engine(stream_basic)).
 :- use_module(engine(internals), [itf_filename/2]).
@@ -16,8 +16,7 @@
 
 :- use_module(ciaopp_tests(incanal/git_wrapper)).
 :- use_module(ciaopp_tests(incanal/naive_reader)).
-:- use_module(ciaopp_tests(incanal/incanal_intermod_bench_driver), [monolithic/0]).
-:- use_module(ciaopp_tests(incanal/incanal_intermod_test), [test_dir/2]).
+:- use_module(ciaopp_tests(incanal/config_db)).
 
 :- doc(title, "Modular program printer").
 
@@ -63,20 +62,17 @@ copy_directory(SrcDir,DstDir) :-
 
 write_dir_state_sequence_([], _, _, _).
 write_dir_state_sequence_([St|Seq], DirType, Dir, N) :-
-    N1 is N + 1,
     atom_number(AN, N),
-    atom_concat(state_, AN, D),
-    path_concat(Dir, D, LocalDir),
+    path_concat(Dir, ~atom_concat(state_, AN), LocalDir),
     make_directory(LocalDir),
     write_dir_state(St, DirType, LocalDir,git_checkout_copy),
-    write_dir_state_sequence_(Seq, DirType, Dir, N1).
+    write_dir_state_sequence_(Seq, DirType, Dir, ~(N+1)).
 
 :- meta_predicate write_dir_state(?,?,?,pred(3)).
 :- pred write_dir_state(+State, +DirType, +DstDir,CheckoutPred)
    #"Writes @var{State} of clauses in modules in directory @var{DstDir}.".
 write_dir_state(St, states, Dir, _) :- !,
-    atom_concat(St,'/',AllSt),
-    process_call(path(cp), ['-r', AllSt, Dir], []),
+    copy_directory(~atom_concat(St,'/'), Dir),
     % remove itfs
     ( % failure-driven loop
       current_file_find([proj(compilable), file_p-match(name, glob('*.pl'))], St, File),
@@ -103,19 +99,15 @@ remove_before_state([_|T],R) :-
     remove_before_state(T,R).
 
 write_dir_state_([], _).
-write_dir_state_([present(ModName, ClList)|IniState], DstDir) :-
-    naive_loaded(ModName, OrigModPath),
-    test_dir(_TestId,TestSrcDir),
-    path_get_relative(TestSrcDir,OrigModPath,RelPath),
-    path_concat(DstDir,RelPath,AbsModPath),
-    path_dirname(AbsModPath,Dir),
-    process_call(path(mkdir), ['-p',Dir], []), % create dir and parents if necessary
+write_dir_state_([p(ModName, ClList)|IniState], DstDir) :-
+    path_concat(DstDir,~path_get_relative(~test_dir(_), ~naive_loaded(ModName)),AbsModPath),
+    process_call(path(mkdir), ['-p',~path_dirname(AbsModPath)], []),
+    % create dir and parents if necessary
     write_mod_state(ModName, ClList, AbsModPath),
     write_dir_state_(IniState, DstDir).
 
 write_mod_state(Mod, ClList, _) :- % this file did not change
-    current_fact(mod_prev_state(Mod, PrevClList)),
-    PrevClList == ClList, !.
+    ~mod_prev_state(Mod) == ClList, !.
 write_mod_state(Mod, ClList, ModPath) :-
     open(ModPath, write, ModS),
     retractall_fact(written_pred(_, _)),
@@ -123,7 +115,10 @@ write_mod_state(Mod, ClList, ModPath) :-
     write_mod_header(Mod, ModS),
     write_failures(Mod, ModS), % IG for all clauses, always an
                                % initial fail is written
-    write_state_cls(ClList, Mod, ModS),
+    ( get_edit_mode(predicate) ->
+        write_state_preds(ClList, Mod, ModS)
+    ; write_state_cls(ClList, Mod, ModS)
+    ),
     assertz_fact(modified(Mod)),
     close(ModS).
 
@@ -140,7 +135,7 @@ write_mod_header(Mod, ModS) :-
     write_cl(directive, Cl, ModS),
     fail.
 write_mod_header(Mod, ModS) :-   % Write here entries also
-    module_clause(Mod,assertion, _, _, _, Cl),
+    module_clause(Mod, assertion, _, _, _, Cl),
     write_cl(assertion, Cl, ModS),
     fail.
 write_mod_header(_, _).
@@ -176,30 +171,26 @@ write_state_cls_([Cl|Cls], [N|Ns], Mod, ModS) :-
 write_state_cls_([_|Cls], [_|Ns], Mod, ModS) :-
     write_state_cls_(Cls, Ns, Mod, ModS).
 
-write_cl(module, Cl, S) :-
+write_state_preds([], _, _).
+write_state_preds([P/A-L|Ps], Mod, ModS) :-
+    findall(Cl, module_clause(Mod,clause, P, A, _, Cl), Cls),
+    write_state_cls_(Cls, L, Mod, ModS),
+    write_state_preds(Ps, Mod, ModS).
+
+write_cl(Type, Cl, S) :-
+    to_write(Type),
     portray_clause(S, Cl).
-write_cl(directive, Cl, S) :-
-    portray_clause(S, Cl).
-write_cl(assertion, Cl, S) :-
-    portray_clause(S, Cl).
-write_cl(clause, Cl, S) :-
-    portray_clause(S, Cl).
+
+to_write(module).
+to_write(directive).
+to_write(assertion).
+to_write(clause).
 
 remove_modified_aux_files(DstDir) :-
     modified(Mod),
-    remove_itf_file(DstDir, Mod),
+    remove_itf_file(DstDir, Mod), % remove itf
     fail.
 remove_modified_aux_files(_).
 
 remove_itf_file(DstDir, Mod) :-
-    path_concat(DstDir, Mod, BasePath),
-    itf_filename(BasePath, Itf),
-    del_file_nofail(Itf).
-
-% ------------------------------------------------------------
-% write the whole program
-write_program(S, Mod) :-
-    module_clause(Mod,A, _, _, _, Cl),
-    write_cl(A, Cl, S),
-    fail.
-write_program(_, _).
+    del_file_nofail(~itf_filename(~path_concat(DstDir, Mod))).

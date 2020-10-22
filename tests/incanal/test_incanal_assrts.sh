@@ -21,16 +21,11 @@ if [ "$#" -ne 1 ]; then
     exit
 fi
 
-./gen_lib_cache.sh
-
 pushd $_base > /dev/null 2>&1
 
 rm -rf $res_dir/*$domain*$tag*
 
-if [ ! -d "$cached_assertions" ]; then
-    echo "Generating cached assertions for libraries $cached_assertions ..."
-    gen_lib_cache $cached_assertions
-fi
+./gen_lib_cache.sh
 
 echo "Running tests $domain (monolithic analysis)..."
 
@@ -41,13 +36,15 @@ mkdir -p "$res_dir"/logs/
 for i in "${tests[@]}" ; do
     echo "Running $i"
     for k in "${inc_configs[@]}" ; do
-        log_file="$res_dir"/logs/"$i"_"$k"_"$domain"_assertions.log
-        ./$bench_driver "$i" add 1 $domain $k assertions $trace --user_tag $tag
+        # log_file="$res_dir"/logs/"$i"_"$k"_"$domain"_assertions.log
+        echo "CMD: ciaopp-test incanal $i $domain $k assertions $trace --user_tag $tag"
+        ciaopp-test incanal "$i" $domain $k assertions $trace --user_tag $tag
     done
 
     bench_res_dir=$(find $res_dir -name "$i*$domain*$tag")
     echo "Checking $i"
-    ciaopp-dump cmp --sequence "$bench_res_dir"/mon-noninc/detailed_step_results "$bench_res_dir"/mon-inc/detailed_step_results $domain
+    echo "CMD: ciaopp-dump cmp --sequence "$res_dir"/mon-noninc/detailed_step_results "$res_dir"/mon-inc/detailed_step_results $domain"
+    ciaopp-dump cmp --sequence "$res_dir"/mon-noninc/detailed_step_results "$res_dir"/mon-inc/detailed_step_results $domain
     errors=$(($errors+$?)) # add errors
 done
 

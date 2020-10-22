@@ -15,9 +15,6 @@ domains=(shfr)
 
 total_checks=5
 
-echo "Compiling tests..."
-./compile.sh
-
 mkdir -p test_results/
 
 echo "Running tests..."
