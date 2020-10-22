@@ -5,7 +5,7 @@
 
 :- doc(module,"
 Usage:
-@includedef{usage_text/1}.").
+  @includedef{usage_text/1}.").
 
 :- use_module(library(errhandle)).
 :- use_module(library(system)).
