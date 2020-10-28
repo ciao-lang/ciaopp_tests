@@ -1,7 +1,8 @@
 :- bundle(ciaopp_tests).
 depends([
   core,
-  ciaopp
+  ciaopp,
+  ciaopp_extra
 ]).
 
 alias_paths([
