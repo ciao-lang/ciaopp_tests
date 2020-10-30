@@ -5,7 +5,6 @@ _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
 
 tests=(trust_C1_+ trust_C1_+bot trust_C2_+ trust_C3_+ trust_C1_- trust_C1_-bot trust_C2_- trust_C3_- trust_S1 trust_S2 trust_S3 trust_S4 trust_C_exported trust_C_internal)
 # TODO: keep up to date w.r.t. test_dirs:inc_trust_call_test/1 and test_dirs:inc_trust_succ_test/1
-bench_driver=incanal_intermod_bench_driver
 res_dir=test_results
 trace=""
 trace=trace # comment to remove tracing
@@ -17,7 +16,7 @@ inc_configs=("" "incremental")
 total_checks=14
 
 if [ "$#" -ne 1 ]; then
-          echo "Usage: ./test_incanal_assrts.sh <domain>"
+    echo "Usage: ./test_incanal_assrts.sh <domain>"
     exit
 fi
 
@@ -43,8 +42,8 @@ for i in "${tests[@]}" ; do
 
     bench_res_dir=$(find $res_dir -name "$i*$domain*$tag")
     echo "Checking $i"
-    echo "CMD: ciaopp-dump cmp --sequence "$res_dir"/mon-noninc/detailed_step_results "$res_dir"/mon-inc/detailed_step_results $domain"
-    ciaopp-dump cmp --sequence "$res_dir"/mon-noninc/detailed_step_results "$res_dir"/mon-inc/detailed_step_results $domain
+    echo "CMD: ciaopp-dump cmp --sequence $bench_res_dir/mon-noninc/detailed_step_results $res_dir/mon-inc/detailed_step_results $domain"
+    ciaopp-dump cmp --sequence "$bench_res_dir"/mon-noninc/detailed_step_results "$bench_res_dir"/mon-inc/detailed_step_results $domain
     errors=$(($errors+$?)) # add errors
 done
 
@@ -53,7 +52,6 @@ popd > /dev/null 2>&1
 noerrors=$(expr $total_checks - $errors)
 
 echo "$noerrors/$total_checks passed."
-
 
 if [ "$errors" -ne 0 ]; then
     errors=1

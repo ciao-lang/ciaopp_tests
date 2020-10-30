@@ -403,7 +403,6 @@ decide_make_dir(_).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- doc(section, "Bundle").
 
-% :- use_package(trace).
 :- use_module(ciaobld(bundle_scan), [scan_bundles_at_path/1]).
 :- use_module(ciaopp_tests(incanal/dynamic_workspace)).
 
