@@ -1,4 +1,4 @@
-:- module(find_all_vars,[find_all_vars/2,append/3],[]).
+:- module(find_all_vars,[find_all_vars/2],[]).
 
 :- use_module(library(sort), [sort/2]).
 :- use_module(find_all_vars2, [find_all_vars2/2]).

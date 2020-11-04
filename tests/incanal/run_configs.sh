@@ -42,8 +42,6 @@ echo "Performing tests..."
 
 res_dir=test_results
 
-# rm -rf "$res_dir"/"$bench_name"-"$test_type"-*"$domain"*
-
 bench_opts="under_all"
 
 echo "Bench options: $domain $bench_opts $user_opts"
