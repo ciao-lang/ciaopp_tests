@@ -2,7 +2,7 @@
 
 syntax_highlight := yes.
 
-:- include(ciaopp_docsrc(common/'LPDOCCOMMON')).
+:- include(ciaopp_docsrc(docpaths)).
 
 output_name := 'ciaopp_tests'.
 
