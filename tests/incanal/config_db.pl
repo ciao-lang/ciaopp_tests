@@ -19,7 +19,7 @@ test_config('--seq_sz', abs). % abs ; rel
 test_config('--edit_type', add). % add ; del
 test_config('--n_edits', 1). % int
 test_config('--domain', shfr).
-test_config('--user_tag', '').
+% test_config('--user_tag', '').
 
 :- export(get_test_config/2).
 get_test_config(A, B) :-

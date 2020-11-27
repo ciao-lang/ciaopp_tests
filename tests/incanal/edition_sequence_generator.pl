@@ -1,4 +1,4 @@
-:- module(_, [], [assertions, isomodes, regtypes, hiord, datafacts, fsyntax]).
+:- module(_, [], [assertions, isomodes, regtypes, nativeprops, hiord, datafacts, fsyntax]).
 
 :- doc(title, "Generator of sequence editions for sets of modules").
 
@@ -52,7 +52,6 @@ yes
 :- use_module(library(sort), [sort/2]).
 :- use_module(library(aggregates)).
 :- use_module(library(random), [random/3]).
-:- use_module(library(format), [format/3]).
 
 :- use_module(config_db).
 
@@ -61,7 +60,8 @@ yes
 
 :- export(gen_edit_sequence/4).
 :- meta_predicate gen_edit_sequence(?,?,pred(4),?).
-:- pred gen_edit_sequence(+Mods, +SeqConfig, +SeqGenerator, -Seq).
+:- pred gen_edit_sequence(+Mods, +SeqConfig, +SeqGenerator, -Seq)
+   + (not_fails, is_det).
 gen_edit_sequence(Mods,SeqConfig, SeqGenerator,[State1|Seq]) :-
     SeqConfig = cfg(NCls, NSteps, NEdits, EditType,PreSkip,MaxSteps),
     init_gen_sequence(EditType, Mods, State0, StateI),

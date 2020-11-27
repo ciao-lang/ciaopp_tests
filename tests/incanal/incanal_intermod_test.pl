@@ -1,4 +1,4 @@
-:- module(incanal_intermod_test, [test/2], [assertions, dynamic, fsyntax]).
+:- module(_, [test/2], [assertions, isomodes, nativeprops, dynamic, fsyntax]).
 
 :- doc(title, "Incremental analysis tester").
 
@@ -117,7 +117,7 @@ set_bundle_ops :-
     fail.
 set_bundle_ops.
 
-:- pred test(BenchId, Opts)
+:- pred test(BenchId, Opts) + (not_fails, is_det)
    #"Runs a test of analysis. The configuration has is expressed as follows:
 
    @begin{itemize}
@@ -193,6 +193,7 @@ clean_ana_dir(AnaDir) :-
 :- doc(section, "Prepare test edition sequence").
 % -----------------------------------------------------------------
 
+:- pred generate_simulation_sequence/3 + (not_fails, is_det).
 generate_simulation_sequence(manual, SrcDir, Seq) :-
     code_db_from_dir(SrcDir),
     get_code_summary(Sum0, NCls),
@@ -296,6 +297,7 @@ fill_list([_|Xs], EditType) :-
 :- doc(section, "Perform analysis").
 % -----------------------------------------------------------------
 
+:- pred perform_seq_analysis/4 + (not_fails, is_det).
 perform_seq_analysis([], _, _, _).
 perform_seq_analysis([St|Seq], DirType, TopLevel, Dir) :-
     perform_seq_analysis1(St, DirType, TopLevel, Dir), !,
@@ -303,6 +305,7 @@ perform_seq_analysis([St|Seq], DirType, TopLevel, Dir) :-
     % retracting facts very slow, because it had to check them)
     perform_seq_analysis(Seq, DirType, TopLevel, Dir).
 
+:- pred perform_seq_analysis1/4 + (not_fails, is_det).
 perform_seq_analysis1(St, DirType, TopLevel, Dir) :-
     write_dir_state(St, DirType, Dir,git_checkout_copy),
     get_test_config('--domain', AbsInt),
