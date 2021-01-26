@@ -102,7 +102,6 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(punit_boundary, bundle),
     set_pp_flag(widen, on),
     set_pp_flag(success_policy, under_all),
-    set_pp_flag(preload_lib_sources, on),
     set_pp_flag(clique_widen, amgu),
     set_pp_flag(clique_widen_type, panic_1),
     set_pp_flag(clique_widen_ub, 10),
