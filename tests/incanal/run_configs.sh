@@ -17,11 +17,11 @@ function check_args {
         fi
     fi
     if [ "$2" != "add" ]; then
-              if [ "$2" != "del" ]; then
-                  echo "Wrong simulation option"
-                  show_help
-                  exit
-              fi
+        if [ "$2" != "del" ]; then
+            echo "Wrong simulation option"
+            show_help
+            exit
+        fi
     fi
 }
 

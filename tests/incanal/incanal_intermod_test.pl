@@ -33,7 +33,8 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(ciaopp(frontend_driver), [module/1]).
 :- use_module(ciaopp(plai/intermod), [intermod_analyze/3]).
 :- use_module(ciaopp(p_unit/p_dump), [dump_dir/1, dump/2]).
-:- use_module(ciaopp(p_unit/p_abs), [registry/3, registry_headers/2, write_registry_file/3]).
+:- use_module(ciaopp(plai/intermod_punit), [write_registry_file/3]).
+:- use_module(ciaopp(plai/intermod_db), [registry/3, registry_headers/2]).
 :- use_module(ciaopp(raw_printer)).
 
 :- use_module(ciaopp(analysis_stats), [clean_stat_steps/0, dump_steps/1]).
@@ -382,9 +383,8 @@ it_dump_gat_file(BenchId, N, DumpDir) :-
     decide_make_dir(DumpDir).
 
 dump_registries(DumpDir) :- % This registry should contain the GAT
-    findall(X, analyzed_module(X), Modules),
     ( % failure-driven loop
-      member(Mod, Modules),
+      analyzed_module(Mod),
         write_registry_file(~path_concat(DumpDir, Mod), Mod, quiet),
         fail
     ; true).

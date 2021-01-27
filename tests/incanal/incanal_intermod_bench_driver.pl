@@ -95,6 +95,9 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(fixpoint, dd),
     set_pp_flag(intermod, on), % modular driver by default
     set_pp_flag(incremental, off),
+    set_pp_flag(remove_useless_abs_info, on),
+    set_pp_flag(preload_lib_sources, on),
+    % for checking the results, it will be set to off if incanal
     set_pp_flag(ext_policy, registry), % Other policies do not make sense
     set_pp_flag(entry_policy, top_level),
     set_pp_flag(mnu_modules_to_analyze, all),
@@ -106,28 +109,27 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(clique_widen_type, panic_1),
     set_pp_flag(clique_widen_ub, 10),
     set_pp_flag(clique_widen_lb, 10),
-    set_pp_flag(type_precision, defined),
-    set_pp_flag(types,deftypes),
+%    set_pp_flag(type_precision, defined),
     current_pp_flag(pplog, Logs),
-    set_pp_flag(pplog, [p_abs,incremental_high|Logs]),
-    set_pp_flag(types,deftypes).
+    set_pp_flag(pplog, [p_abs,incremental_high|Logs]).
+%    set_pp_flag(types,deftypes).
 %        set_pp_flag(timestamp_trace, on).
 
 test(BenchId, Domain, ConfigOpts) :-
-    set_pp_flag(preload_lib_sources, on),
-    ensure_lib_sources_loaded, !,
     set_common_flags,
     make_config(ConfigOpts),
     working_directory(_, ~bundle_path(ciaopp_tests, 'tests/incanal/bench')),
     ( member(basic, ConfigOpts) ->
         ( test_dir(Top, BenchId, Bench0, _Type) ->
             fixed_absolute_file_name(Bench0,'.',BenchDir),
+            ensure_lib_sources_loaded, !,
             basic_analyze(Top, BenchDir, Domain)
         ;
             show_message(error, "Bench not found: ~w~n", [BenchId]),
             halt(1)
         )
     ;
+        ensure_lib_sources_loaded, !,
         test(BenchId, ['--domain', Domain])
     ).
 
@@ -177,9 +179,10 @@ num_opt('--n_edits').
 
 :- pred config/1 : config_opt.
 config(monolithic_driver) :- !, % warning!!! this only works if the program is
-                                % self-contained
+    % self-contained
     set_pp_flag(intermod, off).
 config(incremental) :- !,
+    set_pp_flag(remove_useless_abs_info, off),
     set_pp_flag(incremental, on).
 config(modular) :- !,
     set_pp_flag(module_loading, one),
