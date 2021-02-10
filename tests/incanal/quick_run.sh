@@ -5,7 +5,7 @@ _base=$(e=$0;while test -L "$e";do d=$(dirname "$e");e=$(readlink "$e");\
 
 # set -x
 
-./gen_lib_cache.sh
+ciaopp --gen-lib-cache
 
 pushd $_base > /dev/null 2>&1
 

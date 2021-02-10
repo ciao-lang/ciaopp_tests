@@ -24,7 +24,7 @@ pushd $_base > /dev/null 2>&1
 
 rm -rf $res_dir/*$domain*$tag*
 
-./gen_lib_cache.sh
+ciaopp --gen-lib-cache
 
 echo "Running tests $domain (monolithic analysis)..."
 

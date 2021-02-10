@@ -14,7 +14,7 @@ pushd $_base > /dev/null 2>&1
 
 res_dir=test_results
 
-./gen_lib_cache.sh
+ciaopp --gen-lib-cache
 
 domain=$1
 tag=incanal-mon
@@ -33,7 +33,6 @@ errors=0
 for i in "${tests[@]}" ; do
     echo "Running $i"
     for k in "${inc_configs[@]}" ; do
-        log_file="$res_dir"/logs/"$i"_"$k"_"$domain"_assertions.log
         echo "COMMAND ciaopp-test incanal $i $domain $k monolithic_driver"
         ciaopp-test incanal "$i" $domain $k monolithic_driver --user_tag $tag
     done

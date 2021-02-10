@@ -11,7 +11,7 @@ if [ "$#" -ne 1 ] && [ "$#" -ne 2 ]; then
     exit
 fi
 
-./gen_lib_cache.sh
+ciaopp --gen-lib-cache
 
 pushd $_base > /dev/null 2>&1
 
