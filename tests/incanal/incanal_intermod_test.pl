@@ -34,7 +34,7 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(ciaopp(plai/intermod), [intermod_analyze/3]).
 :- use_module(ciaopp(p_unit/p_dump), [dump_dir/1, dump/2]).
 :- use_module(ciaopp(plai/intermod_punit), [write_registry_file/3]).
-:- use_module(ciaopp(plai/intermod_db), [registry/3, registry_headers/2]).
+:- use_module(ciaopp(plai/intermod_db), [registry/3, registry_header/2]).
 :- use_module(ciaopp(raw_printer)).
 
 :- use_module(ciaopp(analysis_stats), [clean_stat_steps/0, dump_steps/1]).
@@ -393,7 +393,7 @@ dump_registries(DumpDir) :- % This registry should contain the GAT
 % (avoids "default" modules that the modular analysis does not
 % consider during analysis)
 analyzed_module(Mod) :-
-    registry_headers(Mod, open_mode(_)),
+    registry_header(Mod, open_mode(_)),
     ( registry(_SgKey, Mod, _RegData) -> true % (we do not care)
     ; fail
     ).
