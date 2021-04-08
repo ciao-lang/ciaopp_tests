@@ -1370,7 +1370,7 @@ textarea_data(S) -->
    about the incident.  Normaly the whole execution of a CGI is
    protected thus.").
 
-%:- pred html_protect(callable).
+%:- pred html_protect(cgoal).
 
 :- meta_predicate(html_protect(:)). % For compatibility
 
