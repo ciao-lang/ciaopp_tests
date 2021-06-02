@@ -10,11 +10,11 @@ outfile=/tmp/ciaopp-output.out
 
 # Simple command line examples
 
-ciaopp -V "$exampledir"/ann.pl -ftypes=none -fmodes=gr -fmenu_output=off &> "$outfile"
+ciaopp -V "$exampledir"/ann.pl -fassert_ctcheck=manual -ftypes=none -fmodes=gr -fmenu_output=off &> "$outfile"
 cat $outfile
 grep "(gr)" "$outfile" || exit
 
-ciaopp -V "$exampledir"/ann.pl -ftypes=terms -fmenu_output=off &> "$outfile"
+ciaopp -V "$exampledir"/ann.pl -fassert_ctcheck=manual -ftypes=terms -fmodes=none -fmenu_output=off &> "$outfile"
 cat $outfile
 grep "(terms)" "$outfile" || exit
 
