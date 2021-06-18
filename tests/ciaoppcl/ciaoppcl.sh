@@ -10,6 +10,14 @@ outfile=/tmp/ciaopp-output.out
 
 # Simple command line examples
 
+ciaopp -A "$exampledir"/ann.pl -ftypes=none -fmodes=gr -foutput=off &> "$outfile"
+cat $outfile
+grep "(gr)" "$outfile" || exit
+
+ciaopp -A "$exampledir"/ann.pl -fana_det=det -foutput=off &> "$outfile"
+cat $outfile
+grep "(det)" "$outfile" || exit
+
 ciaopp -V "$exampledir"/ann.pl -ftypes=none -fmodes=gr -foutput=off &> "$outfile"
 cat $outfile
 grep "(gr)" "$outfile" || exit
