@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Dummy script to test domains
 
@@ -24,11 +24,15 @@ output('${mod}.co_${dom}.pl').
 halt.
 EOF
         diff "$out" "$out_good"
-        diff "$outlog" "$outlog_good"
+        diff <(notime "$outlog") <(notime "$outlog_good")
     elif [ $mode == "save" ]; then
         cp "$out" "$out_good"
         cp "$outlog" "$outlog_good"
     fi
+}
+# Erase time measures
+notime() { # file
+    sed -e "s/[0-9.]* msec\./msec/" "$1"
 }
 dir=../../../ciaopp_extra/tests/benchs/modes
 #trydom "$dir"/mmatrix-w ptypes
@@ -62,6 +66,7 @@ sharing_doms="$sharing_doms sharefree_clique" # sharefree_clique
 sharing_doms="$sharing_doms share_clique_def" # sharing_clique_def
 sharing_doms="$sharing_doms sharefree_clique_def" # sharefree_clique_def
 sharing_doms="$sharing_doms bshare" # bshare
+
 for prg in peephole; do
     for dom in $sharing_doms; do
         trydom "$dir"/$prg.pl $dom
