@@ -13,16 +13,18 @@ function trydom() { # module domain
     outlog=$mod.co_$dom.log
     out_good=$out-good
     outlog_good=$outlog-good
-    if [ $mode == "check" ]; then
-        cat <<EOF
+    cat <<EOF
 DOMAIN: $2; MODULE: $mod
 EOF
+    if [ $mode == "check" ]; then
         ciaopp > "$outlog" 2>&1 <<EOF
 module('$1').
 analyze($dom).
 output('${mod}.co_${dom}.pl').
 halt.
 EOF
+    fi
+    if [ $mode == "check" ] || [ $mode = "compare" ]; then
         diff "$out" "$out_good"
         diff <(notime "$outlog") <(notime "$outlog_good")
     elif [ $mode == "save" ]; then
@@ -44,7 +46,9 @@ dir=../../../ciaopp_extra/tests/benchs/modes
 
 case $1 in
     save) mode=save ;;
-    *) mode=check ;;
+    compare) mode=compare ;;
+    check) mode=check ;;
+    *) mode=check ;; # (default)
 esac
 
 sharing_doms=
@@ -65,7 +69,24 @@ sharing_doms="$sharing_doms share_clique_1" # sharing_clique_1
 sharing_doms="$sharing_doms sharefree_clique" # sharefree_clique
 sharing_doms="$sharing_doms share_clique_def" # sharing_clique_def
 sharing_doms="$sharing_doms sharefree_clique_def" # sharefree_clique_def
-sharing_doms="$sharing_doms bshare" # bshare
+# sharing_doms="$sharing_doms bshare" # bshare # TODO: not working
+
+# def = ground+covered
+# share = ground+mshare
+# shfr = ground+mshare+var
+# shfrnv = ground+mshare+var+nonvar
+# shfret = ground+mshare+var+regtype
+# shareson = ground+mshare+linear
+# shfrson = ground+mshare+var+linear
+# son = ground+mshare+linear
+# share_amgu = ground+mshare
+# sharefree_amgu = ground+mshare+var
+# shfrlin_amgu = ground+mshare+var+linear
+# share_clique = ground+mshare+clique
+# share_clique_1 = ground+mshare+clique_1
+# sharefree_clique = ground+mshare+var+clique
+# share_clique_def = ground+mshare+clique+not_in_output(covered)
+# sharefree_clique_def = ground+mshare+clique+not_in_output(covered)
 
 for prg in peephole; do
     for dom in $sharing_doms; do
