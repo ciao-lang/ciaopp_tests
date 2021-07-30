@@ -94,7 +94,10 @@ for prg in peephole; do
     done
 done
 
+# ---------------------------------------------------------------------------
 # Domains and their module
+
+# ---------------------------------------------------------------------------
 # aeq.pl --> aeq
 # def.pl --> def
 # deftypes.pl --> deftypes
@@ -129,4 +132,34 @@ done
 # svterms.pl --> svterms
 # termsd.pl --> terms
 # top_path_sharing.pl --> path
+
+# ---------------------------------------------------------------------------
+# (complex domains)
+# nfdet.pl -> nfdet
+# nfplai.pl -> nf
+# detplai.pl -> det
+
+# ---------------------------------------------------------------------------
+# (depends on PPL)
+# polyhedra.pl --> polyhedra [depends on PPL]
+
+# ---------------------------------------------------------------------------
+# (ciaopp_fpnum bundle)
+# nonrel_fintervals.pl --> nonrel_fintervals
+
+# ---------------------------------------------------------------------------
+# (ciaopp_cost bundle)
+# res_plai.pl -> res_plai
+# res_plai_stprf.pl -> res_plai_stprf
+# sized_types.pl -> sized_types
+
+# ---------------------------------------------------------------------------
+# (ciaopp_java bundle)
+# java_nullity -> java_nullity
+# oo_son -> oo_son
+# oo_shnltau -> oo_shnltau
+# oo_types -> oo_types
+# java_cha -> java_cha
+
+
 
