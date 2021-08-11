@@ -16,6 +16,7 @@ function trydom() { # module domain
     cat <<EOF
 DOMAIN: $2; MODULE: $mod
 EOF
+# set_pp_flag(output_lang, raw).
     if [ $mode == "check" ]; then
         ciaopp > "$outlog" 2>&1 <<EOF
 module('$1').
@@ -52,8 +53,10 @@ case $1 in
 esac
 
 sharing_doms=
-sharing_doms="$sharing_doms gr" # gr
+sharing_doms="$sharing_doms fr" # fr_top
 sharing_doms="$sharing_doms def" # def
+sharing_doms="$sharing_doms frdef" # fd
+sharing_doms="$sharing_doms gr" # gr
 sharing_doms="$sharing_doms share" # sharing
 sharing_doms="$sharing_doms shfr" # sharefree
 sharing_doms="$sharing_doms shfrnv" # sharefree_non_var
@@ -71,7 +74,10 @@ sharing_doms="$sharing_doms share_clique_def" # sharing_clique_def
 sharing_doms="$sharing_doms sharefree_clique_def" # sharefree_clique_def
 # sharing_doms="$sharing_doms bshare" # bshare # TODO: not working
 
+# fr = var+posdeps
 # def = ground+covered
+# frdef = var+posdeps+ground+covered
+# gr = ground
 # share = ground+mshare
 # shfr = ground+mshare+var
 # shfrnv = ground+mshare+var+nonvar
