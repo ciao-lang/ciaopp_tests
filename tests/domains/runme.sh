@@ -2,8 +2,6 @@
 
 # Dummy script to test domains
 
-mode=check
-
 # set_pp_flag(output_lang, raw).
 function trydom() { # module domain
     local mod dom
@@ -37,13 +35,74 @@ EOF
 notime() { # file
     sed -e "s/[0-9.]* msec\./msec/" "$1"
 }
-dir=../../../ciaopp_extra/tests/benchs/modes
+function tryprgs() {
+    for prg in $prgs; do
+        for dom in $doms; do
+            trydom "$dir"/$prg.pl $dom
+        done
+    done
+}
+function add_dom() {
+    doms="$doms $1"
+}
+
+# ===========================================================================
+
+function try_sharing() {
+    echo "SHARING DOMAINS" # TODO: mode domains?
+    doms=
+    add_dom "fr" # fr_top.pl | var+posdeps
+    add_dom "def" # def.pl | ground+covered
+    add_dom "frdef" # fd.pl | var+posdeps+ground+covered
+    add_dom "gr" # gr.pl | ground
+    add_dom "share" # sharing.pl | ground+mshare
+    add_dom "shfr" # sharefree.pl | ground+mshare+var
+    add_dom "shfrnv" # sharefree_non_var.pl | ground+mshare+var+nonvar
+    add_dom "shfret" # shfret.pl | ground+mshare+var+regtype
+    add_dom "shareson" # shareson.pl | ground+mshare+linear
+    add_dom "shfrson" # shfrson.pl | ground+mshare+var+linear
+    add_dom "son" # sondergaard.pl | ground+mshare+linear
+    add_dom "share_amgu" # sharing_amgu.pl | ground+mshare
+    add_dom "sharefree_amgu" # sharefree_amgu.pl | ground+mshare+var
+    add_dom "shfrlin_amgu" # shfrlin_amgu.pl | ground+mshare+var+linear
+    add_dom "share_clique" # sharing_clique.pl | ground+mshare+clique
+    add_dom "share_clique_1" # sharing_clique_1.pl | ground+mshare+clique_1
+    add_dom "sharefree_clique" # sharefree_clique.pl | ground+mshare+var+clique
+    add_dom "share_clique_def" # sharing_clique_def.pl | ground+mshare+clique+not_in_output(covered)
+    add_dom "sharefree_clique_def" # sharefree_clique_def.pl | ground+mshare+clique+not_in_output(covered)
+    # add_dom "bshare" # bshare.pl # TODO: not working
+    
+    prgs="peephole"
+    dir=../../../ciaopp_extra/tests/benchs/modes
+    tryprgs
+}
+
+# ===========================================================================
+
+function try_types() {
+    echo "TYPES DOMAINS"
+    doms=
+    add_dom "deftypes" # deftypes.pl
+    add_dom "eterms" # eterms.pl
+    # add_dom "etermsvar" # etermsvar.pl # TODO: buggy
+    add_dom "ptypes" # ptypes.pl
+    add_dom "svterms" # svterms.pl
+    add_dom "terms" # termsd.pl
+
+    # prgs="deriv" # TODO: too expensive
+    # dir=../../../ciaopp_extra/tests/benchs/types
+    prgs="witt"
+    dir=../../../ciaopp_extra/tests/benchs/modes
+    tryprgs
+}
+
+# ===========================================================================
+
 #trydom "$dir"/mmatrix-w ptypes
 #trydom "$dir"/peephole depthk
 #trydom "$dir"/deriv path
 # trydom shfr_exp shfr # (does not finish)
 #trydom "$dir"/shfr_exp sharefree_clique
-#
 
 case $1 in
     save) mode=save ;;
@@ -51,96 +110,26 @@ case $1 in
     check) mode=check ;;
     *) mode=check ;; # (default)
 esac
-
-sharing_doms=
-sharing_doms="$sharing_doms fr" # fr_top
-sharing_doms="$sharing_doms def" # def
-sharing_doms="$sharing_doms frdef" # fd
-sharing_doms="$sharing_doms gr" # gr
-sharing_doms="$sharing_doms share" # sharing
-sharing_doms="$sharing_doms shfr" # sharefree
-sharing_doms="$sharing_doms shfrnv" # sharefree_non_var
-sharing_doms="$sharing_doms shfret" # shfret
-sharing_doms="$sharing_doms shareson" # shareson
-sharing_doms="$sharing_doms shfrson" # shfrson
-sharing_doms="$sharing_doms son" # sondergaard
-sharing_doms="$sharing_doms share_amgu" # sharing_amgu
-sharing_doms="$sharing_doms sharefree_amgu" # sharefree_amgu
-sharing_doms="$sharing_doms shfrlin_amgu" # shfrlin_amgu
-sharing_doms="$sharing_doms share_clique" # sharing_clique
-sharing_doms="$sharing_doms share_clique_1" # sharing_clique_1
-sharing_doms="$sharing_doms sharefree_clique" # sharefree_clique
-sharing_doms="$sharing_doms share_clique_def" # sharing_clique_def
-sharing_doms="$sharing_doms sharefree_clique_def" # sharefree_clique_def
-# sharing_doms="$sharing_doms bshare" # bshare # TODO: not working
-
-# fr = var+posdeps
-# def = ground+covered
-# frdef = var+posdeps+ground+covered
-# gr = ground
-# share = ground+mshare
-# shfr = ground+mshare+var
-# shfrnv = ground+mshare+var+nonvar
-# shfret = ground+mshare+var+regtype
-# shareson = ground+mshare+linear
-# shfrson = ground+mshare+var+linear
-# son = ground+mshare+linear
-# share_amgu = ground+mshare
-# sharefree_amgu = ground+mshare+var
-# shfrlin_amgu = ground+mshare+var+linear
-# share_clique = ground+mshare+clique
-# share_clique_1 = ground+mshare+clique_1
-# sharefree_clique = ground+mshare+var+clique
-# share_clique_def = ground+mshare+clique+not_in_output(covered)
-# sharefree_clique_def = ground+mshare+clique+not_in_output(covered)
-
-for prg in peephole; do
-    for dom in $sharing_doms; do
-        trydom "$dir"/$prg.pl $dom
-    done
-done
+# try_sharing
+try_types
 
 # ---------------------------------------------------------------------------
 # Domains and their module
 
 # ---------------------------------------------------------------------------
+# (other domains)
 # aeq.pl --> aeq
-# def.pl --> def
-# deftypes.pl --> deftypes
 # depthk.pl --> depthk
-# eterms.pl --> eterms
-# etermsvar.pl --> etermsvar
-# fd.pl --> frdef
-# fr_top.pl --> fr
-# gr.pl --> gr
 # lsign.pl --> lsign
 # lsigndiff.pl --> difflsign
 # nonrel_intervals.pl --> nonrel_intervals
 # pd.pl --> pd
 # pdb.pl --> pdb
 # polyhedra.pl --> polyhedra
-# ptypes.pl --> ptypes
-# sharefree.pl --> shfr
-# sharefree_amgu.pl --> sharefree_amgu
-# sharefree_clique.pl --> sharefree_clique
-# sharefree_clique_def.pl --> sharefree_clique_def
-# sharefree_non_var.pl --> shfrnv
-# shareson.pl --> shareson
-# sharing.pl --> share
-# sharing_amgu.pl --> share_amgu
-# sharing_clique.pl --> share_clique
-# sharing_clique_1.pl --> share_clique_1
-# sharing_clique_def.pl --> share_clique_def
-# shfret.pl --> shfret
-# shfrlin_amgu.pl --> shfrlin_amgu
-# shfrson.pl --> shfrson
-# sondergaard.pl --> son
-# svterms.pl --> svterms
-# termsd.pl --> terms
 # top_path_sharing.pl --> path
 
 # ---------------------------------------------------------------------------
-# (complex domains)
+# (includes sharing and types domains)
 # nfdet.pl -> nfdet
 # nfplai.pl -> nf
 # detplai.pl -> det
