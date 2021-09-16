@@ -212,7 +212,7 @@ config(SuccessPolicy) :-
 config(trace) :- !,
     set_pp_flag(trace_fixp, trace).
 config(entry) :- !,
-    set_pp_flag(entry_point, entry).
+    set_pp_flag(entry_points_auto, none).
 config(fact_info) :- !,
     set_pp_flag(fact_info, on).
 config(assertions) :- !,
