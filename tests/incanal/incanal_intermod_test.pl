@@ -32,7 +32,7 @@ flags, use the incanal_intermod_bench_driver module.").
 :- use_module(ciaopp(analyze_driver), [analyze/2]).
 :- use_module(ciaopp(frontend_driver), [module/1]).
 :- use_module(ciaopp(plai/intermod), [intermod_analyze/3]).
-:- use_module(ciaopp(p_unit/p_dump), [dump_dir/1, dump/2]).
+:- use_module(ciaopp(p_dump), [dump_dir/1, dump/2]).
 :- use_module(ciaopp(plai/intermod_punit), [write_registry_file/3]).
 :- use_module(ciaopp(plai/intermod_db), [registry/3, registry_header/2]).
 :- use_module(ciaopp(raw_printer)).
