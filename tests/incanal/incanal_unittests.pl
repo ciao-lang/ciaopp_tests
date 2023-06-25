@@ -10,7 +10,7 @@
 :- use_module(library(aggregates)).
 :- use_module(library(terms_vars)).
 
-:- use_module(ciaopp(p_unit/program_keys)).
+:- use_module(library(compiler/p_unit/program_keys)).
 
 %:- use_module(ciaopp(plai/incanal/tarjan_inc), [tarjan_data/1]).
 

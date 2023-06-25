@@ -3,7 +3,7 @@
 :- use_module(ciaopp(frontend_driver), [module/1]).
 :- use_module(ciaopp(raw_printer), [raw_output/1]).
 
-:- use_module(ciaopp(p_unit), [program/2]).
+:- use_module(library(compiler/p_unit), [program/2]).
 
 :- use_module(ciaopp(plai/transform), [transform_clauses/5]).
 :- use_module(ciaopp(plai/tarjan), [tarjan/2, recursive_classify/4]).
