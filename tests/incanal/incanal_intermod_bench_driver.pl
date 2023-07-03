@@ -62,7 +62,7 @@ The benchmarks that can be currently performed are present in @tt{test_dirs.pl}.
 :- use_module(ciaopp_tests(incanal/incanal_intermod_test)).
 :- use_module(ciaopp_tests(incanal/config_db)).
 :- use_module(ciaopp(plai/incanal/incanal_persistent_db), [set_inc_persistent/1]).
-:- use_module(ciaopp(frontend_driver), [module/1, ensure_lib_sources_loaded/0]).
+:- use_module(ciaopp(frontend_driver), [module/1, ensure_libcache_loaded/0]).
 :- use_module(ciaopp(analyze_driver)).
 :- use_module(ciaopp(raw_printer), [show_analysis/0]).
 :- use_module(ciaopp(plai/domains), []).
@@ -122,14 +122,14 @@ test(BenchId, Domain, ConfigOpts) :-
     ( member(basic, ConfigOpts) ->
         ( test_dir(Top, BenchId, Bench0, _Type) ->
             fixed_absolute_file_name(Bench0,'.',BenchDir),
-            ensure_lib_sources_loaded, !,
+            ensure_libcache_loaded, !,
             basic_analyze(Top, BenchDir, Domain)
         ;
             show_message(error, "Bench not found: ~w~n", [BenchId]),
             halt(1)
         )
     ;
-        ensure_lib_sources_loaded, !,
+        ensure_libcache_loaded, !,
         test(BenchId, ['--domain', Domain])
     ).
 
