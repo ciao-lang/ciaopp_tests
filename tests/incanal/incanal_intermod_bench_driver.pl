@@ -96,7 +96,7 @@ set_common_flags :-  % monolithic by default
     set_pp_flag(intermod, on), % modular driver by default
     set_pp_flag(incremental, off),
     set_pp_flag(remove_useless_abs_info, on),
-    set_pp_flag(preload_lib_sources, on),
+    % set_pp_flag(use_libcache, on), % (enabled by default)
     % for checking the results, it will be set to off if incanal
     set_pp_flag(ext_policy, registry), % Other policies do not make sense
     set_pp_flag(entry_policy, top_level),
