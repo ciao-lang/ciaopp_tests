@@ -162,7 +162,6 @@ runtime_ops :-
     op(1200, xfx,[(-->)]),
     op(1105, xfy, ('|')),
     % fsyntax
-    op(1150,  fx, (function)),
     op(1150,  fx, (fun_eval)),
     op(1150,  fx, (fun_return)),
     op(1130, xfx, (:=)),
