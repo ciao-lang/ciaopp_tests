@@ -6,6 +6,7 @@ syntax_highlight := yes.
 
 output_name := 'ciaopp_tests'.
 
+:- discontiguous filepath/1.
 filepath := 'tests/incanal'.
 
 doc_structure := 'incanal_intermod_bench_driver.pl'.
