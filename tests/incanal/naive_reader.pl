@@ -164,7 +164,8 @@ runtime_ops :-
     % fsyntax
     op(1150,  fx, (fun_eval)),
     op(1150,  fx, (fun_return)),
-    op(1130, xfx, (:=)),
+    % op(1130, xfx, (:=)),
+    op( 980, xfx, (:=)), % priority between (::) and (,) (must be the same as in statevars.pl)
     op(  50,  fx, (~)),
     op( 910,  fx, (^^)),
     op(  25,  fy, (^)),
